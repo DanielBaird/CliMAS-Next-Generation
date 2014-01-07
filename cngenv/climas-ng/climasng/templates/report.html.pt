@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html class="no-js" xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal">
+<head>
+	<meta charset="utf-8" />
+	<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
+	<title>
+		CliMAS Reports, Next Generation
+	</title>
+	<meta content="width=device-width" name="viewport" />
+	<link href="${request.static_path('climasng:static/images/favicon-trans.png')}" rel="shortcut icon" />
+	<link href="${request.static_path('climasng:static/css/normalize.min.css')}" rel="stylesheet" />
+	<link href="${request.static_path('climasng:static/css/h5bp.css')}" rel="stylesheet" />
+	<link href="${request.static_path('climasng:static/css/main.css')}" rel="stylesheet" />
+	<script src="${request.static_path('climasng:static/js/lib/modernizr-2.6.1.min.js')}"></script>
+</head>
+<body>
+	<div id="report">
+		${ report_content }
+	</div>
+</body>
+</html>
+
+
+
+
+
