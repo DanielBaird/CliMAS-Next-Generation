@@ -8,6 +8,8 @@ from sqlalchemy.exc import DBAPIError
 
 from .models import (DBSession, MyModel)
 
+from parsing.docparser import DocParser
+
 # ------------------------------------------------------------------------
 
 @view_config(route_name='doc', renderer='templates/doc.html.pt')
@@ -31,7 +33,7 @@ def form_page(request):
 
 @view_config(route_name='report', renderer='templates/report.html.pt')
 def report_page(request):
-    report_content = "asdf"
+    report_content = DocParser().test()
     return { 'report_content': report_content }
 
 # ------------------------------------------------------------------------
