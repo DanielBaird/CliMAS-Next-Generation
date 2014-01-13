@@ -27,23 +27,32 @@ class ConditionVisitor(NodeVisitor):
     def data(self):
         del self._data
 
+    # throwaway node handler ----------------------------------------
+    def generic_visit(self, node, children):
+        return node.text.strip()
+
     # proper node handlers ------------------------------------------
-    def visit_condition(self, node, value):
+    def visit_condition(self, node, children):
         # top level condition should already have a single boolean child
-        return value
+        return children
+
 
     def visit_always(self, node, children):
         return True
 
+
     def visit_never(self, node, children):
         return False
+
 
     def visit_value(self, node, children):
         # should be already resolved to a real value
         return children[0]
 
+
     def visit_numeric(self, node, children):
         return Decimal(node.text)
+
 
     def visit_varname(self, node, children):
         if node.text in self._data:
@@ -52,48 +61,48 @@ class ConditionVisitor(NodeVisitor):
         # otherwise except out
         raise Exception("Unknown variable name: '" + node.text + "'")
 
+
     def visit_range(self, node, children):
         if children[1] == "%":
             return Percentage(node.text)
         # otherwise raise the numeric first child directly
         return children[0]
 
+
     def visit_comparison(self, node, children):
         return children[0]
 
+
     def visit_simple_comparison(self, node, (left, ws1, comp, ws2, right)):
-        if comp == '==':
+        if comp ==      '==':
             return (left == right)
 
-        if comp == '!=':
+        if comp ==      '!=':
             return (left != right)
+
+        if comp ==      '>=':
+            return (left >= right)
+
+        if comp ==      '>':
+            return (left > right)
+
+        if comp ==      '<=':
+            return (left <= right)
+
+        if comp ==      '<':
+            return (left < right)
+
+        raise Exception('comparison "' + comp + '" is not implemented')
+
 
     def visit_range_eq_comparison(self, node, (left, ws1, eq1, range, eq2, ws2, right)):
         left_min = right - range
         left_max = right + range
         return (left_min <= left <= left_max)
 
+
     def visit_simple_comparator(self, node, (cmp)):
         return cmp[0]
-
-    def visit_percent_sign(self, node, children):
-        return node.text
-
-    # throwaway node handlers ---------------------------------------
-    def visit_ws(self, node, children):
-        return node.text
-
-    def visit_range_eq_prev(self, node, children):
-        return node.text
-
-    def visit_range_eq_post(self, node, children):
-        return node.text
-
-    def visit_cmp_eq(self, node, children):
-        return node.text
-
-    def visit_cmp_neq(self, node, children):
-        return node.text
 
 # ===================================================================
 class ConditionParser(object):
@@ -157,9 +166,13 @@ class ConditionParser(object):
 
             simple_comparison = value ws simple_comparator ws value
 
-            simple_comparator = cmp_eq / cmp_neq
+            simple_comparator = cmp_eq / cmp_neq / cmp_gte / cmp_gt / cmp_lte / cmp_lt
             cmp_eq = "=="
             cmp_neq = "!="
+            cmp_gte = ">="
+            cmp_gt = ">"
+            cmp_lte = "<="
+            cmp_lt = "<"
 
             range_eq_comparison = value ws range_eq_prev range range_eq_post ws value
             range_eq_prev = "="
