@@ -1,3 +1,4 @@
+
 from pyramid.config import Configurator
 from pyramid.httpexceptions import HTTPNotFound
 
@@ -7,6 +8,7 @@ from .models import (
     DBSession,
     Base,
     )
+
 
 def notfound(request):
     # set the 404 page up here
@@ -24,6 +26,7 @@ def main(global_config, **settings):
     config.add_static_view('static', 'static', cache_max_age=3600)
 
     config.add_route('home',   '/')
+    config.add_route('map',    '/map/')
     config.add_route('form',   '/request/')
     config.add_route('report', '/report/')
     config.add_route('doc',    '/info/{doc_name}/')

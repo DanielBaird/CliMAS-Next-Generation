@@ -1,0 +1,120 @@
+
+body {
+    font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Tahoma, "Arial Unicode MS", sans-serif; /* facebook fontstack */
+    font-size: 100%;
+    line-height: 1.4;
+    background: #eee;
+    color: #000;
+    /* light-text-on-dark is too bold on Macs */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    padding: 0;
+}
+
+@media screen { body {
+        background: #2d4048;
+        color: #222;
+}   }
+
+a {
+    color: #016;
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+}
+
+
+@sidepad: 40px;
+
+// header at the top, map at the bottom
+
+/* header - - - - - - - - - - - - - - - - - - - - */
+
+@headerheight: 120px;
+header.page {
+    height: @headerheight;
+    position: relative;
+    background: #242732;
+    padding: 0 @sidepad 0;
+    color: white;
+    margin: 0;
+    overflow: hidden;
+
+    h1 {
+        float: left;
+        font-family: 'Helvetica Neue', sans-serif;
+        font-weight: 100;
+        font-size: 60px;
+        letter-spacing: 0.025em;
+        margin: 0;
+        padding: 0;
+        text-align: left;
+        text-shadow: 2px 2px 5px #000;
+        line-height: @headerheight;
+    }
+
+    img.logo {
+        height: 80px;
+        margin: ((@headerheight - 80px)/2) 0 0;
+        float: right;
+        opacity: 0.25;
+        transition: opacity 0.5s ease-in-out;
+        -moz-transition: opacity 0.5s ease-in-out;
+        -webkit-transition: opacity 0.5s ease-in-out;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    p { // p in the header is a subheading
+        float: left;
+        // font-weight: bold;
+        font-size: inherit;
+        text-shadow: 1px 1px 3px #000;
+        padding: 0 (@sidepad/2) 0;
+        margin: 0;
+        line-height: @headerheight;
+    }
+
+}
+
+/* footer - - - - - - - - - - - - - - - - - - - */
+
+@footerheight: 20px;
+footer.page {
+    height: @footerheight;
+    text-align: center;
+    font-size: 80%;
+    margin: 0;
+    padding: 3px 4% 6px;
+    background: rgba(36,39,50, 1);
+    color: rgba(255,255,255, 1);
+
+    p {
+        margin: 0;
+        padding: 0;
+        opacity: 0.5;
+        -moz-transition: opacity 0.33s ease-in-out;
+        -webkit-transition: opacity 0.33s ease-in-out;
+        transition: opacity 0.33s ease-in-out;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    img { vertical-align: middle; }
+    a { color: rgba(170,187,255, 1); }
+}
+
+
+
+
+
+
+
+
+
+
+
+

@@ -2,10 +2,14 @@
 @import url("report.css");
 
 body {
-    font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Tahoma, "Arial Unicode MS", sans-serif; /* facebook fontstack */    font-size: 100%;
+    font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Tahoma, "Arial Unicode MS", sans-serif; /* facebook fontstack */
+    font-size: 100%;
     line-height: 1.4;
     background: #eee;
     color: #000;
+    /* light-text-on-dark is too bold on Macs */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 @media screen {

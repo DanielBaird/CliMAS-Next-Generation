@@ -10,28 +10,44 @@
 	<link href="${request.static_path('climasng:static/images/favicon-trans.png')}" rel="shortcut icon" />
 	<link href="${request.static_path('climasng:static/css/normalize.min.css')}" rel="stylesheet" />
 	<link href="${request.static_path('climasng:static/css/h5bp.css')}" rel="stylesheet" />
-	<link href="${request.static_path('climasng:static/css/main.css')}" rel="stylesheet" />
-	<script src="${request.static_path('climasng:static/js/lib/modernizr-2.6.1.min.js')}"></script>
+
+	<!-- <link href="${request.static_path('climasng:static/css/map.css')}" rel="stylesheet" /> -->
+	<link rel="stylesheet/less" type="text/css" href="${request.static_path('climasng:static/css/map.less')}" />
+	<script src="${request.static_path('climasng:static/lib/less-1.6.1.min.js')}"></script>
+
+	<script src="${request.static_path('climasng:static/lib/modernizr-2.6.1.min.js')}"></script>
 </head>
-<body>
-	<div id="content"><div id="notreport">
-		<div class="header clearfix">
-			<a href="http://tropicaldatahub.org/">
-				<img class="logo" src="${request.static_path('climasng:static/images/tdhlogo.png')}" />
+
+<body class="map">
+	<header class="page clearfix">
+		<h1>CliMAS</h1>
+		<a href="http://tropicaldatahub.org/">
+			<img class="logo" src="${request.static_path('climasng:static/images/tdhlogo.png')}" />
+		</a>
+		<p>Climate change and biodiversity in Australia</p>
+	</header>
+
+	<div class="mapwrapper">
+	</div>
+
+	<footer class="page">
+		<p>
+			<a href="http://creativecommons.org/licenses/by/3.0/au/deed.en_GB" rel="license">
+				<img alt="Creative Commons Licence" src="http://i.creativecommons.org/l/by/3.0/au/80x15.png" style="border-width:0" />
 			</a>
-			<h1>
-				CliMAS <i style="font-size: 66%; opacity: 0.5; letter-spacing: 0.25em; padding-left: 1em; position: relative; bottom: 0.1em">NEXT GENERATION</i>
-			</h1>
-			<h2>
-				Climate change and biodiversity in Australia
-			</h2>
-		</div>
+			This work is licensed under a
+			<a href="http://creativecommons.org/licenses/by/3.0/au/deed.en_GB" rel="license">
+				Creative Commons Attribution 3.0 Australia License.
+			</a>
+		</p>
+	</footer>
+
+
+<!--
+	<div id="content"><div id="notreport">
 		<div class="navbarwrapper clearfix">
 			<div class="navbarwrapper clearfix">
 				<ul class="nav clearfix">
-					<!-- <li><a href="http://tdh-tools-2.hpc.jcu.edu.au/climas/">
-						&laquo; CliMAS tools
-					</a></li> -->
 					<li><a href="${request.route_url('form')}" title="Visualise climate suitability and biodiversity across Australia">
 						CliMAS Maps
 					</a></li>
@@ -56,6 +72,7 @@
 			</div>
 		</div>
 	</div></div>
+-->
 </body>
 </html>
 
