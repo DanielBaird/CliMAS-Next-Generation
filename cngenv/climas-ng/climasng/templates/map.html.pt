@@ -25,12 +25,36 @@
 			<img class="logo" src="${request.static_path('climasng:static/images/tdhlogo.png')}" />
 		</a>
 		<p>Climate change and biodiversity in Australia</p>
+		<nav>
+			<ul class="main menu clearfix">
+				<li><a class="current" href="${request.route_url('form')}">
+					view maps
+				</a></li>
+				<li><a href="${request.route_url('doc', doc_name='about')}">
+					about Reports
+				</a></li>
+				<li><a href="${request.route_url('doc', doc_name='using')}">
+					using Reports
+				</a></li>
+				<li><a href="${request.route_url('doc', doc_name='credits')}">
+					credits
+				</a></li>
+			</ul>
+		</nav>
 	</header>
 
 	<div class="mapwrapper">
 	</div>
 
-	<footer class="page">
+	<div class="swivel panel species">
+		species selection here
+	</div>
+
+	<div class="map">
+		map lol
+	</div>
+
+	<footer class="page clearfix">
 		<p>
 			<a href="http://creativecommons.org/licenses/by/3.0/au/deed.en_GB" rel="license">
 				<img alt="Creative Commons Licence" src="http://i.creativecommons.org/l/by/3.0/au/80x15.png" style="border-width:0" />

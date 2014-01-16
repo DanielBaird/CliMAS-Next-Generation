@@ -4,6 +4,8 @@ from pyramid.httpexceptions import HTTPNotFound
 
 from sqlalchemy import engine_from_config
 
+import sqlite3
+
 from .models import (
     DBSession,
     Base,
