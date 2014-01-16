@@ -10,14 +10,10 @@ env:
   - PACKAGES=false
 
 install:
-  # - sudo apt-get update
-  # - sudo apt-get install build-essential
   - cd climas-ng
   - pip install setuptools --upgrade
-  # - python bootstrap.py -c buildout.cfg
-  # - bin/buildout -N -t 30 -c buildout.cfg
   - python setup.py install
-# command to run tests
 
 script:
+  # actually run the tests
   - python setup.py test
