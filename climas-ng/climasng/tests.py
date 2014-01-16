@@ -7,9 +7,10 @@ from .models import DBSession
 
 from parsing.prosemaker import ProseMaker
 
+
 # ===================================================================
 class TestMyViewSuccessCondition(unittest.TestCase):
-    # ---------------------------------------------------------------
+
     def setUp(self):
         self.config = testing.setUp()
         from sqlalchemy import create_engine
@@ -23,20 +24,22 @@ class TestMyViewSuccessCondition(unittest.TestCase):
         with transaction.manager:
             model = MyModel(name='one', value=55)
             DBSession.add(model)
-    # ---------------------------------------------------------------
+
     def tearDown(self):
         DBSession.remove()
         testing.tearDown()
-    # ---------------------------------------------------------------
+
+    # ------------------------------------------------------- test --
     def test_passing_view(self):
-        from .views import my_view
-        request = testing.DummyRequest()
-        info = my_view(request)
+        from views.homeview import HomeView
+        home_view = HomeView(testing.DummyRequest())
+        info = home_view()
         self.assertEqual(info['one'].name, 'one')
         self.assertEqual(info['project'], 'climas-ng')
+
 # ===================================================================
 class TestMyViewFailureCondition(unittest.TestCase):
-    # ---------------------------------------------------------------
+
     def setUp(self):
         self.config = testing.setUp()
         from sqlalchemy import create_engine
@@ -46,26 +49,29 @@ class TestMyViewFailureCondition(unittest.TestCase):
             MyModel,
             )
         DBSession.configure(bind=engine)
-    # ---------------------------------------------------------------
+
     def tearDown(self):
         DBSession.remove()
         testing.tearDown()
-    # ---------------------------------------------------------------
+
+    # ------------------------------------------------------- test --
     def test_failing_view(self):
-        from .views import my_view
-        request = testing.DummyRequest()
-        info = my_view(request)
+        from views.homeview import HomeView
+        home_view = HomeView(testing.DummyRequest())
+        info = home_view()
         self.assertEqual(info.status_int, 500)
+
 # ===================================================================
 class TestProseMaker(unittest.TestCase):
-    # ---------------------------------------------------------------
+
     def setUp(self):
         self.config = testing.setUp()
         self.pm = ProseMaker()
-    # ---------------------------------------------------------------
+
     def tearDown(self):
         testing.tearDown()
-    # ---------------------------------------------------------------
+
+    # ------------------------------------------------------- test --
     def test_pm_properties(self):
         some_data = {'a': 'Aaa', 'b': 'Bbb'}
         a_string = 'test source string'
@@ -76,7 +82,8 @@ class TestProseMaker(unittest.TestCase):
         self.assertEqual(self.pm.data, some_data)
         self.assertEqual(self.pm.source, a_string)
         self.assertEqual(self.pm.doc, a_string)
-    # ---------------------------------------------------------------
+
+    # ------------------------------------------------------- test --
     def test_pm_condition_always(self):
         samples = {
             # these sources should result in 'showing'
@@ -93,7 +100,8 @@ class TestProseMaker(unittest.TestCase):
             for sample_doc in sample_docs:
                 self.pm.source = sample_doc
                 self.assertEqual(self.pm.doc, sample_result, "'%s' gave '%s'; expected '%s'" % (self.pm.source, self.pm.doc, sample_result))
-    # ---------------------------------------------------------------
+
+    # ------------------------------------------------------- test --
     def test_pm_condition_never(self):
         samples = {
                 # all these docs should result in ''
@@ -110,7 +118,8 @@ class TestProseMaker(unittest.TestCase):
             for sample_doc in sample_docs:
                 self.pm.source = sample_doc
                 self.assertEqual(self.pm.doc, sample_result, "'%s' gave '%s'; expected '%s'" % (self.pm.source, self.pm.doc, sample_result))
-    # ---------------------------------------------------------------
+
+    # ------------------------------------------------------- test --
     def test_pm_condition_always_and_never(self):
         samples = {
             # these sources should result in 'showing'
@@ -127,7 +136,8 @@ class TestProseMaker(unittest.TestCase):
             for sample_doc in sample_docs:
                 self.pm.source = sample_doc
                 self.assertEqual(self.pm.doc, sample_result, "'%s' gave '%s'; expected '%s'" % (self.pm.source, self.pm.doc, sample_result))
-    # ---------------------------------------------------------------
+
+    # ------------------------------------------------------- test --
     def test_pm_condition_equality_litnum_comparison(self):
         samples = {
             # these sources should result in 'showing'
@@ -146,7 +156,8 @@ class TestProseMaker(unittest.TestCase):
             for sample_doc in sample_docs:
                 self.pm.source = sample_doc
                 self.assertEqual(self.pm.doc, sample_result, "'%s' gave '%s'; expected '%s'" % (self.pm.source, self.pm.doc, sample_result))
-    # ---------------------------------------------------------------
+
+    # ------------------------------------------------------- test --
     def test_pm_condition_inequality_litnum_comparison(self):
         samples = {
             # these sources should result in 'showing'
@@ -165,7 +176,8 @@ class TestProseMaker(unittest.TestCase):
             for sample_doc in sample_docs:
                 self.pm.source = sample_doc
                 self.assertEqual(self.pm.doc, sample_result, "'%s' gave '%s'; expected '%s'" % (self.pm.source, self.pm.doc, sample_result))
-    # ---------------------------------------------------------------
+
+    # ------------------------------------------------------- test --
     def test_pm_condition_greaterthan_litnum_comparison(self):
         samples = {
             # these sources should result in 'showing'
@@ -185,7 +197,8 @@ class TestProseMaker(unittest.TestCase):
             for sample_doc in sample_docs:
                 self.pm.source = sample_doc
                 self.assertEqual(self.pm.doc, sample_result, "'%s' gave '%s'; expected '%s'" % (self.pm.source, self.pm.doc, sample_result))
-    # ---------------------------------------------------------------
+
+    # ------------------------------------------------------- test --
     def test_pm_condition_greaterthaneq_litnum_comparison(self):
         samples = {
             # these sources should result in 'showing'
@@ -209,7 +222,8 @@ class TestProseMaker(unittest.TestCase):
             for sample_doc in sample_docs:
                 self.pm.source = sample_doc
                 self.assertEqual(self.pm.doc, sample_result, "'%s' gave '%s'; expected '%s'" % (self.pm.source, self.pm.doc, sample_result))
-    # ---------------------------------------------------------------
+
+    # ------------------------------------------------------- test --
     def test_pm_condition_lessthan_litnum_comparison(self):
         samples = {
             # these sources should result in 'showing'
@@ -228,7 +242,8 @@ class TestProseMaker(unittest.TestCase):
             for sample_doc in sample_docs:
                 self.pm.source = sample_doc
                 self.assertEqual(self.pm.doc, sample_result, "'%s' gave '%s'; expected '%s'" % (self.pm.source, self.pm.doc, sample_result))
-    # ---------------------------------------------------------------
+
+    # ------------------------------------------------------- test --
     def test_pm_condition_lessthaneq_litnum_comparison(self):
         samples = {
             # these sources should result in 'showing'
@@ -252,7 +267,8 @@ class TestProseMaker(unittest.TestCase):
             for sample_doc in sample_docs:
                 self.pm.source = sample_doc
                 self.assertEqual(self.pm.doc, sample_result, "'%s' gave '%s'; expected '%s'" % (self.pm.source, self.pm.doc, sample_result))
-    # ---------------------------------------------------------------
+
+    # ------------------------------------------------------- test --
     def test_pm_condition_eq_and_neq_litnum_var_comparison(self):
         self.pm.data = { 'one': 1, 'two': 2, 'aten': 10 }
         samples = {
@@ -278,7 +294,8 @@ class TestProseMaker(unittest.TestCase):
             for sample_doc in sample_docs:
                 self.pm.source = sample_doc
                 self.assertEqual(self.pm.doc, sample_result, "'%s' gave '%s'; expected '%s'" % (self.pm.source, self.pm.doc, sample_result))
-    # ---------------------------------------------------------------
+
+    # ------------------------------------------------------- test --
     def test_pm_condition_gt_and_lt_litnum_var_comparison(self):
         self.pm.data = { 'one': 1, 'two': 2, 'aten': 10 }
         samples = {
@@ -309,7 +326,8 @@ class TestProseMaker(unittest.TestCase):
             for sample_doc in sample_docs:
                 self.pm.source = sample_doc
                 self.assertEqual(self.pm.doc, sample_result, "'%s' gave '%s'; expected '%s'" % (self.pm.source, self.pm.doc, sample_result))
-    # ---------------------------------------------------------------
+
+    # ------------------------------------------------------- test --
     def test_pm_condition_rangeequality_litnum_comparison(self):
         samples = {
             # these sources should result in 'showing'
@@ -330,7 +348,7 @@ class TestProseMaker(unittest.TestCase):
             for sample_doc in sample_docs:
                 self.pm.source = sample_doc
                 self.assertEqual(self.pm.doc, sample_result, "'%s' gave '%s'; expected '%s'" % (self.pm.source, self.pm.doc, sample_result))
-    # ---------------------------------------------------------------
+
 
 # ===================================================================
 

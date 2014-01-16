@@ -1,0 +1,23 @@
+language: python
+
+virtualenv:
+  system_site_packages: true
+
+python:
+  - "2.7"
+
+env:
+  - PACKAGES=true
+
+install:
+  # - sudo apt-get update
+  # - sudo apt-get install build-essential
+  - cd climas-ng
+  - pip install setuptools --upgrade
+  # - python bootstrap.py -c buildout.cfg
+  # - bin/buildout -N -t 30 -c buildout.cfg
+  - python setup.py production
+# command to run tests
+
+script:
+  - python setup.py test
