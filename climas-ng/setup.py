@@ -17,7 +17,6 @@ requires = [
     'transaction',
     'zope.sqlalchemy',
     'waitress',
-    'pysqlite',
     'parsimonious'
     ]
 
