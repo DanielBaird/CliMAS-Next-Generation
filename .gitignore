@@ -34,3 +34,8 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+climas-ng/lib
+climas-ng/include
+climas-ng/.Python
+climas-ng/bin
