@@ -16,7 +16,7 @@ install:
   - pip install setuptools --upgrade
   # - python bootstrap.py -c buildout.cfg
   # - bin/buildout -N -t 30 -c buildout.cfg
-  - python setup.py production
+  - python setup.py install
 # command to run tests
 
 script:
