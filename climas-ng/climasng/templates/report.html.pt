@@ -11,7 +11,7 @@
 	<link href="${request.static_path('climasng:static/css/normalize.min.css')}" rel="stylesheet" />
 	<link href="${request.static_path('climasng:static/css/h5bp.css')}" rel="stylesheet" />
 	<link href="${request.static_path('climasng:static/css/main.css')}" rel="stylesheet" />
-	<script src="${request.static_path('climasng:static/js/lib/modernizr-2.6.1.min.js')}"></script>
+	<script src="${request.static_path('climasng:static/js/lib/modernizr.2.7.1.js')}"></script>
 </head>
 <body>
 	<div id="report">

@@ -11,11 +11,24 @@
 	<link href="${request.static_path('climasng:static/css/normalize.min.css')}" rel="stylesheet" />
 	<link href="${request.static_path('climasng:static/css/h5bp.css')}" rel="stylesheet" />
 
+	<link href='http://fonts.googleapis.com/css?family=Raleway:100' rel='stylesheet' type='text/css' />
+
+	<script>
+		window.climasSettings = {
+			assetUrlPrefix: "${request.static_path('climasng:static/assets/')}",
+			vizUrlPrefix: "//118.138.243.53:10600/api/raster/1/default?data_url="
+		}
+	</script>
+
+	<script src="${request.static_path('climasng:static/lib/modernizr.2.7.1.js')}"></script>
+
 	<!-- <link href="${request.static_path('climasng:static/css/map.css')}" rel="stylesheet" /> -->
 	<link rel="stylesheet/less" type="text/css" href="${request.static_path('climasng:static/css/map.less')}" />
 	<script src="${request.static_path('climasng:static/lib/less-1.6.1.min.js')}"></script>
 
-	<script src="${request.static_path('climasng:static/lib/modernizr-2.6.1.min.js')}"></script>
+	<script src="${request.static_path('climasng:static/lib/jquery-1.10.2.min.js')}"></script>
+	<script src="${request.static_path('climasng:static/lib/jquery-ui-1.10.4.custom.min.js')}"></script>
+	<link href="${request.static_path('climasng:static/lib/jqueryui-css/ui-lightness/jquery-ui-1.10.4.custom.min.css')}" rel="stylesheet" />
 </head>
 
 <body class="map">
@@ -27,31 +40,43 @@
 		<p>Climate change and biodiversity in Australia</p>
 		<nav>
 			<ul class="main menu clearfix">
-				<li><a class="current" href="${request.route_url('form')}">
-					view maps
+				<li class="menuitem current">
+					<a>View Maps</a>
+					<ul class="sub menu">
+						<li class="menuitem current"><a class="paneltrigger" data-panelid="speciespanel">Species Suitability</a></li>
+						<li class="menuitem"><a class="paneltrigger" data-panelid="biodiversitypanel">Biodiversity</a></li>
+					</ul>
+				</li>
+				<li class="menuitem"><a href="${request.route_url('form')}">
+					Generate Reports
 				</a></li>
-				<li><a href="${request.route_url('doc', doc_name='about')}">
-					about Reports
-				</a></li>
-				<li><a href="${request.route_url('doc', doc_name='using')}">
-					using Reports
-				</a></li>
-				<li><a href="${request.route_url('doc', doc_name='credits')}">
-					credits
+				<li class="menuitem"><a href="${request.route_url('doc', doc_name='credits')}">
+					About CliMAS
 				</a></li>
 			</ul>
 		</nav>
 	</header>
 
-	<div class="mapwrapper">
+	<div id="speciespanel" class="swivel panel species hidden clearfix">
+		<div id="speciesselectpage" class="page speciesselect active clearfix">
+			<!-- selection form goes here ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<div metal:use-macro="load: partial.speciesselect.html.pt"></div>
+			<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		</div>
+		<div id="speciesshowingpage" class="page speciesshowing clearfix">
+			<p>
+				Showing suitability distribution for <strong class="speciesname">your selected species</strong>.
+				<button type="button" id="speciesselectbtn" class="switchpage" data-targetpage="speciesselectpage">view a different distribution</button>
+			</p>
+		</div>
 	</div>
 
-	<div class="swivel panel species">
-		species selection here
+	<div id="biodiversitypanel" class="swivel panel biodiversity hidden clearfix">
+		biodiversity selection here
 	</div>
 
-	<div class="map">
-		map lol
+	<div id="map" class="map">
+		<iframe class="mapframe" id="mapframe"></iframe>
 	</div>
 
 	<footer class="page clearfix">
@@ -66,37 +91,11 @@
 		</p>
 	</footer>
 
+	<!-- JS goes down here, where civilised people put it -->
+	<script src="${request.static_path('climasng:static/js/panelpages.js')}"></script>
+	<script src="${request.static_path('climasng:static/js/swivelpanel.js')}"></script>
+	<script src="${request.static_path('climasng:static/js/speciespanel.js')}"></script>
 
-<!--
-	<div id="content"><div id="notreport">
-		<div class="navbarwrapper clearfix">
-			<div class="navbarwrapper clearfix">
-				<ul class="nav clearfix">
-					<li><a href="${request.route_url('form')}" title="Visualise climate suitability and biodiversity across Australia">
-						CliMAS Maps
-					</a></li>
-					<li><a href="${request.route_url('form')}">
-						CliMAS Reports
-					</a></li>
-				</ul>
-			</div>
-		</div>
-		<div class="maincontent">
-			do we need this main page?
-		</div>
-		<div class="footer-wrapper">
-			<div class="footer">
-				<a href="http://creativecommons.org/licenses/by/3.0/au/deed.en_GB" rel="license">
-					<img alt="Creative Commons Licence" src="http://i.creativecommons.org/l/by/3.0/au/80x15.png" style="border-width:0" />
-				</a>
-				This work is licensed under a
-				<a href="http://creativecommons.org/licenses/by/3.0/au/deed.en_GB" rel="license">
-					Creative Commons Attribution 3.0 Australia License.
-				</a>
-			</div>
-		</div>
-	</div></div>
--->
 </body>
 </html>
 

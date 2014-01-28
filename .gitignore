@@ -35,7 +35,12 @@ nosetests.xml
 .project
 .pydevproject
 
+# ignore the annoying crap python virtualenv leaves lying around
 climas-ng/lib
 climas-ng/include
 climas-ng/.Python
 climas-ng/bin
+
+# we have to ignore lib dirs because they get scattered about
+# everywhere, but DON'T ignore the static lib dir
+!climas-ng/climasng/static/lib
