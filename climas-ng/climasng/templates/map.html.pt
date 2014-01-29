@@ -72,7 +72,7 @@
 			<div metal:use-macro="load: partial.speciesselect.html.pt"></div>
 			<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 		</div>
-		<div id="speciesshowingpage" class="page speciesshowing clearfix">
+		<div id="speciesshowingpage" class="short page speciesshowing clearfix">
 			<p>
 				Showing suitability distribution for <strong class="speciesname">your selected species</strong>.
 				<button type="button" id="speciesselectbtn" class="switchpage" data-targetpage="speciesselectpage">view a different distribution</button>
@@ -81,9 +81,15 @@
 	</div>
 
 	<div id="biodiversitypanel" class="swivel panel biodiversity hidden clearfix">
-		<div id="nobiodiversitypage" class="page biodiversityselect active clearfix">
+		<div id="biodiversityselectpage" class="page biodiversityselect active clearfix">
+			<!-- selection form goes here ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<div metal:use-macro="load: partial.biodiversityselect.html.pt"></div>
+			<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		</div>
+		<div id="biodiversityshowingpage" class="short page biodiversityshowing clearfix">
 			<p>
-				&mdash;&nbsp;Biodiversity maps not yet available&nbsp;&mdash;
+				Showing species richness for <strong class="taxonname">your selected taxon</strong>.
+				<button type="button" id="biodivselectbutton" class="switchpage" data-targetpage="biodiversityselectpage">view a different richness map</button>
 			</p>
 		</div>
 	</div>
