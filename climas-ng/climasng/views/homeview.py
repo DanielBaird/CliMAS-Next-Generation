@@ -33,7 +33,7 @@ class HomeView(object):
     def __init__(self, request):
         self.request = request
 
-    @view_config(route_name='home', renderer='../templates/home.html.pt')
+#    @view_config(route_name='home', renderer='../templates/home.html.pt')
     def __call__(self):
         try:
             one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
