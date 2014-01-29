@@ -9,8 +9,6 @@
 
         // function that shows a particular page
         var showPage = function(page) {
-
-            console.log('switching to ' + page);
             var $targetPage = $(page);
 
             $pageList.not($targetPage).fadeOut().removeClass('active');
@@ -31,14 +29,11 @@
         var $switcherList = $panel.find('.switchpage');
         $switcherList.each( function(switcherIndex, switcher) {
             $(switcher).click( function(event) {
-                console.log('switcher clicked: ', $(switcher).data('targetpage'));
                 showPage('#' + $(switcher).data('targetpage'));
             });
         });
 
-
         // console.log('there are ' + $pageList.length + ' pages in panel ' + $panel.attr('class'));
     });
-
 
 })();

@@ -18,8 +18,6 @@
         // fetch the current form elements
         var $timePointCtl = $('input[name=timepoint]:checked');
 
-        console.log('enabling fields.', $timePointCtl.html());
-
         if ($timePointCtl.val() === 'baseline') {
             $('input[name=scenario], input[name=gcm]').prop('disabled', true); // DISable the future fields
             $('fieldset.scenario, fieldset.gcm').addClass('disabled');
@@ -77,7 +75,6 @@
     // need to attach the fade-in event hander to the iframe's "ready" event just once, and it
     // will trigger each time we set the iframe's src and the page loads.
     $('#mapframe').load(function() {
-        console.log('ready to fade back in');
         $('#map').animate({ opacity: 1 }, 2500);
     });
 
@@ -91,8 +88,6 @@
         var timePoint = $('input[name=timepoint]:checked').val();
         var scenario = $('input[name=scenario]:checked').val();
         var climateModel = $('input[name=gcm]:checked').val();
-
-        console.log(sppName, timePoint, scenario, climateModel);
 
         var futureModelPoint = scenario + '_' + climateModel + '_' + timePoint;
         if (timePoint === 'baseline') {

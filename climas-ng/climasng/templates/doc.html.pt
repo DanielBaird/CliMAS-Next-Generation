@@ -5,67 +5,63 @@
 	<meta charset="utf-8" />
 	<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
 	<title>
-		CliMAS Reports, Next Generation
+		CliMAS Next Generation
 	</title>
 	<meta content="width=device-width" name="viewport" />
 	<link href="${request.static_path('climasng:static/images/favicon-trans.png')}" rel="shortcut icon" />
 	<link href="${request.static_path('climasng:static/css/normalize.min.css')}" rel="stylesheet" />
 	<link href="${request.static_path('climasng:static/css/h5bp.css')}" rel="stylesheet" />
 	<link href="${request.static_path('climasng:static/css/main.css')}" rel="stylesheet" />
-	<script src="${request.static_path('climasng:static/js/lib/modernizr.2.7.1.js')}"></script>
+
+	<link href='http://fonts.googleapis.com/css?family=Advent+Pro:100' rel='stylesheet' type='text/css'>
+	<script>
+		window.climasSettings = {
+			assetUrlPrefix: "${request.static_path('climasng:static/assets/')}",
+			vizUrlPrefix: "//118.138.243.53:10600/api/raster/1/default?data_url="
+		}
+	</script>
+
+	<script src="${request.static_path('climasng:static/lib/modernizr.2.7.1.js')}"></script>
+
+	<!-- <link href="${request.static_path('climasng:static/css/map.css')}" rel="stylesheet" /> -->
+	<link rel="stylesheet/less" type="text/css" href="${request.static_path('climasng:static/css/map.less')}" />
+	<script src="${request.static_path('climasng:static/lib/less-1.6.1.min.js')}"></script>
+
+	<script src="${request.static_path('climasng:static/lib/jquery-1.10.2.min.js')}"></script>
+	<script src="${request.static_path('climasng:static/lib/jquery-ui-1.10.4.custom.min.js')}"></script>
+	<link href="${request.static_path('climasng:static/lib/jqueryui-css/ui-lightness/jquery-ui-1.10.4.custom.min.css')}" rel="stylesheet" />
 </head>
 <body>
+	<header class="page clearfix">
+		<h1>CliMAS</h1>
+		<a href="http://tropicaldatahub.org/">
+			<img class="logo" src="${request.static_path('climasng:static/images/tdhlogo.png')}" />
+		</a>
+		<p>Climate change and biodiversity in Australia</p>
+		<nav>
+			<ul class="main menu clearfix">
+				<li class="menuitem">
+					<a href="${request.route_url('map')}">View Maps</a>
+				</li>
+				<!--
+				<li class="menuitem"><a href="${request.route_url('form')}">
+					Generate Reports
+				</a></li>
+				-->
+				<li class="menuitem">
+					<a href="${request.route_url('doc', doc_name='about')}">
+						About CliMAS
+					</a>
+				</li>
+				<li class="menuitem">
+					<a href="${request.route_url('doc', doc_name='credits')}">
+						Credits
+					</a>
+				</li>
+			</ul>
+		</nav>
+	</header>
 	<div id="content"><div id="notreport">
-		<div class="header clearfix">
-			<a href="http://tropicaldatahub.org/">
-				<img class="logo" src="${request.static_path('climasng:static/images/tdhlogo.png')}" />
-			</a>
-			<h1>
-				CliMAS Reports <i style="font-size: 66%; opacity: 0.5; letter-spacing: 0.25em; padding-left: 1em; position: relative; bottom: 0.1em">NEXT GENERATION</i>
-			</h1>
-			<h2>
-				Reports on climate change and biodiversity
-			</h2>
-		</div>
-		<div class="navbarwrapper clearfix">
-			<div class="navbarwrapper clearfix">
-				<ul class="nav clearfix">
-					<!-- <li><a href="http://tdh-tools-2.hpc.jcu.edu.au/climas/">
-						&laquo; CliMAS tools
-					</a></li> -->
-					<li>
-						<a href="${request.route_url('form')}">
-							generate reports
-						</a>
-					</li>
-
-					<li>
-						<a tal:omit-tag="doc != 'about'" class="current" href="${request.route_url('doc', doc_name='about')}">
-						<a tal:omit-tag="doc == 'about'"                 href="${request.route_url('doc', doc_name='about')}">
-							about Reports
-						</a>
-						</a>
-					</li>
-
-					<li>
-						<a tal:omit-tag="doc != 'using'" class="current" href="${request.route_url('doc', doc_name='using')}">
-						<a tal:omit-tag="doc == 'using'"                 href="${request.route_url('doc', doc_name='using')}">
-							using Reports
-						</a>
-						</a>
-					</li>
-
-					<li>
-						<a tal:omit-tag="doc != 'credits'" class="current" href="${request.route_url('doc', doc_name='credits')}">
-						<a tal:omit-tag="doc == 'credits'"                 href="${request.route_url('doc', doc_name='credits')}">
-							credits
-						</a>
-						</a>
-					</li>
-
-				</ul>
-			</div>
-		</div>
 		<div class="maincontent">
 			${ structure: page_content }
 		</div>
@@ -81,6 +77,9 @@
 			</div>
 		</div>
 	</div></div>
+	<script>
+		$('header').disableSelection();
+	</script>
 </body>
 </html>
 

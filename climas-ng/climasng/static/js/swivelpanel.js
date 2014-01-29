@@ -38,6 +38,10 @@
 
             }
 
+            if ($trigger.parent().hasClass('current')) {
+                $trigger.click();
+            }
+
         });
 
     });
