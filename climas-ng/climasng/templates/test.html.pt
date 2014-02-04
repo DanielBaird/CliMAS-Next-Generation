@@ -9,11 +9,14 @@
 	<meta content="width=device-width" name="viewport" />
 	<link href="${request.static_path('climasng:static/images/favicon-trans.png')}" rel="shortcut icon" />
 	<link href="${request.static_path('climasng:static/css/normalize.min.css')}" rel="stylesheet" />
-	<script src="${request.static_path('climasng:static/lib/jquery-1.10.2.min.js')}"></script>
+    <script src="${request.static_path('climasng:static/lib/jquery-1.11.0.js')}"></script>
+    <script src="${request.static_path('climasng:static/lib/jquery-ui-1.10.4.custom.min.js')}"></script>
 
 	<script src="${request.static_path('climasng:static/js/menusandpanels.js')}"></script>
 
 	<style>
+
+        /* ================================= mspp menus & submenus */
 
         .mspp-main-menu * {
             background: rgba(0,0,0, 0.1);
@@ -22,7 +25,7 @@
         .mspp-main-menu ul { /* --------------- main and sub menus */
             margin: 0;
             padding: 0;
-            display: inline;
+            float: left;
             line-height: 3em;
         }
 
@@ -31,23 +34,34 @@
             padding: 0;
             display: block;
             float: left;
+            overflow: hidden;
+            -webkit-transition: width 1s;
+            transition: width 1s;
+        }
+        .mspp-main-menu li.current {
+            background: rgba(0,100,0, 0.33);
         }
 
         .mspp-main-menu li a { /* -------------- text inside items */
             padding: 0 1em;
-            display: inline-block;
-            *display: inline;
-            *zoom: 1;
+            float: left;
             color: inherit;
             text-decoration: none;
             cursor: pointer;
         }
+        .mspp-main-menu li a:hover {
+            background: rgba(0,100,255, 0.2);
+        }
 
         .mspp-main-menu { /* --------------------------- main menu */
             height: 3em;
+            padding: 0;
+            margin: 1em 5% 0;
+            overflow: hidden;
         }
 
         .mspp-main-menu > li > a { /* ------------- main menu text */
+            height: 3em;
             line-height: 3em;
         }
 
@@ -55,25 +69,48 @@
             vertical-align: bottom;
             height: 2em;
             line-height: 2em;
-            margin: 0 1em 0 0.5em;
-            display: none;
+            margin: 1em 1em 0 0.5em;
         }
 
         .mspp-main-menu li.current ul { /* ------ current sub menu */
-            display: inline-block;
-            *display: inline;
-            *zoom: 1;
+            display: block;
         }
 
         .mspp-main-menu ul li a { /* ----------- submenu item text */
             line-height: 2em;
             height: 2em;
-            display: inline-block;
-            *display: inline;
-            *zoom: 1;
+            float: left;
         }
 
-        /* ----------------------------------------- clearfix */
+        /* =================================== mspp panels & pages */
+
+        .mspp-panel * {
+            background: rgba(0,0,0, 0.1);
+        }
+
+        .mspp-panel { /* ---------------------------------- panels */
+            background: rgba(0,0,0, 0.1);
+            position: relative;
+            width: 90%;
+            margin: 0 5% 0;
+            padding: 0;
+        }
+
+        .mspp-panel .mspp-page { /* ------------------------ pages */
+            box-sizing: border-box;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            padding: 1em 5%;
+        }
+
+        .mspp-panel .mspp-page.current {
+            background: rgba(0,100,0, 0.33);
+        }
+
+        /* ======================================== mspp utilities */
+
+        /* ---------------------------------------------- clearfix */
         .mspp-clearfix:before, .mspp-clearfix:after {
             content: " ";
             display: table;
@@ -94,17 +131,19 @@
         <a>Main First Item</a>
         <ul>
             <li class="current">
-                <a data-targetpanel="panel1">sub item 1 (panel 1)</a>
+                <a data-targetpanel="panel1a">sub item 1 (panel 1-1)</a>
             </li>
-            <li><a>sub item 2</a></li>
+            <li><a data-targetpanel="panel1b">sub item 2</a></li>
         </ul>
     </li>
-    <li> <a href="#">main item 2</a> </li>
+
+    <li><a href="#">main item 2</a></li>
+
     <li>
         <a>main item 3</a>
         <ul>
             <li>
-                <a data-targetpanel="panel1">sub item 1 (panel 1)</a>
+                <a data-targetpanel="panel2">sub2 item 1 (panel 2-1)</a>
             </li>
             <li class="current"><a>sub item 2</a></li>
         </ul>
@@ -112,19 +151,51 @@
     </li>
 </ul>
 
-<div id="panel1" class="panel">
-    <div id="page1" class="page current">
-        This is the current page.
-        <button type="button" data-targetpage="page2">show page 2</button>
+<div id="panel1a" class="mspp-panel">
+    <div id="page1a-1" class="mspp-page current">
+        <p>This is the first page of panel 1a.</p>
+        <p>This is the first page of panel 1a.</p>
+        <button type="button" data-targetpage="page1a-2">show page 2</button>
     </div>
-    <div id="page2" class="page">
+    <div id="page1a-2" class="mspp-page">
+        <p>This is the other page of panel 1a. #######################</p>
+        <p>This is the other page of panel 1a.</p>
+        <p>This is the other page of panel 1a.</p>
+        <p>This is the other page of panel 1a.</p>
+        <p>This is the other page of panel 1a.</p>
+        <p>This is the other page of panel 1a.</p>
+        <p>This is the other page of panel 1a.</p>
+        <p>This is the other page of panel 1a.</p>
+        <a data-targetpage="page1a-1">see the first page again</a>
+    </div>
+</div>
+<div id="panel1b" class="mspp-panel">
+    <div id="page1b-1" class="mspp-page current">
+        This is the first page of panel 1b.
+        <button type="button" data-targetpage="page1b-2">show page 2</button>
+    </div>
+    <div id="page1b-2" class="mspp-page">
         This is the other page.
-        <a data-targetpage="page1">see the first page again</a>
+        <a data-targetpage="page1b-1">see the first page again</a>
+    </div>
+</div>
+
+<div id="panel2" class="mspp-panel">
+    <div id="page2-1" class="mspp-page current">
+        <p>This is the first page of panel 2.</p>
+        <p>This is the first page of panel 2.</p>
+        <p>This is the first page of panel 2.</p>
+        <p>This is the first page of panel 2.</p>
+        <button type="button" data-targetpage="page2-2">show page 2</button>
+    </div>
+    <div id="page2-2" class="mspp-page">
+        This is the other page.
+        <a data-targetpage="page2-1">see the first page again</a>
     </div>
 </div>
 
 <script>
-	MSPP.init('#menu');
+	$('#menu').mspp();
 </script>
 
 </body>

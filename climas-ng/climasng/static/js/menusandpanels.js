@@ -1,6 +1,5 @@
 
-// REQUIRES jQuery (or Zepto or whatever).  At the moment this isn't handled properly when in AMD mode, so
-// feel free to fix that -- yay open source!
+// jQuery plugin
 
 //
 // This manages menus, submenus, panels, and pages.
@@ -55,61 +54,268 @@
 //  </ul>
 //
 //  <div id="panel1" class="panel">
-//      <div id="page1" class="page current">
-//          This is the current page.
-//          <button type="button" data-targetpage="page2">show page 2</button>
+//      <div id="page11" class="page current">
+//          This is the current page on panel 1.
+//          <button type="button" data-targetpage="page12">show page 2</button>
 //      </div>
-//      <div id="page2" class="page">
-//          This is the other page.
-//          <a data-targetpage="page1">see the first page again</a>
+//      <div id="page12" class="page">
+//          This is the other page on panel 1.
+//          <a data-targetpage="page11">see the first page again</a>
 //      </div>
 //  </div>
-//
-
-// AMD compatibility copied from https://github.com/umdjs/umd/blob/master/amdWeb.js
-(function (root, factory) {
-    // maybe we're in an AMD context..
-    if (typeof define === 'function' && define.amd) {
-        define(factory); // ...if so, register as an AMD module
-    } else {
-        root.MSPP = factory(); // ..if not, install as a browser global
-    }
-}(this, function() {
-
-    // private funcs and vars ================================================
+//  <div id="panel2" class="panel">
+//      <div id="page21" class="page current">
+//          This is the current page on panel 2.
+//          <button type="button" data-targetpage="page22">show page 2</button>
+//      </div>
+//      <div id="page22" class="page">
+//          This is the other page on panel 2.
+//          <a data-targetpage="page21">see the first page again</a>
+//      </div>
+//  </div>
 
 
-    // default options
-    defaultOpts = {
-        mainMenuClass: 'mspp-main-menu',
-        clearfixClass: 'mspp-clearfix'
-    }
+;( function($, window, document, undefined) {
 
-    return {
-        // public funcs ======================================================
+    // namespace climas, widget name mspp
+    // second arg is used as the widget's "prototype" object
+    $.widget( "climas.mspp" , {
 
-        init: function(selector, userOpts) {
-            // merge together user options and default options
-            this.options = {};
-            var attr;
-            for (attr in defaultOpts) { this.options[attr] = defaultOpts[attr]; }
-            for (attr in userOpts)    { this.options[attr] = userOpts[attr]; }
+        //Options to be used as defaults
+        options: {
+            mainMenuClass: 'mspp-main-menu',
 
-            this.$topMenu = $(selector);
-            this.$topMenu.addClass(this.options.mainMenuClass);
-            this.$topMenu.addClass(this.options.clearfixClass);
+            panelClass: 'mspp-panel',
+            pageClass: 'mspp-page',
 
-            console.log( this.$topMenu.html() );
+            clearfixClass: 'mspp-clearfix',
+            activeClass: 'current'
+        },
+        // ---------------------------------------------------------------
+        //Setup widget (eg. element creation, apply theming
+        // , bind events etc.)
+        _create: function() {
 
+            var base = this;
+
+            // populate some convenience variables
+            var $menu = this.element;
+            this.mainMenuItems = $menu.children('li');
+            this.panels = $('.' + this.options.panelClass);
+
+            // disappear while we sort things out
+            $menu.css({ opacity: 0 });
+            this.panels.css({ opacity: 0 });
+
+            // make some DOM mods
+            $menu.addClass(this.options.mainMenuClass);
+            $menu.addClass(this.options.clearfixClass);
+            this.panels.addClass(this.options.clearfixClass);
+
+            // layout the menu
+            this._layoutMenu();
+
+            // layout the panels
+            this._layoutPanels();
+
+            // hook up click handling etc
+            $menu.on('msppshowmenu', this._showMenu);
+            $menu.on('msppshowsubmenu', this._showSubMenu);
+            $menu.on('msppshowpanel', this._showPanel);
+            $menu.on('msppshowpage', this._showPage);
+
+            // attach handlers to the menu-triggers
+            this.mainMenuItems.each( function(index, item) {
+                // the li menu item has a child a that is it's trigger
+                $(item).children('a').click( function(event) {
+                    base._trigger('showmenu', event, { menuitem: item, widget: base });
+                });
+                // attach handlers to the submenu items
+                $(item).find('li').each( function(index, subMenuItem) {
+                    $(subMenuItem).find('a').click( function(event) {
+                        base._trigger('showsubmenu', event, { menuitem: item, submenuitem: subMenuItem, widget: base });
+                    });
+                });
+            });
+
+            // attach handlers to the panel triggers
+            $menu.find('[data-targetpanel]').each( function(index, paneltrigger) {
+                $(paneltrigger).click( function(event) {
+                    base._trigger('showpanel', event, { panel: $('#' + $(paneltrigger).data('targetpanel')).first(), widget: base });
+                });
+            });
+
+            // attach handlers to the page switchers
+            this.panels.each( function(index, panel) {
+                var $panel = $(panel);
+                $panel.find('[data-targetpage]').click( function(event) {
+                    base._trigger('showpage', event, {
+                        panel: $panel,
+                        page: $('#' + $(this).data('targetpage')),
+                        widget: base
+                    });
+                });
+            });
+
+            // activate the current menus, panels etc
+            // ...TODO
+
+            // finally, fade back in
+            $menu.animate({ opacity: 1 }, 'fast');
+            // panels stay invisible
+        },
+        // ---------------------------------------------------------------
+        _switchClassOption: function(className, newClass) {
+            var oldClass = this.options[className];
+            if (oldClass !== newClass) {
+                var group = this.element.find('.' + oldClass);
+                this.options[className] = newClass;
+                group.removeClass(oldClass);
+                group.addClass(newClass);
+            }
+        },
+        // ---------------------------------------------------------------
+        // Respond to any changes the user makes to the
+        // option method
+        _setOption: function(key, value) {
+            switch (key) {
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            case "mainMenuClass":
+            case "clearfixClass":
+            case "activeClass":
+                this._switchClassOption(key, value);
+                break;
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            default:
+                this.options[key] = value;
+                break;
+            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+            }
+            // remember to call our super's _setOption method
+            this._super( "_setOption", key, value );
+        },
+        // ---------------------------------------------------------------
+        // Destroy an instantiated plugin and clean up
+        // modifications the widget has made to the DOM
+        _destroy: function() {
+            this.element.removeClass(this.options.mainMenuClass);
+            this.element.removeClass(this.options.clearfixClass);
+            this.panels.removeClass(this.options.clearfixClass);
+        },
+        // ---------------------------------------------------------------
+        // do the layout calculations
+        _layoutMenu: function() {
+            // go through each submenu and record its width
+            this.element.find('ul').each( function(index, subMenu) {
+                var $sm = $(subMenu);
+                $sm.css({width: 'auto'});
+                $sm.data('originalWidth', $sm.width());
+
+                // leave each submenu hidden, with width 0
+                $sm.css({ width: 0, display: 'none' });
+            });
+        },
+        // ---------------------------------------------------------------
+        _showMenu: function(event, data) {
+            var $item = $(data.menuitem);
+            var base = data.widget;
+            // $item is a clicked-on menu item..
+            if ($item.hasClass(base.options.activeClass)) {
+                // ??
+            } else {
+                base._hidePanels();
+                base.mainMenuItems.removeClass(base.options.activeClass);
+                var $newSubMenu = $item.find('ul');
+                var $oldSubMenus = base.element.find('ul').not($newSubMenu);
+                var newWidth = $newSubMenu.data('originalWidth');
+
+                $oldSubMenus.animate({ width: 0 }, 100, function() {
+                    $oldSubMenus.css({ display: 'none' });
+                });
+                $item.addClass(base.options.activeClass);
+                $newSubMenu
+                    .css({display: 'block' })
+                    .animate({ width: newWidth }, 250, function() {
+                        $newSubMenu.css({ width: 'auto' }).removeAttr('style');
+                        base._trigger('menushown', event, { item: $item, widget: base });
+                    })
+                ;
+                // if the new submenu has an active item, click it
+                $newSubMenu.find('.' + base.options.activeClass + ' a').click();
+            }
+        },
+        // ---------------------------------------------------------------
+        _showSubMenu: function(event, data) {
+            // de-activeify all the submenu items
+            $(data.menuitem).find('li').removeClass(data.widget.options.activeClass);
+            // active-ify the one true submenu item
+            $(data.submenuitem).addClass(data.widget.options.activeClass);
+        },
+        // ---------------------------------------------------------------
+        // do the layout calculations
+        _layoutPanels: function() {
+
+            var $pages = this.panels.find('.' + this.options.pageClass);
+
+            // go through each page and record its height
+            $pages.each( function(index, page) {
+                var $page = $(page);
+                $page.css({height: 'auto'});
+                $page.data('originalHeight', $page.outerHeight());
+
+                // leave each page hidden, with height 0
+                $page.css({ height: 0, display: 'none' });
+            });
+
+            // go through each panel and hide it
+            this.panels.each( function(index, panel) {
+                var $panel = $(panel);
+                $panel.css({ display: 'none' });
+            });
+        },
+        // ---------------------------------------------------------------
+        _hidePanels: function() {
+            this.panels.removeClass(this.options.activeClass).css({ display: 'none', height: 0 });
+        },
+        // ---------------------------------------------------------------
+        _showPanel: function(event, data) {
+            var $panel = $(data.panel);
+            var base = data.widget;
+            // $panel is a panel to show..
+            if ($panel.hasClass(base.options.activeClass)) {
+                // ??
+            } else {
+                base._hidePanels();
+                $panel.addClass(base.options.activeClass);
+                $panel.css({ display: 'block', opacity: 1 });
+                var $page = $($panel.find('.' + base.options.pageClass + '.' + base.options.activeClass));
+                base._trigger('showpage', event, { panel: $panel, page: $page, widget: base });
+            }
+        },
+        // ---------------------------------------------------------------
+        _showPage: function(event, data) {
+            var base = data.widget;
+            var $panel = $(data.panel);
+            var $page = $(data.page);
+            var newHeight = $page.data('originalHeight');
+
+            var $oldPage = $panel.find('.' + base.options.pageClass + '.' + base.options.activeClass);
+            if ($oldPage.get(0) != $page.get(0)) {
+                $oldPage.removeClass(base.options.activeClass).fadeOut(100, function() {
+                    $oldPage.css({ height: 0 });
+                });
+            }
+            $page.css({ height: 'auto' }).addClass(base.options.activeClass).fadeIn(200);
+            $panel.animate({ height: newHeight }, 200, function() {
+                $page.removeAttr('style');
+            });
 
         },
-        // -------------------------------------------------------------------
-        asdf: function() {
-        }
-        // -------------------------------------------------------------------
-    }
-}));
+        // ---------------------------------------------------------------
+        _: null // no following comma
+    });
 
+})(jQuery, window, document);
 
 
 
