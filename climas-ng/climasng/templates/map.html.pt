@@ -7,12 +7,6 @@
 		CliMAS Next Generation
 	</title>
 	<meta content="width=device-width" name="viewport" />
-	<link href="${request.static_path('climasng:static/images/favicon-trans.png')}" rel="shortcut icon" />
-	<link href="${request.static_path('climasng:static/css/normalize.min.css')}" rel="stylesheet" />
-	<link href="${request.static_path('climasng:static/css/h5bp.css')}" rel="stylesheet" />
-
-	<link href='http://fonts.googleapis.com/css?family=Advent+Pro:100' rel='stylesheet' type='text/css'>
-
 	<script>
 		window.climasSettings = {
 			assetUrlPrefix: "${request.static_path('climasng:static/assets/')}",
@@ -20,15 +14,18 @@
 		}
 	</script>
 
-	<script src="${request.static_path('climasng:static/lib/modernizr.2.7.1.js')}"></script>
+	<link href="${request.static_path('climasng:static/images/favicon-trans.png')}" rel="shortcut icon" />
+	<link href="${request.static_path('climasng:static/css/normalize.min.css')}" rel="stylesheet" />
+	<link href="${request.static_path('climasng:static/css/h5bp.css')}" rel="stylesheet" />
 
-	<!-- <link href="${request.static_path('climasng:static/css/map.css')}" rel="stylesheet" /> -->
+	<link href='http://fonts.googleapis.com/css?family=Advent+Pro:100' rel='stylesheet' type='text/css'>
+
 	<link rel="stylesheet/less" type="text/css" href="${request.static_path('climasng:static/css/map.less')}" />
-	<script src="${request.static_path('climasng:static/lib/less-1.6.1.min.js')}"></script>
+	<link href="${request.static_path('climasng:static/lib/jqueryui-css/smoothness/jquery-ui-1.10.4.custom.min.css')}" rel="stylesheet" />
+	<link href="${request.static_path('climasng:static/css/menusandpanels.css')}" rel="stylesheet" />
 
-	<script src="${request.static_path('climasng:static/lib/jquery-1.10.2.min.js')}"></script>
-	<script src="${request.static_path('climasng:static/lib/jquery-ui-1.10.4.custom.min.js')}"></script>
-	<link href="${request.static_path('climasng:static/lib/jqueryui-css/ui-lightness/jquery-ui-1.10.4.custom.min.css')}" rel="stylesheet" />
+	<script src="${request.static_path('climasng:static/lib/modernizr.2.7.1.js')}"></script>
+	<script src="${request.static_path('climasng:static/lib/less-1.6.1.min.js')}"></script>
 </head>
 
 <body class="map">
@@ -40,54 +37,55 @@
 		<p>Climate change and biodiversity in Australia</p>
 		<nav>
 			<ul class="main menu clearfix">
-				<li class="menuitem current">
+				<li class="current">
 					<a>View Maps</a>
-					<ul class="sub menu">
-						<li class="menuitem current"><a class="paneltrigger" data-panelid="speciespanel">Species Suitability</a></li>
-						<li class="menuitem"><a class="paneltrigger" data-panelid="biodiversitypanel">Biodiversity</a></li>
+					<ul>
+						<li class="current"><a data-targetpanel="speciespanel">Species Suitability</a></li>
+						<li><a data-targetpanel="biodiversitypanel">Biodiversity</a></li>
 					</ul>
 				</li>
-				<!--
-				<li class="menuitem"><a href="${request.route_url('form')}">
-					Generate Reports
-				</a></li>
-				-->
-				<li class="menuitem">
-					<a href="${request.route_url('doc', doc_name='about')}">
-						About CliMAS
-					</a>
-				</li>
-				<li class="menuitem">
-					<a href="${request.route_url('doc', doc_name='credits')}">
-						Credits
-					</a>
+				<li>
+					<a>About CliMAS</a>
+					<ul>
+						<li class="current"><a data-targetpanel="aboutpanel">About this project</a></li>
+						<li><a data-targetpanel="creditspanel">Credits</a></li>
+					</ul>
 				</li>
 			</ul>
 		</nav>
 	</header>
 
-	<div id="speciespanel" class="swivel panel species hidden clearfix">
-		<div id="speciesselectpage" class="page speciesselect active clearfix">
-			<!-- selection form goes here ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-			<div metal:use-macro="load: partial.speciesselect.html.pt"></div>
-			<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<div id="speciespanel" class="mspp-panel current species">
+		<div id="speciesselectpage" class="mspp-page current speciesselect">
+			<div metal:use-macro="load: partial.speciesselect.html.pt"></div><!-- ..partial -->
 		</div>
-		<div id="speciesshowingpage" class="page speciesshowing clearfix">
+		<div id="speciesshowingpage" class="mspp-page short speciesshowing">
 			<p>
 				Showing suitability distribution for <strong class="speciesname">your selected species</strong>.
 				<button type="button" id="speciesselectbtn" class="switchpage" data-targetpage="speciesselectpage">view a different distribution</button>
 			</p>
 		</div>
 	</div>
-
-	<div id="biodiversitypanel" class="swivel panel biodiversity hidden clearfix">
-		<div id="nobiodiversitypage" class="page biodiversityselect active clearfix">
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<div id="biodiversitypanel" class="mspp-panel biodiversity">
+		<div id="nobiodiversitypage" class="mspp-page biodiversityselect current short">
 			<p>
 				&mdash;&nbsp;Biodiversity maps not yet available&nbsp;&mdash;
 			</p>
 		</div>
 	</div>
-
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<div id="aboutpanel" class="mspp-panel about"><div id="docaboutpage" class="mspp-page docabout current">
+		<div metal:use-macro="load: ../pagecontent/about.html"></div><!-- ..partial -->
+	</div></div>
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<div id="creditspanel" class="mspp-panel credits"><div id="doccreditspage" class="mspp-page doccredits current">
+		<div metal:use-macro="load: ../pagecontent/credits.html"></div><!-- ..partial -->
+	</div></div>
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<div id="map" class="map">
 		<iframe class="mapframe" id="mapframe"></iframe>
 	</div>
@@ -105,10 +103,14 @@
 	</footer>
 
 	<!-- JS goes down here, where civilised people put it -->
-	<script src="${request.static_path('climasng:static/js/panelpages.js')}"></script>
-	<script src="${request.static_path('climasng:static/js/swivelpanel.js')}"></script>
+	<script src="${request.static_path('climasng:static/lib/jquery-1.11.0.js')}"></script>
+	<script src="${request.static_path('climasng:static/lib/jquery-ui-1.10.4.custom.min.js')}"></script>
+
+	<script src="${request.static_path('climasng:static/js/menusandpanels.js')}"></script>
 	<script src="${request.static_path('climasng:static/js/speciespanel.js')}"></script>
+
 	<script>
+		$('nav > ul').mspp(); // turn on the menu/submenus/panels/pages handling via plugin
 		$('header').disableSelection();
 	</script>
 

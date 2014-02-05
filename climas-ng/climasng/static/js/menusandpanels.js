@@ -1,5 +1,7 @@
 
 // jQuery plugin
+// author: Daniel Baird <daniel@danielbaird.com>
+// version: 0.1.2014-02-05
 
 //
 // This manages menus, submenus, panels, and pages.
@@ -27,12 +29,12 @@
 // - Selecting a main menu item will show its submenu, if it has one
 // - A submenu always has a single item selected
 // - Clicking an inactive submenu item will show its panel
-// - Clicking a selected submenu item will toggle its panel showing <-> hiding
+// - Clicking a selected submenu item will toggle its panel showing <-> hiding ((( NB: not yet implemented )))
 // - A panel initially shows its first page
-// - Switching pages in a panel changes the panel height to suite it's current page
-// - A panel must have the class .panel
-// - If a panel contains pages, one page should have the class .current
-// - A page must have the class .page
+// - Switching pages in a panel changes the panel height to suit its current page
+// - A panel is a HTML block element with the class .mspp-panel (can be overridden via option)
+// - If a panel contains pages, one page should have the class .current (can be overridden via option)
+// - A page is a HTML block element with the class .mspp-page (can be overridden via option)
 // - <button> or <a> tags in pages that have a data-targetpage attribute set will switch to the indicated page
 //
 //
@@ -53,22 +55,22 @@
 //      <li> <a>whatever</a> </li>
 //  </ul>
 //
-//  <div id="panel1" class="panel">
-//      <div id="page11" class="page current">
+//  <div id="panel1" class="mspp-panel">
+//      <div id="page11" class="mspp-page current">
 //          This is the current page on panel 1.
 //          <button type="button" data-targetpage="page12">show page 2</button>
 //      </div>
-//      <div id="page12" class="page">
+//      <div id="page12" class="mspp-page">
 //          This is the other page on panel 1.
 //          <a data-targetpage="page11">see the first page again</a>
 //      </div>
 //  </div>
-//  <div id="panel2" class="panel">
-//      <div id="page21" class="page current">
+//  <div id="panel2" class="mspp-panel">
+//      <div id="page21" class="mspp-page current">
 //          This is the current page on panel 2.
 //          <button type="button" data-targetpage="page22">show page 2</button>
 //      </div>
-//      <div id="page22" class="page">
+//      <div id="page22" class="mspp-page">
 //          This is the other page on panel 2.
 //          <a data-targetpage="page21">see the first page again</a>
 //      </div>
@@ -158,7 +160,8 @@
             });
 
             // activate the current menus, panels etc
-            // ...TODO
+            var $currentMain = this.mainMenuItems.filter('.' + this.options.activeClass);
+            $currentMain.removeClass(this.options.activeClass).children('a').click();
 
             // finally, fade back in
             $menu.animate({ opacity: 1 }, 'fast');
@@ -299,14 +302,15 @@
             var $page = $(data.page);
             var newHeight = $page.data('originalHeight');
 
-            var $oldPage = $panel.find('.' + base.options.pageClass + '.' + base.options.activeClass);
-            if ($oldPage.get(0) != $page.get(0)) {
+            var $oldPage = $panel.find('.' + base.options.pageClass + '.' + base.options.activeClass).not($page);
+            if ($oldPage.length > 0) {
                 $oldPage.removeClass(base.options.activeClass).fadeOut(100, function() {
                     $oldPage.css({ height: 0 });
                 });
             }
             $page.css({ height: 'auto' }).addClass(base.options.activeClass).fadeIn(200);
-            $panel.animate({ height: newHeight }, 200, function() {
+            var animTime = ($oldPage.length > 0 ? 200 : 400); // animate faster if it's switching pages
+            $panel.animate({ height: newHeight }, animTime, function() {
                 $page.removeAttr('style');
             });
 
