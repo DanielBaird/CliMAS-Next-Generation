@@ -6,9 +6,9 @@
     // convenience functions
     var enableGoButton = function() {
         if ($.inArray($('#speciesname').val(), speciesSciNameList) > -1) {
-            $('#showmap').removeClass('disabled').prop('disabled', false); // enable the button
+            $('#sppshowmap').removeClass('disabled').prop('disabled', false); // enable the button
         } else {
-            $('#showmap').addClass('disabled').prop('disabled', true); // DISable the button
+            $('#sppshowmap').addClass('disabled').prop('disabled', true); // DISable the button
         }
     }
 
@@ -16,14 +16,14 @@
     var enableFutureFields = function() {
 
         // fetch the current form elements
-        var $timePointCtl = $('input[name=timepoint]:checked');
+        var $timePointCtl = $('input[name=spptimepoint]:checked');
 
         if ($timePointCtl.val() === 'baseline') {
-            $('input[name=scenario], input[name=gcm]').prop('disabled', true); // DISable the future fields
-            $('fieldset.scenario, fieldset.gcm').addClass('disabled');
+            $('input[name=sppscenario], input[name=sppgcm]').prop('disabled', true); // DISable the future fields
+            $('fieldset.sppscenario, fieldset.sppgcm').addClass('disabled');
         } else {
-            $('input[name=scenario], input[name=gcm]').prop('disabled', false); // enable the future fields
-            $('fieldset.scenario, fieldset.gcm').removeClass('disabled');
+            $('input[name=sppscenario], input[name=sppgcm]').prop('disabled', false); // enable the future fields
+            $('fieldset.sppscenario, fieldset.sppgcm').removeClass('disabled');
         }
     }
 
@@ -64,7 +64,7 @@
     $('#speciesname').on('keyup',              function(event, ui) { enableGoButton(); });
     $('#speciesname').on('change',             function(event, ui) { enableGoButton(); });
 
-    $('input[name=timepoint]').change( function() {
+    $('input[name=spptimepoint]').change( function() {
         enableFutureFields();
     });
 
@@ -81,13 +81,13 @@
 
     // -------------------------------------------------------------------------------------------
     // handle when they actually click on the species panel button
-    $('#showmap').click( function() {
+    $('#sppshowmap').click( function() {
 
         // fetch the current species name etc from the form elements.
         var sppName = $('#speciesname').val();
-        var timePoint = $('input[name=timepoint]:checked').val();
-        var scenario = $('input[name=scenario]:checked').val();
-        var climateModel = $('input[name=gcm]:checked').val();
+        var timePoint = $('input[name=spptimepoint]:checked').val();
+        var scenario = $('input[name=sppscenario]:checked').val();
+        var climateModel = $('input[name=sppgcm]:checked').val();
 
         var futureModelPoint = scenario + '_' + climateModel + '_' + timePoint;
         if (timePoint === 'baseline') {

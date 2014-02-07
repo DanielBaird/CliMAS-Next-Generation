@@ -26,6 +26,7 @@
 
 	<script src="${request.static_path('climasng:static/lib/modernizr.2.7.1.js')}"></script>
 	<script src="${request.static_path('climasng:static/lib/less-1.6.1.min.js')}"></script>
+	<script src="${request.static_path('climasng:static/lib/jquery-1.11.0.js')}"></script>
 </head>
 
 <body class="map">
@@ -69,10 +70,17 @@
 		</div>
 	</div>
 	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
 	<div id="biodiversitypanel" class="mspp-panel biodiversity">
-		<div id="nobiodiversitypage" class="mspp-page biodiversityselect current short">
+		<div id="biodiversityselectpage" class="mspp-page biodiversityselect current">
+			<!-- selection form goes here ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<div metal:use-macro="load: partial.biodiversityselect.html.pt"></div>
+			<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		</div>
+		<div id="biodiversityshowingpage" class="mspp-page biodiversityshowing short">
 			<p>
-				&mdash;&nbsp;Biodiversity maps not yet available&nbsp;&mdash;
+				Showing species richness for <strong class="taxonname">your selected taxon</strong>.
+				<button type="button" id="biodivselectbutton" class="switchpage" data-targetpage="biodiversityselectpage">view a different richness map</button>
 			</p>
 		</div>
 	</div>
@@ -103,7 +111,6 @@
 	</footer>
 
 	<!-- JS goes down here, where civilised people put it -->
-	<script src="${request.static_path('climasng:static/lib/jquery-1.11.0.js')}"></script>
 	<script src="${request.static_path('climasng:static/lib/jquery-ui-1.10.4.custom.min.js')}"></script>
 
 	<script src="${request.static_path('climasng:static/js/menusandpanels.js')}"></script>

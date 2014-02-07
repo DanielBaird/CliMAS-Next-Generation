@@ -84,6 +84,10 @@
         <p>This is the other page of panel 1a.</p>
         <p>This is the other page of panel 1a.</p>
         <a data-targetpage="page1a-1">see the first page again</a>
+        <p>
+            <button type="button" onclick="$(this).parent().height( $(this).parent().height() + 100 );">grow</button>
+            <button type="button" onclick="$(this).parent().height( $(this).parent().height() - 100 );">shrink</button>
+        </p>
     </div>
 </div>
 <div id="panel1b" class="mspp-panel">

@@ -302,16 +302,23 @@
             var $page = $(data.page);
             var newHeight = $page.data('originalHeight');
 
+            // fix the panel's current height
+            $panel.css({height: $panel.height() });
+
+            // deal with the page currently being displayed
             var $oldPage = $panel.find('.' + base.options.pageClass + '.' + base.options.activeClass).not($page);
             if ($oldPage.length > 0) {
+                $oldPage.data('originalHeight', $oldPage.outerHeight());
                 $oldPage.removeClass(base.options.activeClass).fadeOut(100, function() {
                     $oldPage.css({ height: 0 });
                 });
             }
+
+            // switch on the new page and grow the opanel to hold it
             $page.css({ height: 'auto' }).addClass(base.options.activeClass).fadeIn(200);
             var animTime = ($oldPage.length > 0 ? 200 : 400); // animate faster if it's switching pages
             $panel.animate({ height: newHeight }, animTime, function() {
-                $page.removeAttr('style');
+                $panel.removeAttr('style');
             });
 
         },
