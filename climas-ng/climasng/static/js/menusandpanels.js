@@ -85,6 +85,8 @@
 
         //Options to be used as defaults
         options: {
+            animationFactor: 2,
+
             mainMenuClass: 'mspp-main-menu',
 
             panelClass: 'mspp-panel',
@@ -232,13 +234,13 @@
                 var $oldSubMenus = base.element.find('ul').not($newSubMenu);
                 var newWidth = $newSubMenu.data('originalWidth');
 
-                $oldSubMenus.animate({ width: 0 }, 100, function() {
+                $oldSubMenus.animate({ width: 0 }, (50 * base.options.animationFactor), function() {
                     $oldSubMenus.css({ display: 'none' });
                 });
                 $item.addClass(base.options.activeClass);
                 $newSubMenu
                     .css({display: 'block' })
-                    .animate({ width: newWidth }, 250, function() {
+                    .animate({ width: newWidth }, (125 * base.options.animationFactor), function() {
                         $newSubMenu.css({ width: 'auto' }).removeAttr('style');
                         base._trigger('menushown', event, { item: $item, widget: base });
                     })
@@ -309,14 +311,14 @@
             var $oldPage = $panel.find('.' + base.options.pageClass + '.' + base.options.activeClass).not($page);
             if ($oldPage.length > 0) {
                 $oldPage.data('originalHeight', $oldPage.outerHeight());
-                $oldPage.removeClass(base.options.activeClass).fadeOut(100, function() {
+                $oldPage.removeClass(base.options.activeClass).fadeOut((50 * base.options.animationFactor), function() {
                     $oldPage.css({ height: 0 });
                 });
             }
 
             // switch on the new page and grow the opanel to hold it
-            $page.css({ height: 'auto' }).addClass(base.options.activeClass).fadeIn(200);
-            var animTime = ($oldPage.length > 0 ? 200 : 400); // animate faster if it's switching pages
+            $page.css({ height: 'auto' }).addClass(base.options.activeClass).fadeIn((100 * base.options.animationFactor));
+            var animTime = ($oldPage.length > 0 ? (100 * base.options.animationFactor) : (150 * base.options.animationFactor)); // animate faster if it's switching pages
             $panel.animate({ height: newHeight }, animTime, function() {
                 $panel.removeAttr('style');
             });

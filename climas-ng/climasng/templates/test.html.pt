@@ -116,7 +116,7 @@
 </div>
 
 <script>
-	$('#menu').mspp();
+	$('#menu').mspp({animationFactor: 0.5});
 </script>
 
 </body>
