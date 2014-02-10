@@ -317,7 +317,9 @@
             }
 
             // switch on the new page and grow the opanel to hold it
-            $page.css({ height: 'auto' }).addClass(base.options.activeClass).fadeIn((100 * base.options.animationFactor));
+            $page.css({ height: 'auto' }).addClass(base.options.activeClass).fadeIn((100 * base.options.animationFactor), function() {
+                $page.removeAttr('style');
+            });
             var animTime = ($oldPage.length > 0 ? (100 * base.options.animationFactor) : (150 * base.options.animationFactor)); // animate faster if it's switching pages
             $panel.animate({ height: newHeight }, animTime, function() {
                 $panel.removeAttr('style');
