@@ -57,7 +57,7 @@
 		</nav>
 	</header>
 
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<div id="speciespanel" class="mspp-panel current species">
 		<div id="speciesselectpage" class="mspp-page current speciesselect">
 			<div metal:use-macro="load: partial.speciesselect.html.pt"></div><!-- ::partial:: -->
@@ -70,7 +70,7 @@
 			</p>
 		</div>
 	</div>
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
 	<div id="biodiversitypanel" class="mspp-panel biodiversity">
 		<div id="biodiversityselectpage" class="mspp-page biodiversityselect current">
@@ -84,15 +84,15 @@
 			</p>
 		</div>
 	</div>
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<div id="aboutpanel" class="mspp-panel about"><div id="docaboutpage" class="mspp-page docabout current">
 		<div metal:use-macro="load: ../pagecontent/about.html"></div><!-- ::partial:: -->
 	</div></div>
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<div id="creditspanel" class="mspp-panel credits"><div id="doccreditspage" class="mspp-page doccredits current">
 		<div metal:use-macro="load: ../pagecontent/credits.html"></div><!-- ::partial:: -->
 	</div></div>
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<div id="map" class="map">
 		<iframe class="mapframe" id="mapframe"></iframe>
 	</div>
