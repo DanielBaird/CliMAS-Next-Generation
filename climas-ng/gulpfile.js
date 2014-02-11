@@ -15,6 +15,12 @@ gulp.task('build', ['cssbuild', 'jsbuild']);
 // ------------------------------------------------- lint your source
 gulp.task('lint', ['jslint']);
 
+// ------------------------------------------------- lint your source
+gulp.task('watch', function() {
+    console.log('"watch" task not yet implemented.');
+    console.log('Run "gulp tasks" to see what else you can do.');
+});
+
 // ------------------------------------------------------ compile css
 gulp.task('cssbuild', ['cssclean'], function() {
     return gulp.src('climasng/src/css/page-*.less')
@@ -29,7 +35,8 @@ gulp.task('cssbuild', ['cssclean'], function() {
 
 // ------------------------------------------------- delete built css
 gulp.task('cssclean', function() {
-    return gulp.src(['climasng/static/css/*.css'], {read: false}).pipe(plugins.clean());
+    return gulp.src(['climasng/static/css/*.css'], {read: false})
+        .pipe(plugins.clean());
 });
 
 // ------------------------------------------------------- compile js
@@ -47,14 +54,15 @@ gulp.task('jsbuild', ['jsclean', 'jslint'], function() {
 
 // ---------------------------------------------------------- lint js
 gulp.task('jslint', function() {
-    return gulp.src('climasng/src/js/page-*.js')
+    return gulp.src(['gulpfile.js', 'climasng/src/js/page-*.js'])
         .pipe(plugins.jshint())
         .pipe(plugins.jshint.reporter('default'));
 });
 
 // -------------------------------------------------- delete built js
 gulp.task('jsclean', function() {
-    return gulp.src(['climasng/static/js/*.js'], {read: false}).pipe(plugins.clean());
+    return gulp.src(['climasng/static/js/*.js'], {read: false})
+        .pipe(plugins.clean());
 });
 
 // ===================================================== meta stuff..
@@ -67,24 +75,27 @@ gulp.task('tasks', function() {
         return Math.max(prev, current.length);
     }, 0);
 
-    taskNames.forEach( function(key) {
-        var task = gulp.tasks[key];
+    taskNames.forEach( function(taskName) {
+        var task = gulp.tasks[taskName];
         var depList = '';
         if (task.dep.length > 0) {
-            var depList = Array(maxLen - key.length + 1).join(' ');
-            var depList = depList + '  (' + task.dep.join(', ') + ')';
+            depList = Array(maxLen - taskName.length + 1).join(' ');
+            depList = depList + '  (' + task.dep.join(', ') + ')';
         }
-        console.log('    ' + key + depList);
+        console.log('    ' + taskName + depList);
     });
-    console.log('execute "gulp <taskname>" to perform a task (or "gulp" to perform the default task).' + gutil.linefeed);
+    console.log('execute "gulp <taskname>" to perform a task ' +
+        'or "gulp" to perform the default task).' +
+        gutil.linefeed
+    );
 });
 
 // -------------------------------------- show all the loaded plugins
 gulp.task('plugins', function() {
-    // just outputs your laoded plugins
+    // just outputs your loaded plugins
     console.log(gutil.linefeed + 'Available plugins:');
-    Object.keys(plugins).forEach( function(key) {
-        console.log('    ' + key);
+    Object.keys(plugins).forEach( function(pluginName) {
+        console.log('    ' + pluginName);
     });
     console.log();
 });
