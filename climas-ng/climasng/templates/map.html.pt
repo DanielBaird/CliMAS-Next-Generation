@@ -26,8 +26,7 @@
 	<!-- <link rel="stylesheet/less" type="text/css" href="${request.static_path('climasng:static/css/map.less')}" /> -->
 	<link href="${request.static_path('climasng:static/css/page-map.css')}" rel="stylesheet" />
 
-	<!-- <script src="${request.static_path('climasng:static/lib/less-1.6.1.min.js')}"></script> -->
-	<script src="${request.static_path('climasng:static/lib/modernizr.2.7.1.js')}"></script>
+	<!-- script shoudl be at the bottom but the awful biodiv code uses jquery -->
 	<script src="${request.static_path('climasng:static/lib/jquery-1.11.0.js')}"></script>
 </head>
 
@@ -59,11 +58,11 @@
 	</header>
 
 	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<div id="speciespanel" class="mspp-panel current species">
 		<div id="speciesselectpage" class="mspp-page current speciesselect">
-			<div metal:use-macro="load: partial.speciesselect.html.pt"></div><!-- ..partial -->
+			<div metal:use-macro="load: partial.speciesselect.html.pt"></div><!-- ::partial:: -->
 		</div>
+
 		<div id="speciesshowingpage" class="mspp-page short speciesshowing">
 			<p>
 				Showing suitability distribution for <strong class="speciesname">your selected species</strong>.
@@ -75,10 +74,9 @@
 
 	<div id="biodiversitypanel" class="mspp-panel biodiversity">
 		<div id="biodiversityselectpage" class="mspp-page biodiversityselect current">
-			<!-- selection form goes here ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-			<div metal:use-macro="load: partial.biodiversityselect.html.pt"></div>
-			<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+			<div metal:use-macro="load: partial.biodiversityselect.html.pt"></div><!-- ::partial:: -->
 		</div>
+
 		<div id="biodiversityshowingpage" class="mspp-page biodiversityshowing short">
 			<p>
 				Showing species richness for <strong class="taxonname">your selected taxon</strong>.
@@ -88,13 +86,12 @@
 	</div>
 	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<div id="aboutpanel" class="mspp-panel about"><div id="docaboutpage" class="mspp-page docabout current">
-		<div metal:use-macro="load: ../pagecontent/about.html"></div><!-- ..partial -->
+		<div metal:use-macro="load: ../pagecontent/about.html"></div><!-- ::partial:: -->
 	</div></div>
 	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<div id="creditspanel" class="mspp-panel credits"><div id="doccreditspage" class="mspp-page doccredits current">
-		<div metal:use-macro="load: ../pagecontent/credits.html"></div><!-- ..partial -->
+		<div metal:use-macro="load: ../pagecontent/credits.html"></div><!-- ::partial:: -->
 	</div></div>
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<div id="map" class="map">
 		<iframe class="mapframe" id="mapframe"></iframe>
@@ -113,20 +110,10 @@
 	</footer>
 
 	<!-- JS goes down here, where civilised people put it -->
+	<script src="${request.static_path('climasng:static/lib/modernizr.2.7.1.js')}"></script>
 	<script src="${request.static_path('climasng:static/lib/jquery-ui-1.10.4.custom.min.js')}"></script>
 
-	<script src="${request.static_path('climasng:static/js/menusandpanels.js')}"></script>
-	<script src="${request.static_path('climasng:static/js/speciespanel.js')}"></script>
-
-	<script>
-		$('nav > ul').mspp(); // turn on the menu/submenus/panels/pages handling via plugin
-		$('header').disableSelection();
-	</script>
+	<script src="${request.static_path('climasng:static/js/page-map.js')}"></script>
 
 </body>
 </html>
-
-
-
-
-
