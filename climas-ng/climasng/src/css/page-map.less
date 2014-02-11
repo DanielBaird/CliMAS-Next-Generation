@@ -1,4 +1,14 @@
 
+// This is the master css for the map page.
+//
+// running 'gulp styles' will compile this less file and it's @imports into a single minified css file.
+
+// include other css-es used on the map page
+@import (less) "normalize.css";
+@import (less) "h5bp.css";
+
+@import (less) "menusandpanels.css";
+
 
 // mixin for transform-origin
 .transform-origin(@arg) {
@@ -220,7 +230,7 @@ nav ul li ul {
         border: 1px solid rgba(255,255,255, 0.1);
         border-right: 1px solid rgba(0,0,0, 0.1);
         border-bottom: none;
-        border-radius: 3px, 3px, 0, 0;
+        border-radius: 3px 3px 0 0;
 
         &.current, &:hover {
             background: #efe6c5;
@@ -298,7 +308,7 @@ div.mspp-panel {
     margin: 0;
     padding: 0;
     line-height: 1.4;
-    border-radius: 0, 0, 2px, 2px;
+    border-radius: 0 0 2px 2px;
     overflow: hidden;
 
     &.hidden {
