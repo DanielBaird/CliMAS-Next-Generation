@@ -72,7 +72,7 @@ gulp.task('tasks', function() {
         var depList = '';
         if (task.dep.length > 0) {
             var depList = Array(maxLen - key.length + 1).join(' ');
-            var depList = depList + '  (' + task[key].dep.join(', ') + ')';
+            var depList = depList + '  (' + task.dep.join(', ') + ')';
         }
         console.log('    ' + key + depList);
     });
