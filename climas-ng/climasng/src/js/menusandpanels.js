@@ -101,20 +101,21 @@
         _create: function() {
 
             var base = this;
+            var opts = this.options;
 
             // populate some convenience variables
             var $menu = this.element;
             this.mainMenuItems = $menu.children('li');
-            this.panels = $('.' + this.options.panelClass);
+            this.panels = $('.' + opts.panelClass);
 
             // disappear while we sort things out
             $menu.css({ opacity: 0 });
             this.panels.css({ opacity: 0 });
 
             // make some DOM mods
-            $menu.addClass(this.options.mainMenuClass);
-            $menu.addClass(this.options.clearfixClass);
-            this.panels.addClass(this.options.clearfixClass);
+            $menu.addClass(opts.mainMenuClass);
+            $menu.addClass(opts.clearfixClass);
+            this.panels.addClass(opts.clearfixClass);
 
             // layout the menu
             this._layoutMenu();
@@ -132,20 +133,31 @@
             this.mainMenuItems.each( function(index, item) {
                 // the li menu item has a child a that is it's trigger
                 $(item).children('a').click( function(event) {
-                    base._trigger('showmenu', event, { menuitem: item, widget: base });
+                    base._trigger('showmenu', event, {
+                        menuitem: item,
+                        widget: base
+                    });
                 });
                 // attach handlers to the submenu items
                 $(item).find('li').each( function(index, subMenuItem) {
                     $(subMenuItem).find('a').click( function(event) {
-                        base._trigger('showsubmenu', event, { menuitem: item, submenuitem: subMenuItem, widget: base });
+                        base._trigger('showsubmenu', event, {
+                            menuitem: item,
+                            submenuitem: subMenuItem,
+                            widget: base
+                        });
                     });
                 });
             });
 
             // attach handlers to the panel triggers
-            $menu.find('[data-targetpanel]').each( function(index, paneltrigger) {
-                $(paneltrigger).click( function(event) {
-                    base._trigger('showpanel', event, { panel: $('#' + $(paneltrigger).data('targetpanel')).first(), widget: base });
+            $menu.find('[data-targetpanel]').each( function(index, trigger) {
+                var $trigger =$(trigger);
+                $trigger.click( function(event) {
+                    base._trigger('showpanel', event, {
+                        panel: $('#' + $trigger.data('targetpanel')).first(),
+                        widget: base
+                    });
                 });
             });
 
@@ -162,11 +174,12 @@
             });
 
             // activate the current menus, panels etc
-            var $currentMain = this.mainMenuItems.filter('.' + this.options.activeClass);
-            $currentMain.removeClass(this.options.activeClass).children('a').click();
+            var $currentMain = this.mainMenuItems.filter('.' + opts.activeClass);
+            $currentMain.removeClass(opts.activeClass).children('a').click();
 
             // finally, fade back in
             $menu.animate({ opacity: 1 }, 'fast');
+
             // panels stay invisible
         },
         // ---------------------------------------------------------------
@@ -184,17 +197,16 @@
         // option method
         _setOption: function(key, value) {
             switch (key) {
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            case "mainMenuClass":
-            case "clearfixClass":
-            case "activeClass":
-                this._switchClassOption(key, value);
-                break;
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            default:
-                this.options[key] = value;
-                break;
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                case "mainMenuClass":
+                case "clearfixClass":
+                case "activeClass":
+                    this._switchClassOption(key, value);
+                    break;
+
+                default:
+                    this.options[key] = value;
+                    break;
+                // it's okay that there's no } here
             }
             // remember to call our super's _setOption method
             this._super( "_setOption", key, value );
