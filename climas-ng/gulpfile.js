@@ -7,7 +7,13 @@ var gutil = require('gulp-util');
 var plugins = require('gulp-load-plugins')();
 
 // ----------------------------------------------------- default task
-gulp.task('default', ['build', 'watch']);
+gulp.task('default', ['build', 'watch'], function() {
+    console.log('Running the default task.');
+    console.log(
+        'If this is not what you expected, you should ' +
+        'run "gulp tasks" to see what else you can do.'
+    );
+});
 
 // --------------------------------------------- build ALL the things
 gulp.task('build', ['cssbuild', 'jsbuild']);
@@ -15,10 +21,14 @@ gulp.task('build', ['cssbuild', 'jsbuild']);
 // ------------------------------------------------- lint your source
 gulp.task('lint', ['jslint']);
 
-// ------------------------------------------------- lint your source
+// -------------------------------------------- react to file updates
 gulp.task('watch', function() {
-    console.log('"watch" task not yet implemented.');
-    console.log('Run "gulp tasks" to see what else you can do.');
+    gulp.watch('climasng/src/css/page-*.less', function() {
+        gulp.run('cssbuild');
+    });
+    gulp.watch('climasng/src/js/page-*.js', function() {
+        gulp.run('jsbuild');
+    });
 });
 
 // ------------------------------------------------------ compile css
@@ -67,7 +77,7 @@ gulp.task('jsclean', function() {
 
 // ===================================================== meta stuff..
 
-// -------------------------------------- show all the loaded plugins
+// --------------------------------------------- show available tasks
 gulp.task('tasks', function() {
     console.log(gutil.linefeed + 'Available tasks:');
     var taskNames = Object.keys(gulp.tasks);
