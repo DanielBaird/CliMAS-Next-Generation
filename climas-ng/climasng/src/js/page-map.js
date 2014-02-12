@@ -8,4 +8,3 @@ require('./speciespanel');
 
 $('nav > ul').mspp(); // turn on the menu/panels/pages handling
 $('header').disableSelection(); // unpopular but still better
-
