@@ -1,39 +1,84 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 
+var path = require('path');
+
 // this gulpfile uses gulp-load-plugins to load plugins, which saves
 // having to load everything separately.
 // info: https://github.com/jackfranklin/gulp-load-plugins
 var plugins = require('gulp-load-plugins')();
 
+// paths this project uses
+var cssSourcePaths = [
+    'climasng/src/css/page-*.less'
+];
+var jsSourcePaths = [
+    'climasng/src/js/page-*.js'
+];
+var jsLintablePaths = jsSourcePaths.concat([
+    'gulpfile.js'
+]);
+var coffeeSourcePaths = [
+    'climasng/src/js/oldreports/**/*.coffee'
+];
+
+// returns a string consisting of prefix + filePath + postfix,
+// with nice colours highlighting the filepath.
+function colorFileMsg(prefix, filePath, postfix) {
+    return (
+        gutil.colors.gray(prefix) +
+        gutil.colors.magenta(path.dirname(filePath) + '/') +
+        gutil.colors.bold.magenta(path.basename(filePath)) +
+        gutil.colors.gray(postfix)
+    );
+}
+
+// **returns a function** that when invoked with an event argument,
+// logs a nice message saying that the event will be handled.
+// Arg 'message' is what to say instead of "Handled" in the message.
+function adviseOfEvent(message) {
+    return (function(event) {
+        var msg = message || 'Handling';
+        gutil.log(colorFileMsg(msg + ' ', event.path, ' for you...'));
+    });
+}
+
 // ----------------------------------------------------- default task
 gulp.task('default', ['build', 'watch'], function() {
     console.log('Running the default task.');
+    console.log('This will watch your files and do all the ' +
+        'necessary compilation etc.');
     console.log(
-        'If this is not what you expected, you should ' +
-        'run "gulp tasks" to see what else you can do.'
+        'If this is not what you expected, you should press ' +
+        'Ctrl+c to quit this, then run "gulp tasks" to see ' +
+        'what else you can do.'
     );
 });
 
 // --------------------------------------------- build ALL the things
-gulp.task('build', ['cssbuild', 'jsbuild']);
+gulp.task('build', ['cssbuild', 'jsbuild', 'coffeebuild']);
 
 // ------------------------------------------------- lint your source
 gulp.task('lint', ['jslint']);
 
 // -------------------------------------------- react to file updates
 gulp.task('watch', function() {
-    gulp.watch('climasng/src/css/page-*.less', function() {
-        gulp.run('cssbuild');
-    });
-    gulp.watch('climasng/src/js/page-*.js', function() {
-        gulp.run('jsbuild');
-    });
+    gulp.watch(cssSourcePaths, ['cssbuild'])
+        .on('change', adviseOfEvent('Building'));
+
+    gulp.watch(jsLintablePaths, ['jslint'])
+        .on('change', adviseOfEvent('Linting'));
+
+    gulp.watch(jsSourcePaths, ['jsbuild'])
+        .on('change', adviseOfEvent('Building'));
+
+    gulp.watch(coffeeSourcePaths, ['coffeebuild'])
+        .on('change', adviseOfEvent('Compiling'));
 });
 
 // ------------------------------------------------------ compile css
 gulp.task('cssbuild', ['cssclean'], function() {
-    return gulp.src('climasng/src/css/page-*.less')
+    return gulp.src(cssSourcePaths)
         .pipe(plugins.less())
         .on('error', gutil.log).on('error', gutil.beep)
         .pipe(plugins.autoprefixer())
@@ -51,7 +96,7 @@ gulp.task('cssclean', function() {
 
 // ------------------------------------------------------- compile js
 gulp.task('jsbuild', ['jsclean', 'jslint'], function() {
-    return gulp.src('climasng/src/js/page-*.js')
+    return gulp.src(jsSourcePaths)
         .pipe(plugins.browserify({
             debug: !gutil.env.production
         }))
@@ -64,7 +109,7 @@ gulp.task('jsbuild', ['jsclean', 'jslint'], function() {
 
 // ---------------------------------------------------------- lint js
 gulp.task('jslint', function() {
-    return gulp.src(['gulpfile.js', 'climasng/src/js/page-*.js'])
+    return gulp.src(jsLintablePaths)
         .pipe(plugins.jshint())
         .pipe(plugins.jshint.reporter('default'));
 });
@@ -73,6 +118,14 @@ gulp.task('jslint', function() {
 gulp.task('jsclean', function() {
     return gulp.src(['climasng/static/js/*.js'], {read: false})
         .pipe(plugins.clean());
+});
+
+// --------------------------------------------- compile coffeescript
+gulp.task('coffeebuild', [], function() {
+    return gulp.src(coffeeSourcePaths)
+        .pipe(plugins.coffee({ bare: true }))
+        .on('error', gutil.log).on('error', gutil.beep)
+        .pipe(gulp.dest('climasng/static/js/oldreports/')) ;
 });
 
 // ===================================================== meta stuff..

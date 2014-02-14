@@ -47,6 +47,9 @@
 					</ul>
 				</li>
 				<li>
+					<a href="${request.route_path('oldreport')}">Create Reports</a>
+				</li>
+				<li>
 					<a>About CliMAS</a>
 					<ul>
 						<li class="current"><a data-targetpanel="aboutpanel">About this project</a></li>

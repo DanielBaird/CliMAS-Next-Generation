@@ -95,7 +95,7 @@
             clearfixClass: 'mspp-clearfix',
             activeClass: 'current'
         },
-        // ---------------------------------------------------------------
+        // ----------------------------------------------------------
         //Setup widget (eg. element creation, apply theming
         // , bind events etc.)
         _create: function() {
@@ -182,7 +182,7 @@
 
             // panels stay invisible
         },
-        // ---------------------------------------------------------------
+        // ----------------------------------------------------------
         _switchClassOption: function(className, newClass) {
             var oldClass = this.options[className];
             if (oldClass !== newClass) {
@@ -192,7 +192,7 @@
                 group.addClass(newClass);
             }
         },
-        // ---------------------------------------------------------------
+        // ----------------------------------------------------------
         // Respond to any changes the user makes to the
         // option method
         _setOption: function(key, value) {
@@ -211,7 +211,7 @@
             // remember to call our super's _setOption method
             this._super( "_setOption", key, value );
         },
-        // ---------------------------------------------------------------
+        // ----------------------------------------------------------
         // Destroy an instantiated plugin and clean up
         // modifications the widget has made to the DOM
         _destroy: function() {
@@ -219,7 +219,7 @@
             this.element.removeClass(this.options.clearfixClass);
             this.panels.removeClass(this.options.clearfixClass);
         },
-        // ---------------------------------------------------------------
+        // ----------------------------------------------------------
         // do the layout calculations
         _layoutMenu: function() {
             // go through each submenu and record its width
@@ -232,7 +232,7 @@
                 $sm.css({ width: 0, display: 'none' });
             });
         },
-        // ---------------------------------------------------------------
+        // ----------------------------------------------------------
         _showMenu: function(event, data) {
             var $item = $(data.menuitem);
             var base = data.widget;
@@ -261,14 +261,14 @@
                 $newSubMenu.find('.' + base.options.activeClass + ' a').click();
             }
         },
-        // ---------------------------------------------------------------
+        // ----------------------------------------------------------
         _showSubMenu: function(event, data) {
             // de-activeify all the submenu items
             $(data.menuitem).find('li').removeClass(data.widget.options.activeClass);
             // active-ify the one true submenu item
             $(data.submenuitem).addClass(data.widget.options.activeClass);
         },
-        // ---------------------------------------------------------------
+        // ----------------------------------------------------------
         // do the layout calculations
         _layoutPanels: function() {
 
@@ -290,11 +290,11 @@
                 $panel.css({ display: 'none' });
             });
         },
-        // ---------------------------------------------------------------
+        // ----------------------------------------------------------
         _hidePanels: function() {
             this.panels.removeClass(this.options.activeClass).css({ display: 'none', height: 0 });
         },
-        // ---------------------------------------------------------------
+        // ----------------------------------------------------------
         _showPanel: function(event, data) {
             var $panel = $(data.panel);
             var base = data.widget;
@@ -309,7 +309,7 @@
                 base._trigger('showpage', event, { panel: $panel, page: $page, widget: base });
             }
         },
-        // ---------------------------------------------------------------
+        // ----------------------------------------------------------
         _showPage: function(event, data) {
             var base = data.widget;
             var $panel = $(data.panel);
@@ -338,7 +338,7 @@
             });
 
         },
-        // ---------------------------------------------------------------
+        // ----------------------------------------------------------
         _: null // no following comma
     });
 
