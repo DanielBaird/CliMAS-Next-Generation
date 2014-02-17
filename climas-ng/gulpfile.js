@@ -23,12 +23,16 @@ var coffeeSourcePaths = [
 ];
 
 // returns a string consisting of prefix + filePath + postfix,
-// with nice colours highlighting the filepath.
+// with colour highlighting of the filepath.
 function colorFileMsg(prefix, filePath, postfix) {
+    // maybe a relative path is clearer..
+    var nicePath = path.relative('.', filePath);
+    if (nicePath.substr(0,2) === '..') {
+        nicePath = filePath;
+    }
     return (
-        gutil.colors.gray(prefix) +
-        gutil.colors.magenta(path.dirname(filePath) + '/') +
-        gutil.colors.bold.magenta(path.basename(filePath)) +
+        gutil.colors.gray(prefix + path.dirname(nicePath) + '/') +
+        gutil.colors.magenta(path.basename(nicePath)) +
         gutil.colors.gray(postfix)
     );
 }
