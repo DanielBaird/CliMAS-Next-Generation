@@ -74,7 +74,7 @@ define(['jquery', 'underscore', 'backbone', 'showdown', 'js/oldreports/collectio
         the_region = this.regions.get(region);
       }
       clean_name = the_region.get('name').replace(/[^A-Za-z0-9-]/g, '_');
-      url = [window.settings.dataUrlPrefix, "regions/", the_region.get('region_type_regiontype'), "_", clean_name, "/"].join("");
+      url = [window.climasSettings.assetUrlPrefix, "regions/", the_region.get('region_type_regiontype'), "_", clean_name, "/"].join("");
       return url;
     },
     regionZipUrl: function(region) {
@@ -192,7 +192,7 @@ define(['jquery', 'underscore', 'backbone', 'showdown', 'js/oldreports/collectio
       if (this.doc) {
         return this.progress;
       } else {
-        doc_url = window.settings.dataUrlPrefix + "sourcedoc.txt";
+        doc_url = window.climasSettings.assetUrlPrefix + "sourcedoc.txt";
         return $.ajax(doc_url, {
           context: this,
           dataType: 'text',
@@ -216,7 +216,7 @@ define(['jquery', 'underscore', 'backbone', 'showdown', 'js/oldreports/collectio
       if (this.appendix) {
         return this.progress;
       } else {
-        appendix_url = window.settings.siteUrlPrefix + ("region/" + this.selected_region + "/" + this.year + "/speciestables.html");
+        appendix_url = window.climasSettings.siteUrlPrefix + ("region/" + this.selected_region + "/" + this.year + "/speciestables.html");
         return $.ajax(appendix_url, {
           context: this,
           dataType: 'html',
@@ -274,7 +274,7 @@ define(['jquery', 'underscore', 'backbone', 'showdown', 'js/oldreports/collectio
     },
     postback: function(content, cssFiles, format) {
       var contentField, cssField, form, formatField;
-      form = $('<form method="post" action="' + window.settings.siteUrlPrefix + 'reflect"></form>');
+      form = $('<form method="post" action="' + window.climasSettings.siteUrlPrefix + 'reflect"></form>');
       formatField = $('<input type="hidden" name="format" />');
       formatField.attr('value', format);
       form.append(formatField);
@@ -289,7 +289,7 @@ define(['jquery', 'underscore', 'backbone', 'showdown', 'js/oldreports/collectio
       return form.appendTo('body').submit();
     }
   }, {
-    form: _.template("<p class=\"toolintro\">\n    Get a regional report on projected changes in temperature,\n    rainfall, and species composition for a selected year.\n    <br>Species included are land-based Australian birds, mammals,\n    reptiles and amphibians.\n</p>\n<form id=\"kickoffform\" class=\"clearfix\">\n    <%= formcontent %>\n</form>"),
+    form: _.template("<form id=\"kickoffform\" class=\"clearfix\">\n    <p class=\"toolintro\">\n        Get a regional report on projected changes in temperature,\n        rainfall, and species composition for a selected year.\n        <br>Species included are land-based Australian birds, mammals,\n        reptiles and amphibians.\n    </p>\n    <%= formcontent %>\n</form>"),
     format_option: _.template("<label><input type=\"radio\" class=\"format\" name=\"formatradio\" value=\"<%= format %>\">\n    <%= formatname %>\n</label>"),
     format_chooser: _.template("<div class=\"onefield formatselection formsection\">\n    <h3>Select an output format</h3>\n    <%= formats %>\n    <button class=\"generate\">generate report</button>\n</div>"),
     year_option: _.template("<label><input type=\"radio\" class=\"year\" name=\"yearradio\" value=\"<%= year %>\">\n    <%= year %>\n</label>"),

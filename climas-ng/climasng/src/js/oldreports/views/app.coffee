@@ -90,7 +90,7 @@ define [
             clean_name = the_region.get('name').replace /[^A-Za-z0-9-]/g, '_'
 
             url = [
-                window.settings.dataUrlPrefix
+                window.climasSettings.assetUrlPrefix
                 "regions/"
                 the_region.get 'region_type_regiontype'
                 "_"
@@ -218,7 +218,7 @@ Let us know if you think we're missing data for your region.
             if @doc
                 @progress
             else
-                doc_url = window.settings.dataUrlPrefix + "sourcedoc.txt"
+                doc_url = window.climasSettings.assetUrlPrefix + "sourcedoc.txt"
                 $.ajax doc_url, {
                     context: this
                     dataType: 'text'
@@ -238,7 +238,7 @@ This should only happen if your network is down; if you're sure your connection 
             if @appendix
                 @progress
             else
-                appendix_url = window.settings.siteUrlPrefix + "region/#{@selected_region}/#{@year}/speciestables.html"
+                appendix_url = window.climasSettings.siteUrlPrefix + "region/#{@selected_region}/#{@year}/speciestables.html"
                 $.ajax appendix_url, {
                     context: this
                     dataType: 'html'
@@ -313,7 +313,7 @@ Let us know if you think we're missing data for your region.
             # cssFiles: a comma-separated list of css files, without the .css
             # format: the format you want back, e.g. 'msword_html' or 'html'
 
-            form = $ '<form method="post" action="' + window.settings.siteUrlPrefix + 'reflect"></form>'
+            form = $ '<form method="post" action="' + window.climasSettings.siteUrlPrefix + 'reflect"></form>'
 
             formatField = $ '<input type="hidden" name="format" />'
             formatField.attr 'value', format
@@ -334,13 +334,13 @@ Let us know if you think we're missing data for your region.
         # templates here
         # ----------------------------------------------------------------
         form: _.template """
-            <p class="toolintro">
-                Get a regional report on projected changes in temperature,
-                rainfall, and species composition for a selected year.
-                <br>Species included are land-based Australian birds, mammals,
-                reptiles and amphibians.
-            </p>
             <form id="kickoffform" class="clearfix">
+                <p class="toolintro">
+                    Get a regional report on projected changes in temperature,
+                    rainfall, and species composition for a selected year.
+                    <br>Species included are land-based Australian birds, mammals,
+                    reptiles and amphibians.
+                </p>
                 <%= formcontent %>
             </form>
         """
