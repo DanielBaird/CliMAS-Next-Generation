@@ -10,6 +10,9 @@
 	<script>
 		window.climasSettings = {
 			assetUrlPrefix: "${request.static_path('climasng:static/assets/')}",
+			regionDataUrlPrefix: "/olddata/regions/",
+			speciesDataUrlPrefix: "/oldspecies/",
+			reflectorUrl: "/reflector/",
 			vizUrlPrefix: "//118.138.243.53:10600/api/raster/1/default?data_url=",
 			staticUrlPrefix: "${request.static_path('climasng:static/')}",
 		    regionTypeList: [{"regiontype":"IBRA","regiontypename_singular":"IBRA bioregion","regiontypename_plural":"IBRA bioregions","regiontypeurl":"http://www.environment.gov.au/parks/nrs/science/bioregion-framework/ibra/"},{"regiontype":"NRM","regiontypename_singular":"Natural Resource Management (NRM) region","regiontypename_plural":"Natural Resource Management (NRM) regions","regiontypeurl":"http://www.nrm.gov.au/about/nrm/regions/"},{"regiontype":"National","regiontypename_singular":"country","regiontypename_plural":"countries","regiontypeurl":"http://australia.gov.au/"},{"regiontype":"State","regiontypename_singular":"state of Australia","regiontypename_plural":"states of Australia","regiontypeurl":"http://www.gov.au/"}],

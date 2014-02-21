@@ -6,7 +6,7 @@ import pyramid.httpexceptions as httpexceptions
 
 from sqlalchemy.exc import DBAPIError
 
-from climasng.models import (DBSession, MyModel)
+from climasng.models import (DBSession,)
 
 # ------------------------------------------------------------------------
 
@@ -35,10 +35,10 @@ class HomeView(object):
 
 #    @view_config(route_name='home', renderer='../templates/home.html.pt')
     def __call__(self):
-        try:
-            one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
-        except DBAPIError:
-            return Response(conn_err_msg, content_type='text/plain', status_int=500)
-        return {'one': one, 'project': 'climas-ng'}
+        # try:
+        #     one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
+        # except DBAPIError:
+        #     return Response(conn_err_msg, content_type='text/plain', status_int=500)
+        return {'one': '1 1 1', 'project': 'climas-ng'}
 
 # ------------------------------------------------------------------------

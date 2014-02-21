@@ -74,7 +74,7 @@ define(['jquery', 'underscore', 'backbone', 'showdown', 'js/oldreports/collectio
         the_region = this.regions.get(region);
       }
       clean_name = the_region.get('name').replace(/[^A-Za-z0-9-]/g, '_');
-      url = [window.climasSettings.assetUrlPrefix, "regions/", the_region.get('region_type_regiontype'), "_", clean_name, "/"].join("");
+      url = [window.climasSettings.regionDataUrlPrefix, the_region.get('region_type_regiontype'), "_", clean_name, "/"].join("");
       return url;
     },
     regionZipUrl: function(region) {
@@ -216,7 +216,7 @@ define(['jquery', 'underscore', 'backbone', 'showdown', 'js/oldreports/collectio
       if (this.appendix) {
         return this.progress;
       } else {
-        appendix_url = window.climasSettings.siteUrlPrefix + ("region/" + this.selected_region + "/" + this.year + "/speciestables.html");
+        appendix_url = window.climasSettings.speciesDataUrlPrefix + ("" + this.selected_region + "/" + this.year + "/speciestables.html");
         return $.ajax(appendix_url, {
           context: this,
           dataType: 'html',
@@ -227,7 +227,7 @@ define(['jquery', 'underscore', 'backbone', 'showdown', 'js/oldreports/collectio
             };
           })(this),
           error: (function(_this) {
-            return function() {
+            return function(err) {
               _this.exitLoadingState();
               return alert("Could not fetch data for this region.\n\nDue to modelling constraints, we can only report on continental Australia.\n\nLet us know if you think we're missing data for your region.");
             };
@@ -264,7 +264,7 @@ define(['jquery', 'underscore', 'backbone', 'showdown', 'js/oldreports/collectio
       html = new Showdown.converter().makeHtml(resolution);
       html += this.appendix;
       if (this.format === 'preview') {
-        $('body').append($('<div id="report"></div>'));
+        $('#content').append($('<div id="report"></div>'));
         $('#report').html(html);
         $('#report').get(0).scrollIntoView(true);
       } else {
@@ -274,7 +274,7 @@ define(['jquery', 'underscore', 'backbone', 'showdown', 'js/oldreports/collectio
     },
     postback: function(content, cssFiles, format) {
       var contentField, cssField, form, formatField;
-      form = $('<form method="post" action="' + window.climasSettings.siteUrlPrefix + 'reflect"></form>');
+      form = $('<form method="post" action="' + window.climasSettings.reflectorUrl + '"></form>');
       formatField = $('<input type="hidden" name="format" />');
       formatField.attr('value', format);
       form.append(formatField);

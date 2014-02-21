@@ -6,7 +6,7 @@ import pyramid.httpexceptions as httpexceptions
 
 from sqlalchemy.exc import DBAPIError
 
-from climasng.models import (DBSession, MyModel)
+from climasng.models import (DBSession, )
 
 from climasng.parsing.docparser import DocParser
 

@@ -90,8 +90,7 @@ define [
             clean_name = the_region.get('name').replace /[^A-Za-z0-9-]/g, '_'
 
             url = [
-                window.climasSettings.assetUrlPrefix
-                "regions/"
+                window.climasSettings.regionDataUrlPrefix
                 the_region.get 'region_type_regiontype'
                 "_"
                 clean_name
@@ -238,14 +237,14 @@ This should only happen if your network is down; if you're sure your connection 
             if @appendix
                 @progress
             else
-                appendix_url = window.climasSettings.siteUrlPrefix + "region/#{@selected_region}/#{@year}/speciestables.html"
+                appendix_url = window.climasSettings.speciesDataUrlPrefix + "#{@selected_region}/#{@year}/speciestables.html"
                 $.ajax appendix_url, {
                     context: this
                     dataType: 'html'
                     success: (data) =>
                         @appendix = data
                         @progress()
-                    error: () =>
+                    error: (err) =>
                         @exitLoadingState()
                         alert """
 Could not fetch data for this region.
@@ -290,7 +289,7 @@ Let us know if you think we're missing data for your region.
 
             if @format == 'preview'
                 # this appends the report into the current window
-                $('body').append $('<div id="report"></div>')
+                $('#content').append $('<div id="report"></div>')
                 $('#report').html html
                 $('#report').get(0).scrollIntoView true
 
@@ -313,7 +312,7 @@ Let us know if you think we're missing data for your region.
             # cssFiles: a comma-separated list of css files, without the .css
             # format: the format you want back, e.g. 'msword_html' or 'html'
 
-            form = $ '<form method="post" action="' + window.climasSettings.siteUrlPrefix + 'reflect"></form>'
+            form = $ '<form method="post" action="' + window.climasSettings.reflectorUrl + '"></form>'
 
             formatField = $ '<input type="hidden" name="format" />'
             formatField.attr 'value', format
