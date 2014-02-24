@@ -4,68 +4,19 @@
 // running 'gulp css' will compile this less file and it's @imports into a single minified css file.
 
 // include other css-es used on the map page
-@import (less) "normalize.css";
-@import (less) "h5bp.css";
+@import (less) "components/normalize.css";
+@import (less) "components/h5bp.css";
 
-@import (less) "menusandpanels.css";
+// our jq plugin css for the menubar and panels
+@import (less) "components/menusandpanels.css";
 
-
-// mixin for transform-origin
-.transform-origin(@arg) {
-    -webkit-transform-origin: @arg;
-    -moz-transform-origin: @arg;
-    transform-origin: @arg;
-}
-
-.allrounded(@radius: 2px) {
-    -webkit-border-radius: @radius;
-    -moz-border-radius: @radius;
-    border-radius: @radius;
-}
+@import (less) "components/common.less";       // common styles
 
 
-.borderbox() {
-    -moz-box-sizing:border-box;
-    -webkit-box-sizing:border-box;
-    box-sizing:border-box;
-}
+/* body  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+body { height: 100% }
 
-.dropshadow() {
-    -webkit-box-shadow: 0 6px 12px -6px rgba(0,0,0, 0.5);
-       -moz-box-shadow: 0 6px 12px -6px rgba(0,0,0, 0.5);
-            box-shadow: 0 6px 12px -6px rgba(0,0,0, 0.5);
-}
-
-@background: #2d4048;
-
-body {
-    padding: 0;
-    font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Tahoma, "Arial Unicode MS", sans-serif; /* facebook fontstack */
-    font-size: 100%;
-    -webkit-font-smoothing: antialiased; /* light-text-on-dark is too bold on Macs */
-    line-height: 1.4;
-    color: #000;
-    background: #eee;
-    -moz-osx-font-smoothing: grayscale; /* light-text-on-dark is too bold on Macs */
-}
-
-@media screen { body {
-        background: @background;
-        color: #222;
-}   }
-
-a {
-    color: #016;
-    text-decoration: none;
-    &:hover { text-decoration: underline; }
-}
-
-@sidepad: 4%;
-
-/* body - - - - - - - - - - - - - - - - - - - - - */
-body.map { height: 100% }
-
-/* header - - - - - - - - - - - - - - - - - - - - */
+/* header  - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 @headerheight: 120px;
 header.page {
@@ -114,7 +65,7 @@ header.page {
     }
 }
 
-/* navbar - - - - - - - - - - - - - - - - - - - - */
+/* navbar  - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 /*
     normal background: #242732 / 36,39,50
@@ -240,7 +191,7 @@ nav ul li ul {
 
 
 
-/* footer - - - - - - - - - - - - - - - - - - - */
+/* footer  - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 @footerheight: 30px;
 footer.page {
@@ -273,11 +224,12 @@ footer.page {
     a { color: rgba(170,187,255, 1); }
 }
 
-/* map - - - - - - - - - - - - - - - - - - - - - */
+/* map - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 div.map {
     position: absolute;
     top: @headerheight;
+    box-shadow: 0 6px 12px -6px rgba(0,0,0, 0.5);
     right: 0;
     bottom: @footerheight;
     left: 0;
@@ -299,7 +251,7 @@ div.mspp-panel {
     z-index: 2;
     position: absolute;
     top: (@headerheight);
-    .dropshadow();
+    box-shadow: 0 6px 12px -6px rgba(0,0,0, 0.5);
     width: (100% - @sidepad - @sidepad);
     left: @sidepad;
     text-align: center;
