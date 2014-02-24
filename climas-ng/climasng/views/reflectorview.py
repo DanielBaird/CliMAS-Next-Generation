@@ -1,5 +1,6 @@
 import os
-import os
+import cgi
+import re
 
 from pyramid.response import Response
 from pyramid.view import view_config
@@ -15,84 +16,61 @@ class ReflectorView(object):
     @view_config(route_name='reflector')
     def __call__(self):
 
+                # # find the filename, css files, and format they wanted
+                # filename = params['filename'] || 'RegionReport'
+                # format = params['format'] || 'html'
+                # css_to_include = (params['css'] && params['css'].split(',')) || []
+
+        # grab some params
         filename = self.request.params.get('filename', 'RegionReport')
+        css_inclusions = self.request.params.get('css', '')
+        css_inclusions = css_inclusions.split(',')
 
-        print(filename)
+        # start our response
+        response = Response()
+        # use this to write body content to (better than a giant memory-hogging string)
+        body = response.body_file
 
-        return Response(body='report downloading coming soon!', content_type='text/plain')
+        # tell the client this is a downloadable html file
+        response.content_type='application/octet-stream'
+        response.content_disposition='attachment; filename="' + filename + '.html"'
+        response.headers['Content-Desciption'] = 'File Transfer' # unnecessary?
 
+        # don't cache this file
+        response.cache_expires(0) # sets various cache headers
 
+        # now start filling out the body
+        body.write("<html><head>\n")
 
-        # # find the filename, css files, and format they wanted
-        # filename = params['filename'] || 'RegionReport'
-        # format = params['format'] || 'html'
-        # css_to_include = (params['css'] && params['css'].split(',')) || []
+        # add in the css they wanted
+        for css in css_inclusions:
+            # throw away path in case we're being hacked
+            css_file = os.path.join(
+                os.path.dirname(__file__),
+                '..', 'static', 'css',
+                # also replace extension with .css coz SECURITAY
+                os.path.splitext(os.path.basename(css))[0] + '.css'
+            )
+            css_content = ''
+            try:
+                with file(css_file) as f:
+                    css_content = f.read()
+            except IOError:
+                css_content = '/* could not load "' + cgi.escape(css, True) + '" */'
 
-        # # set up the headers
-        # response['Expires'] = '0'   # don't cache
-        # response['Cache-Control'] = 'must-revalidate, post-check=0, pre-check=0' # really don't cache
-        # response['Content-Description'] = 'File Transfer' # download, don't open
+            body.write("<style>" + css_content + "</style>\n")
 
-        # if params['format'] == 'msword-html'
+        content = self.request.params.get('content', '(no report content was supplied)')
+        content = content.replace(
+            '<img src="/',
+            '<img src="' + self.request.route_url('home')
+        )
 
-        #     response['Content-Type'] = 'application/msword' # pretend this is a word doc
-        #     response['Content-Disposition'] = 'attachment; filename="' + filename + '.doc"' # pretend it's a word doc
+        body.write("</head><body><div id='report'>\n")
+        body.write(content)
+        body.write("\n</div></body></html>\n")
 
-        #     # start the doc
-        #     content = ['<html><head>']
-
-        #     # add some MS-trickery to make Word display this properly
-        #     # AFAICT this doesn't work, but maybe it will in older office versions
-        #     content << "<!--[if gte mso 9]>"
-        #     content << "<xml>"
-        #     content << "<w:WordDocument>"
-        #     content << "<w:View>Print</w:View>"
-        #     content << "<w:Zoom>90</w:Zoom>"
-        #     content << "<w:DoNotOptimizeForBrowser/>"
-        #     content << "</w:WordDocument>"
-        #     content << "</xml>"
-        #     content << "<![endif]-->"
-
-        #     # add in the css files specified by the url call
-        #     css_to_include.each do |cssfile|
-        #         cssfile = cssfile.split('/')[0] # avoid directory trickery
-        #         content << '<style>'
-        #         content << File.read('public/css/' + cssfile + '.css')
-        #         content << '</style>'
-        #     end
-
-        #     # finish the head and start on the actual report body
-        #     content << '</head><body><div id="report">'
-
-        #     content << fix_image_sizes( prettify_table_cells(params['content']) )
-
-        #     content << '</div></body></html>'
-
-        # else # default to a html report
-
-        #     response['Content-Type'] = 'application/octet-stream'
-        #     response['Content-Disposition'] = 'attachment; filename="' + filename + '.html"'
-
-        #     # start the doc
-        #     content = ['<html><head>']
-
-        #     # add in the css files specified by the url call
-        #     css_to_include.each do |cssfile|
-        #         cssfile = cssfile.split('/')[0] # avoid directory trickery
-        #         content << '<style>'
-        #         content << File.read('public/css/' + cssfile + '.css')
-        #         content << '</style>'
-        #     end
-
-        #     # finish the head and start on the actual report body
-        #     content << '</head><body><div id="report">'
-        #     content << params['content']
-        #     content << '</div></body></html>'
-
-        # end
-
-        # # return the content
-        # content.join "\n"
+        return response
 
 # ------------------------------------------------------------------------
 

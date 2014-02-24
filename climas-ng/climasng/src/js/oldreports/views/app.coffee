@@ -6,20 +6,20 @@ define [
 ], ($, _, Backbone, Showdown, Regions, RegionTypes, RA) ->
 
     AppView = Backbone.View.extend {
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         events:
             'change input[type=radio].rtype':  'changeRegionType'
             'change select.regionselect':      'changeRegion'
             'change input[type=radio].year':   'changeYear'
             'change input[type=radio].format': 'changeFormat'
             'click .generate':                 'startReport'
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         initialize: () ->
             # window.region_list initialised in the HAML template
             @region_types = new RegionTypes window.climasSettings.regionTypeList
             @regions = new Regions window.climasSettings.regionList
             _.bindAll this
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         render: () ->
 
             me = this
@@ -76,7 +76,7 @@ define [
             @updateReportButton()
 
             $('.content').append @$el
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         regionDataUrl: (region) ->
             # did we get a region id or actual model?
 
@@ -98,14 +98,14 @@ define [
             ].join ""
 
             url
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         regionZipUrl: (region) ->
             url = @regionDataUrl region
             # lazily retrieve the clean name..
             bits = url.split '/'
             clean_name = bits[bits.length - 2]
             url + clean_name + '.zip'
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         changeRegionType: () ->
             selected_region_type = @$('.rtype:checked').val()
 
@@ -118,7 +118,7 @@ define [
 
             # reset the region to the selected one for this type
             @changeRegion { target: $('#chosen_' + selected_region_type) }
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         changeRegion: (e) ->
             @selected_region = $(e.target).val()
             if @selected_region == "invalid"
@@ -133,21 +133,21 @@ define [
                 @$('#regiondownloadlink').css "visibility", "hidden"
 
             @updateReportButton()
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         changeYear: (e) ->
             @year = $(e.target).val()
             @updateReportButton()
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         changeFormat: (e) ->
             @format = $(e.target).val()
             @updateReportButton()
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         updateReportButton: () ->
             if @selected_region and @year and @format
                 @$('.generate').removeAttr 'disabled'
             else
                 @$('.generate').attr 'disabled', 'disabled'
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         startReport: (e) ->
 
             @$('#report').empty()
@@ -168,7 +168,7 @@ define [
             @updateProgress()
 
             e.preventDefault()
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         updateProgress: () ->
             fetchlist = {
                 'template': @doc
@@ -190,7 +190,7 @@ define [
                 @exitLoadingState()
             else if @loading
                 @$('.generate').html progress
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         fetchData: () ->
             if @data
                 @progress
@@ -212,7 +212,7 @@ Due to modelling constraints, we can only report on continental Australia.
 Let us know if you think we're missing data for your region.
 """
                 }
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         fetchDoc: () ->
             if @doc
                 @progress
@@ -232,7 +232,7 @@ Could not fetch the report template.
 This should only happen if your network is down; if you're sure your connection is okay, we'd appreciate it if you reported this problem to the developers.
 """
                 }
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         fetchAppendix: () ->
             if @appendix
                 @progress
@@ -254,31 +254,31 @@ Due to modelling constraints, we can only report on continental Australia.
 Let us know if you think we're missing data for your region.
 """
                 }
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         enterLoadingState: () ->
             @loading = true
             document.body.style.cursor = 'wait'
             @$('.generate').attr 'disabled', 'disabled'
             @$('.generate').css 'cursor', 'wait'
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         exitLoadingState: () ->
             @loading = false
             document.body.style.cursor = 'default'
             @$('.generate').removeAttr('disabled').css 'cursor', 'pointer'
             @$('.generate').html 'generate report'
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         progress: () ->
             @updateProgress()
             if @doc and @data and @appendix
                 @generateReport()
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         generateReport: () ->
             # do the thing
             @data['year'] = @year
 
             the_region = @regions.get @selected_region
 
-            @data['rg_url'] = @regionDataUrl the_region
+            @data['rg_url'] = @regionDataUrl(the_region).replace /\/$/, ''
             @data['rg_short_name'] = the_region.get 'name'
             @data['rg_long_name'] = the_region.get 'long_name'
 
@@ -295,7 +295,9 @@ Let us know if you think we're missing data for your region.
 
             else
                 # this posts the report content back to the server so it returns as a url document
-                @postback html, 'report', @format
+                filename = the_region.get('name') + '_' + @year
+                filename = filename.replace(/\s+/g, '')
+                @postback html, 'report', @format, filename
 
             document.body.style.cursor = 'default'
 
@@ -306,17 +308,13 @@ Let us know if you think we're missing data for your region.
             # report_window = window.open()
             # report_window.document.write(new Showdown.converter().makeHtml(resolution))
 
-        # ----------------------------------------------------------------
-        postback: (content, cssFiles, format) ->
+        # -----------------------------------------------------------
+        postback: (content, cssFiles, format, filename) ->
             # content: what you want back from the server
             # cssFiles: a comma-separated list of css files, without the .css
             # format: the format you want back, e.g. 'msword_html' or 'html'
 
             form = $ '<form method="post" action="' + window.climasSettings.reflectorUrl + '"></form>'
-
-            formatField = $ '<input type="hidden" name="format" />'
-            formatField.attr 'value', format
-            form.append formatField
 
             contentField = $ '<input type="hidden" name="content" />'
             contentField.attr 'value', content
@@ -327,11 +325,21 @@ Let us know if you think we're missing data for your region.
                 cssField.attr 'value', cssFiles
                 form.append cssField
 
+            if format
+                formatField = $ '<input type="hidden" name="format" />'
+                formatField.attr 'value', format
+                form.append formatField
+
+            if filename
+                filenameField = $ '<input type="hidden" name="filename" />'
+                filenameField.attr 'value', filename
+                form.append filenameField
+
             form.appendTo('body').submit()
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
     },{ # ================================================================
         # templates here
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         form: _.template """
             <form id="kickoffform" class="clearfix">
                 <p class="toolintro">
@@ -343,14 +351,14 @@ Let us know if you think we're missing data for your region.
                 <%= formcontent %>
             </form>
         """
-        # ----------------------------------------------------------------
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
+        # -----------------------------------------------------------
         format_option: _.template """
             <label><input type="radio" class="format" name="formatradio" value="<%= format %>">
                 <%= formatname %>
             </label>
         """
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         format_chooser: _.template """
             <div class="onefield formatselection formsection">
                 <h3>Select an output format</h3>
@@ -358,22 +366,22 @@ Let us know if you think we're missing data for your region.
                 <button class="generate">generate report</button>
             </div>
         """
-        # ----------------------------------------------------------------
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
+        # -----------------------------------------------------------
         year_option: _.template """
             <label><input type="radio" class="year" name="yearradio" value="<%= year %>">
                 <%= year %>
             </label>
         """
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         year_chooser: _.template """
             <div class="onefield yearselection formsection">
                 <h3>Select a year</h3>
                 <%= years %>
             </div>
         """
-        # ----------------------------------------------------------------
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
+        # -----------------------------------------------------------
         type_choice: _.template """
                 <div class="regiontypeselector">
                     <label><input type="radio" class="rtype" name="regiontyperadio"
@@ -384,11 +392,11 @@ Let us know if you think we're missing data for your region.
                     </select>
                 </div>
         """
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         region_option: _.template """
             <option value="<%= id %>"><%= name %></option>
         """
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
         type_chooser: _.template """
             <div class="onefield regiontypeselection formsection">
                 <h3>Select a region</h3>
@@ -396,7 +404,7 @@ Let us know if you think we're missing data for your region.
                 <a id="regiondownloadlink" href="">download region data</a>
             </div>
         """
-        # ----------------------------------------------------------------
+        # -----------------------------------------------------------
     }
 
     return AppView

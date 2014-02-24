@@ -254,10 +254,10 @@ define(['jquery', 'underscore', 'backbone', 'showdown', 'js/oldreports/collectio
       }
     },
     generateReport: function() {
-      var html, resolution, the_region;
+      var filename, html, resolution, the_region;
       this.data['year'] = this.year;
       the_region = this.regions.get(this.selected_region);
-      this.data['rg_url'] = this.regionDataUrl(the_region);
+      this.data['rg_url'] = this.regionDataUrl(the_region).replace(/\/$/, '');
       this.data['rg_short_name'] = the_region.get('name');
       this.data['rg_long_name'] = the_region.get('long_name');
       resolution = RA.resolve(this.doc, this.data);
@@ -268,16 +268,15 @@ define(['jquery', 'underscore', 'backbone', 'showdown', 'js/oldreports/collectio
         $('#report').html(html);
         $('#report').get(0).scrollIntoView(true);
       } else {
-        this.postback(html, 'report', this.format);
+        filename = the_region.get('name') + '_' + this.year;
+        filename = filename.replace(/\s+/g, '');
+        this.postback(html, 'report', this.format, filename);
       }
       return document.body.style.cursor = 'default';
     },
-    postback: function(content, cssFiles, format) {
-      var contentField, cssField, form, formatField;
+    postback: function(content, cssFiles, format, filename) {
+      var contentField, cssField, filenameField, form, formatField;
       form = $('<form method="post" action="' + window.climasSettings.reflectorUrl + '"></form>');
-      formatField = $('<input type="hidden" name="format" />');
-      formatField.attr('value', format);
-      form.append(formatField);
       contentField = $('<input type="hidden" name="content" />');
       contentField.attr('value', content);
       form.append(contentField);
@@ -285,6 +284,16 @@ define(['jquery', 'underscore', 'backbone', 'showdown', 'js/oldreports/collectio
         cssField = $('<input type="hidden" name="css" />');
         cssField.attr('value', cssFiles);
         form.append(cssField);
+      }
+      if (format) {
+        formatField = $('<input type="hidden" name="format" />');
+        formatField.attr('value', format);
+        form.append(formatField);
+      }
+      if (filename) {
+        filenameField = $('<input type="hidden" name="filename" />');
+        filenameField.attr('value', filename);
+        form.append(filenameField);
       }
       return form.appendTo('body').submit();
     }

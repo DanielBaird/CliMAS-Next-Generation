@@ -10,7 +10,8 @@ var plugins = require('gulp-load-plugins')();
 
 // paths this project uses
 var cssSourcePaths = [
-    'climasng/src/css/page-*.less'
+    'climasng/src/css/*.less',
+    'climasng/src/css/*.css'
 ];
 var jsSourcePaths = [
     'climasng/src/js/page-*.js'
