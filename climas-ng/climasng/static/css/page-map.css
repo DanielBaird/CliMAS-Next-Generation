@@ -526,21 +526,21 @@ textarea {
  * author: Daniel Baird <daniel@danielbaird.com>
  * version: 0.1.2014-02-05
  */
-/* ================================= mspp menus & submenus */
+/* ========================================= mspp menus & submenus */
 /*
 .mspp-main-menu * {
     background: rgba(0,0,0, 0.1);
 }
 */
 .mspp-main-menu ul {
-  /* --------------- main and sub menus */
+  /* ----------------------- main and sub menus */
   margin: 0;
   padding: 0;
   float: left;
   line-height: 3em;
 }
 .mspp-main-menu li {
-  /* ---------- main and sub menu items */
+  /* ------------------ main and sub menu items */
   margin: 0;
   padding: 0;
   display: block;
@@ -553,7 +553,7 @@ textarea {
   /* background: rgba(0,100,0, 0.33); */
 }
 .mspp-main-menu li a {
-  /* -------------- text inside items */
+  /* ---------------------- text inside items */
   padding: 0 1em;
   float: left;
   color: inherit;
@@ -564,24 +564,24 @@ textarea {
   /* background: rgba(0,100,255, 0.2); */
 }
 .mspp-main-menu {
-  /* --------------------------- main menu */
+  /* ----------------------------------- main menu */
   height: 3em;
   padding: 0;
   margin: 1em 5% 0;
   overflow: hidden;
 }
 .mspp-main-menu > li {
-  /* ----------------- main menu item */
+  /* ------------------------- main menu item */
   position: relative;
   height: 3em;
 }
 .mspp-main-menu > li > a {
-  /* ------------- main menu text */
+  /* --------------------- main menu text */
   height: 100%;
   line-height: 3em;
 }
 .mspp-main-menu ul {
-  /* ------------------------- sub menu */
+  /* --------------------------------- sub menu */
   height: 2em;
   line-height: 2em;
   margin: -2em 1em 0 0.5em;
@@ -589,23 +589,23 @@ textarea {
   top: 100%;
 }
 .mspp-main-menu li.current ul {
-  /* ------ current sub menu */
+  /* -------------- current sub menu */
   display: block;
 }
 .mspp-main-menu ul li a {
-  /* ----------- submenu item text */
+  /* ------------------- submenu item text */
   line-height: 2em;
   height: 2em;
   float: left;
 }
-/* =================================== mspp panels & pages */
+/* =========================================== mspp panels & pages */
 /*
 .mspp-panel * {
     background: rgba(0,0,0, 0.1);
 }
 */
 .mspp-panel {
-  /* ---------------------------------- panels */
+  /* ------------------------------------------ panels */
   /* background: rgba(0,0,0, 0.1); */
   position: relative;
   width: 90%;
@@ -614,19 +614,19 @@ textarea {
   overflow: auto;
 }
 .mspp-panel .mspp-page {
-  /* ------------------------ pages */
+  /* -------------------------------- pages */
   -webkit-box-sizing: border-box;
-  /* ------------------------ pages */
+  /* -------------------------------- pages */
   -moz-box-sizing: border-box;
-  /* ------------------------ pages */
+  /* -------------------------------- pages */
   box-sizing: border-box;
   padding: 1em 5%;
 }
 .mspp-panel .mspp-page.current {
   /* background: rgba(0,100,0, 0.33); */
 }
-/* ======================================== mspp utilities */
-/* ---------------------------------------------- clearfix */
+/* ================================================ mspp utilities */
+/* ------------------------------------------------------ clearfix */
 .mspp-clearfix:before,
 .mspp-clearfix:after {
   content: " ";
@@ -721,7 +721,7 @@ nav {
   bottom: 0;
   width: 100%;
   background: #242732;
-  background: -webkit-gradient(linear, left top, left bottom, from(#2e3240), to(#1e212a));
+  background: -webkit-gradient(linear, left top, left bottom, from(top), color-stop(0, #2e3240), to(#1e212a));
   background: -webkit-linear-gradient(top, #2e3240 0, #1e212a 100%);
   background: linear-gradient(top, #2e3240 0, #1e212a 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#2e3240', endColorstr='#1e212a');
@@ -767,7 +767,7 @@ nav .main.menu > li {
   border-left: 1px solid #2e3240;
 }
 nav .main.menu > li.current {
-  background: -webkit-gradient(linear, left top, left bottom, from(#1e212a), to(#2e3240));
+  background: -webkit-gradient(linear, left top, left bottom, from(top), color-stop(0, #1e212a), to(#2e3240));
   background: -webkit-linear-gradient(top, #1e212a 0, #2e3240 100%);
   background: linear-gradient(top, #1e212a 0, #2e3240 100%);
   border-right: 1px solid #2e3240;
@@ -802,7 +802,7 @@ nav ul li ul {
 }
 nav ul li ul > li {
   background: #cfc6a9;
-  background: -webkit-gradient(linear, left top, left bottom, from(#efe6c5), to(#cfc6a9));
+  background: -webkit-gradient(linear, left top, left bottom, from(top), color-stop(0, #efe6c5), to(#cfc6a9));
   background: -webkit-linear-gradient(top, #efe6c5 0, #cfc6a9 100%);
   background: linear-gradient(top, #efe6c5 0, #cfc6a9 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
