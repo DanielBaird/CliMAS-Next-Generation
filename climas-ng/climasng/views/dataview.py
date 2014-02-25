@@ -4,7 +4,7 @@ from pyramid.response import FileResponse
 from pyramid.view import view_config
 import pyramid.httpexceptions as httpexceptions
 
-# ------------------------------------------------------------------------
+# -------------------------------------------------------------------
 
 class DataView(object):
 
@@ -20,5 +20,5 @@ class DataView(object):
             content_type='application/json'
         )
 
-# ------------------------------------------------------------------------
+# -------------------------------------------------------------------
 
