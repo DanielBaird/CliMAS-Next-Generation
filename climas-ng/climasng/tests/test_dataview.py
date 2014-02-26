@@ -5,14 +5,11 @@ import json
 from pyramid import testing
 
 from climasng.views.dataview import DataView
+from climasng.tests import ClimasTestCase
 
+class TestDataView(ClimasTestCase):
 
-class TestDataView(unittest.TestCase):
-    def setUp(self):
-        self.config = testing.setUp()
-
-    def tearDown(self):
-        testing.tearDown()
+    # setup and teardown already implemented by parent class
 
     # ------------------------------------------------------- test --
     def test_view_gets_data(self):

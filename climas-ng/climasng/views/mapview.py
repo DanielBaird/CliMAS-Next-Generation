@@ -4,7 +4,7 @@ from pyramid.response import Response
 from pyramid.view import view_config
 import pyramid.httpexceptions as httpexceptions
 
-# ------------------------------------------------------------------------
+# -------------------------------------------------------------------
 
 class MapView(object):
 
@@ -17,5 +17,5 @@ class MapView(object):
     def __call__(self):
         return {}
 
-# ------------------------------------------------------------------------
+# -------------------------------------------------------------------
 

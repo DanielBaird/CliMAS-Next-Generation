@@ -95,10 +95,22 @@ class ConditionVisitor(NodeVisitor):
         raise Exception('comparison "' + comp + '" is not implemented')
 
 
-    def visit_range_eq_comparison(self, node, (left, ws1, eq1, range, eq2, ws2, right)):
+    def visit_range_eq_comparison(self, node, (left, ws1, pre, range, post, ws2, right)):
         left_min = right - range
         left_max = right + range
         return (left_min <= left <= left_max)
+
+
+    def visit_range_leftrocket_comparison(self, node, (left, ws1, pre, range, post, ws2, right)):
+        left_min = right - range
+        left_max = right
+        return (left_min <= left < left_max)
+
+
+    def visit_range_rightrocket_comparison(self, node, (left, ws1, pre, range, post, ws2, right)):
+        left_min = right
+        left_max = right + range
+        return (left_min < left <= left_max)
 
 
     def visit_simple_comparator(self, node, (cmp)):
@@ -162,7 +174,7 @@ class ConditionParser(object):
             range = numeric percent_sign
             percent_sign = ~"%?"
 
-            comparison = range_eq_comparison / simple_comparison
+            comparison = range_eq_comparison / range_leftrocket_comparison / range_rightrocket_comparison / simple_comparison
 
             simple_comparison = value ws simple_comparator ws value
 
@@ -177,6 +189,14 @@ class ConditionParser(object):
             range_eq_comparison = value ws range_eq_prev range range_eq_post ws value
             range_eq_prev = "="
             range_eq_post = "="
+
+            range_leftrocket_comparison = value ws range_lr_prev range range_lr_post ws value
+            range_lr_prev = "<"
+            range_lr_post = "="
+
+            range_rightrocket_comparison = value ws range_rr_prev range range_rr_post ws value
+            range_rr_prev = "="
+            range_rr_post = ">"
         """)
 
         tree = g.parse(self._condition)

@@ -6,7 +6,7 @@ from pyramid.response import Response
 from pyramid.view import view_config
 import pyramid.httpexceptions as httpexceptions
 
-# ------------------------------------------------------------------------
+# -------------------------------------------------------------------
 
 class ReflectorView(object):
 
@@ -44,6 +44,9 @@ class ReflectorView(object):
 
         # add in the css they wanted
         for css in css_inclusions:
+            # skip a blank css file (from splitting a blank string, for example)
+            if len(css) == 0:
+                continue
             # throw away path in case we're being hacked
             css_file = os.path.join(
                 os.path.dirname(__file__),
@@ -60,7 +63,7 @@ class ReflectorView(object):
 
             body.write("<style>" + css_content + "</style>\n")
 
-        content = self.request.params.get('content', '(no report content was supplied)')
+        content = self.request.params.get('content', '(no content was supplied)')
         content = content.replace(
             '<img src="/',
             '<img src="' + self.request.route_url('home')
@@ -72,5 +75,5 @@ class ReflectorView(object):
 
         return response
 
-# ------------------------------------------------------------------------
+# -------------------------------------------------------------------
 

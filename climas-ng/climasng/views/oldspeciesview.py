@@ -10,7 +10,7 @@ from sqlalchemy import or_
 # from climasng.models import DBSession, Species
 from climasng.models import *
 
-# ------------------------------------------------------------------------
+# -------------------------------------------------------------------
 
 class OldSpeciesView(object):
 
@@ -20,17 +20,13 @@ class OldSpeciesView(object):
     @view_config(route_name='oldspecies', renderer='../templates/oldspecies.html.pt')
     def __call__(self):
 
-        # try:
-        #     one = DBSession.query(MyModel).filter(MyModel.name == 'one').first()
-        # except DBAPIError:
-        #     return Response(conn_err_msg, content_type='text/plain', status_int=500)
-        # return {'one': one, 'project': 'climas-ng'}
-
         regionid = self.request.matchdict['region']
         year = self.request.matchdict['year']
 
         try:
-            region = DBSession.query(Region).filter(Region.id == regionid).first()
+            region = DBSession.query(Region)
+            region = region.filter(Region.id == regionid)
+            region = region.first()
 
             region_presences = DBSession.query(Region, PresenceList, Species)\
                 .filter(Region.id == PresenceList.region_id)\
@@ -51,5 +47,5 @@ class OldSpeciesView(object):
             'year': year
         }
 
-# ------------------------------------------------------------------------
+# -------------------------------------------------------------------
 

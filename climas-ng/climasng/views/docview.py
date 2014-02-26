@@ -4,7 +4,7 @@ from pyramid.response import Response
 from pyramid.view import view_config
 import pyramid.httpexceptions as httpexceptions
 
-# ------------------------------------------------------------------------
+# -------------------------------------------------------------------
 
 class DocView(object):
 
@@ -22,5 +22,5 @@ class DocView(object):
 
         return { 'doc': self.request.matchdict['doc_name'], 'page_content': page_content }
 
-# ------------------------------------------------------------------------
+# -------------------------------------------------------------------
 
