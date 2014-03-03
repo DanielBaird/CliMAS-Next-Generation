@@ -65,8 +65,8 @@ class ConditionVisitor(NodeVisitor):
     def visit_range(self, node, children):
         if children[1] == "%":
             return Percentage(node.text)
-        # otherwise raise the numeric first child directly
-        return children[0]
+        # otherwise raise the absolute value of the (numeric) child
+        return abs(children[0])
 
 
     def visit_comparison(self, node, children):
@@ -95,10 +95,9 @@ class ConditionVisitor(NodeVisitor):
         raise Exception('comparison "' + comp + '" is not implemented')
 
 
-    def visit_range_eq_comparison(self, node, (left, ws1, pre, range, post, ws2, right)):
-        left_min = right - range
-        left_max = right + range
-        return (left_min <= left <= left_max)
+    def visit_range_muchlessthan_comparison(self, node, (left, ws1, pre, range, post, ws2, right)):
+        left_max = right - range
+        return (left < left_max)
 
 
     def visit_range_leftrocket_comparison(self, node, (left, ws1, pre, range, post, ws2, right)):
@@ -107,10 +106,21 @@ class ConditionVisitor(NodeVisitor):
         return (left_min <= left < left_max)
 
 
+    def visit_range_eq_comparison(self, node, (left, ws1, pre, range, post, ws2, right)):
+        left_min = right - range
+        left_max = right + range
+        return (left_min <= left <= left_max)
+
+
     def visit_range_rightrocket_comparison(self, node, (left, ws1, pre, range, post, ws2, right)):
         left_min = right
         left_max = right + range
         return (left_min < left <= left_max)
+
+
+    def visit_range_muchgreaterthan_comparison(self, node, (left, ws1, pre, range, post, ws2, right)):
+        left_min = right + range
+        return (left > left_min)
 
 
     def visit_simple_comparator(self, node, (cmp)):
@@ -174,7 +184,7 @@ class ConditionParser(object):
             range = numeric percent_sign
             percent_sign = ~"%?"
 
-            comparison = range_eq_comparison / range_leftrocket_comparison / range_rightrocket_comparison / simple_comparison
+            comparison = range_eq_comparison / range_leftrocket_comparison / range_rightrocket_comparison / range_muchlessthan_comparison / range_muchgreaterthan_comparison / simple_comparison
 
             simple_comparison = value ws simple_comparator ws value
 
@@ -186,17 +196,25 @@ class ConditionParser(object):
             cmp_lte = "<="
             cmp_lt = "<"
 
-            range_eq_comparison = value ws range_eq_prev range range_eq_post ws value
-            range_eq_prev = "="
-            range_eq_post = "="
+            range_muchlessthan_comparison = value ws range_lt_prev range range_lt_post ws value
+            range_lt_prev = "<"
+            range_lt_post = "<"
 
             range_leftrocket_comparison = value ws range_lr_prev range range_lr_post ws value
             range_lr_prev = "<"
             range_lr_post = "="
 
+            range_eq_comparison = value ws range_eq_prev range range_eq_post ws value
+            range_eq_prev = "="
+            range_eq_post = "="
+
             range_rightrocket_comparison = value ws range_rr_prev range range_rr_post ws value
             range_rr_prev = "="
             range_rr_post = ">"
+
+            range_muchgreaterthan_comparison = value ws range_gt_prev range range_gt_post ws value
+            range_gt_prev = ">"
+            range_gt_post = ">"
         """)
 
         tree = g.parse(self._condition)

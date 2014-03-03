@@ -321,6 +321,54 @@ class TestProseMaker(ClimasTestCase):
             for sample_doc in sample_docs:
                 self.assertParses(self.pm, sample_doc, sample_result)
 
+    # ------------------------------------------------------- test --
+    def test_pm_condition_rangemuchlessthan_litnum_comparison(self):
+        samples = {
+            # these sources should result in 'showing'
+            'showing':  [   '[[6 <3< 10]]showing',
+                            '[[1.0 <0.1< 1.101]]showing',
+                            '[[1.0 <0.1< 1.2]]showing',
+                            '[[0.99 <0< 1]]showing',
+            ],
+            # all these docs should result in ''
+            '':         [   '[[1.01 <0.1< 1.1]]hiding',
+                            '[[1 <0.1< 1.1]]hiding',
+                            '[[6 <5< 10]]hiding',
+                            '[[1 <0< 1]]hiding',
+                            '[[1 <1< 0.99]]hiding',
+                            '[[10 <2< 11]]hiding',
+                            '[[1.01 <0< 1]]hiding',
+                            '[[1.2 <0.1< 1]]hiding',
+            ]
+        }
+        for sample_result, sample_docs in samples.items():
+            for sample_doc in sample_docs:
+                self.assertParses(self.pm, sample_doc, sample_result)
+
+    # ------------------------------------------------------- test --
+    def test_pm_condition_rangemuchgreaterthan_litnum_comparison(self):
+        samples = {
+            # these sources should result in 'showing'
+            'showing':  [   '[[10 >3> 6]]showing',
+                            '[[1.101 >0.1> 1.0]]showing',
+                            '[[1.2 >0.1> 1.0]]showing',
+                            '[[1 >0> 0.99]]showing',
+            ],
+            # all these docs should result in ''
+            '':         [   '[[1.1 >0.1> 1.01]]hiding',
+                            '[[1.1 >0.1> 1]]hiding',
+                            '[[10 >5> 6]]hiding',
+                            '[[1 >0> 1]]hiding',
+                            '[[0.99 >1> 1]]hiding',
+                            '[[11 >2> 10]]hiding',
+                            '[[1 >0> 1.01]]hiding',
+                            '[[1 >0.1> 1.2]]hiding',
+            ]
+        }
+        for sample_result, sample_docs in samples.items():
+            for sample_doc in sample_docs:
+                self.assertParses(self.pm, sample_doc, sample_result)
+
 # ===================================================================
 
 
