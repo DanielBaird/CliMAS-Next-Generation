@@ -19,6 +19,6 @@ script:
   # actually run the tests
   - python setup.py test
   # check coverage too
-  - coverage run --source climas-ng setup.py test
+  - coverage run --source=climas-ng setup.py test
 after_success:
   - coveralls
