@@ -18,6 +18,7 @@ install:
 script:
   # actually run the tests
   - python setup.py test
+  # check coverage too
   - coverage run setup.py test
 after_success:
-  - coveralls
+  coveralls

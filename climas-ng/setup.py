@@ -17,7 +17,8 @@ requires = [
     'transaction',
     'zope.sqlalchemy',
     'waitress',
-    'parsimonious'
+    'parsimonious',
+    'coverage'
     ]
 
 setup(name='climas-ng',
