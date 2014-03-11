@@ -7,9 +7,9 @@ from pyramid.config import Configurator
 from pyramid import testing
 from climasng.views.oldspeciesview import OldSpeciesView
 from climasng.models import *
-from climasng.tests import ClimasTestCase
+from climasng.tests import ClimasDataTestCase
 
-class TestOldSpeciesView(ClimasTestCase):
+class TestOldSpeciesView(ClimasDataTestCase):
 
     # setup and teardown already implemented by parent class
 

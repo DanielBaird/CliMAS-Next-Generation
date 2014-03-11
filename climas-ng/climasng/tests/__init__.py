@@ -8,7 +8,38 @@ from pyramid import testing
 from climasng.views.oldspeciesview import OldSpeciesView
 from climasng.models import *
 
+from climasng.parsing.prosemaker import ProseMaker
+
+# -------------------------------------------------------------------
 class ClimasTestCase(unittest.TestCase):
+    def setUp(self):
+        self.config = testing.setUp()
+
+    def tearDown(self):
+        testing.tearDown()
+
+# -------------------------------------------------------------------
+class ProseMakerTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.pm = ProseMaker()
+        self.config = testing.setUp()
+
+    def tearDown(self):
+        testing.tearDown()
+
+    def assertParses(self, source, expected, parser=None):
+        if parser is None:
+            parser = self.pm
+        parser.source = source
+        self.assertEqual(
+            parser.doc,
+            expected,
+            "'%s' gave '%s'; expected '%s'" % (source, parser.doc, expected)
+        )
+
+# -------------------------------------------------------------------
+class ClimasDataTestCase(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
 
@@ -25,4 +56,3 @@ class ClimasTestCase(unittest.TestCase):
     def tearDown(self):
         DBSession.remove()
         testing.tearDown()
-

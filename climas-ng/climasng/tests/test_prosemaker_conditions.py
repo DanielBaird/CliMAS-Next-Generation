@@ -3,26 +3,11 @@ import transaction
 
 from pyramid import testing
 
-from climasng.tests import ClimasTestCase
+from climasng.tests import ProseMakerTestCase
 from climasng.parsing.prosemaker import ProseMaker
 
 # ===================================================================
-class TestProseMaker(ClimasTestCase):
-
-    def setUp(self):
-        self.pm = ProseMaker()
-        super(TestProseMaker, self).setUp()
-
-    def tearDown(self):
-        super(TestProseMaker, self).tearDown()
-
-    def assertParses(self, parser, source, expected):
-        parser.source = source
-        self.assertEqual(
-            parser.doc,
-            expected,
-            "'%s' gave '%s'; expected '%s'" % (source, parser.doc, expected)
-        )
+class TestProseMakerConditions(ProseMakerTestCase):
 
     # ------------------------------------------------------- test --
     def test_pm_properties(self):
@@ -51,7 +36,7 @@ class TestProseMaker(ClimasTestCase):
         }
         for sample_result, sample_docs in samples.items():
             for sample_doc in sample_docs:
-                self.assertParses(self.pm, sample_doc, sample_result)
+                self.assertParses(sample_doc, sample_result)
     # ------------------------------------------------------- test --
     def test_pm_condition_never(self):
         samples = {
@@ -67,7 +52,7 @@ class TestProseMaker(ClimasTestCase):
         }
         for sample_result, sample_docs in samples.items():
             for sample_doc in sample_docs:
-                self.assertParses(self.pm, sample_doc, sample_result)
+                self.assertParses(sample_doc, sample_result)
     # ------------------------------------------------------- test --
     def test_pm_condition_always_and_never(self):
         samples = {
@@ -83,7 +68,7 @@ class TestProseMaker(ClimasTestCase):
         }
         for sample_result, sample_docs in samples.items():
             for sample_doc in sample_docs:
-                self.assertParses(self.pm, sample_doc, sample_result)
+                self.assertParses(sample_doc, sample_result)
     # ------------------------------------------------------- test --
     def test_pm_condition_equality_litnum_comparison(self):
         samples = {
@@ -101,7 +86,7 @@ class TestProseMaker(ClimasTestCase):
         }
         for sample_result, sample_docs in samples.items():
             for sample_doc in sample_docs:
-                self.assertParses(self.pm, sample_doc, sample_result)
+                self.assertParses(sample_doc, sample_result)
     # ------------------------------------------------------- test --
     def test_pm_condition_inequality_litnum_comparison(self):
         samples = {
@@ -119,7 +104,7 @@ class TestProseMaker(ClimasTestCase):
         }
         for sample_result, sample_docs in samples.items():
             for sample_doc in sample_docs:
-                self.assertParses(self.pm, sample_doc, sample_result)
+                self.assertParses(sample_doc, sample_result)
     # ------------------------------------------------------- test --
     def test_pm_condition_greaterthan_litnum_comparison(self):
         samples = {
@@ -138,7 +123,7 @@ class TestProseMaker(ClimasTestCase):
         }
         for sample_result, sample_docs in samples.items():
             for sample_doc in sample_docs:
-                self.assertParses(self.pm, sample_doc, sample_result)
+                self.assertParses(sample_doc, sample_result)
     # ------------------------------------------------------- test --
     def test_pm_condition_greaterthaneq_litnum_comparison(self):
         samples = {
@@ -161,7 +146,7 @@ class TestProseMaker(ClimasTestCase):
         }
         for sample_result, sample_docs in samples.items():
             for sample_doc in sample_docs:
-                self.assertParses(self.pm, sample_doc, sample_result)
+                self.assertParses(sample_doc, sample_result)
     # ------------------------------------------------------- test --
     def test_pm_condition_lessthan_litnum_comparison(self):
         samples = {
@@ -179,7 +164,7 @@ class TestProseMaker(ClimasTestCase):
         }
         for sample_result, sample_docs in samples.items():
             for sample_doc in sample_docs:
-                self.assertParses(self.pm, sample_doc, sample_result)
+                self.assertParses(sample_doc, sample_result)
     # ------------------------------------------------------- test --
     def test_pm_condition_lessthaneq_litnum_comparison(self):
         samples = {
@@ -202,7 +187,7 @@ class TestProseMaker(ClimasTestCase):
         }
         for sample_result, sample_docs in samples.items():
             for sample_doc in sample_docs:
-                self.assertParses(self.pm, sample_doc, sample_result)
+                self.assertParses(sample_doc, sample_result)
     # ------------------------------------------------------- test --
     def test_pm_condition_eq_and_neq_litnum_var_comparison(self):
         self.pm.data = { 'one': 1, 'two': 2, 'aten': 10 }
@@ -227,7 +212,7 @@ class TestProseMaker(ClimasTestCase):
         }
         for sample_result, sample_docs in samples.items():
             for sample_doc in sample_docs:
-                self.assertParses(self.pm, sample_doc, sample_result)
+                self.assertParses(sample_doc, sample_result)
     # ------------------------------------------------------- test --
     def test_pm_condition_gt_and_lt_litnum_var_comparison(self):
         self.pm.data = { 'one': 1, 'two': 2, 'aten': 10 }
@@ -257,7 +242,7 @@ class TestProseMaker(ClimasTestCase):
         }
         for sample_result, sample_docs in samples.items():
             for sample_doc in sample_docs:
-                self.assertParses(self.pm, sample_doc, sample_result)
+                self.assertParses(sample_doc, sample_result)
     # ------------------------------------------------------- test --
     def test_pm_condition_rangeequality_litnum_comparison(self):
         samples = {
@@ -277,7 +262,7 @@ class TestProseMaker(ClimasTestCase):
         }
         for sample_result, sample_docs in samples.items():
             for sample_doc in sample_docs:
-                self.assertParses(self.pm, sample_doc, sample_result)
+                self.assertParses(sample_doc, sample_result)
     # ------------------------------------------------------- test --
     def test_pm_condition_rangeleftrocket_litnum_comparison(self):
         samples = {
@@ -298,7 +283,7 @@ class TestProseMaker(ClimasTestCase):
         }
         for sample_result, sample_docs in samples.items():
             for sample_doc in sample_docs:
-                self.assertParses(self.pm, sample_doc, sample_result)
+                self.assertParses(sample_doc, sample_result)
     # ------------------------------------------------------- test --
     def test_pm_condition_rangerightrocket_litnum_comparison(self):
         samples = {
@@ -319,7 +304,7 @@ class TestProseMaker(ClimasTestCase):
         }
         for sample_result, sample_docs in samples.items():
             for sample_doc in sample_docs:
-                self.assertParses(self.pm, sample_doc, sample_result)
+                self.assertParses(sample_doc, sample_result)
 
     # ------------------------------------------------------- test --
     def test_pm_condition_rangemuchlessthan_litnum_comparison(self):
@@ -343,7 +328,7 @@ class TestProseMaker(ClimasTestCase):
         }
         for sample_result, sample_docs in samples.items():
             for sample_doc in sample_docs:
-                self.assertParses(self.pm, sample_doc, sample_result)
+                self.assertParses(sample_doc, sample_result)
 
     # ------------------------------------------------------- test --
     def test_pm_condition_rangemuchgreaterthan_litnum_comparison(self):
@@ -367,10 +352,6 @@ class TestProseMaker(ClimasTestCase):
         }
         for sample_result, sample_docs in samples.items():
             for sample_doc in sample_docs:
-                self.assertParses(self.pm, sample_doc, sample_result)
+                self.assertParses(sample_doc, sample_result)
 
 # ===================================================================
-
-
-
-

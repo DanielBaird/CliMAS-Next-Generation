@@ -1,4 +1,6 @@
 
+import re
+
 from docpart import DocPart
 from conditionparser import ConditionParser
 
@@ -73,19 +75,12 @@ class ProseMaker(object):
 
         if len(self.data) > 0: # no need to insert vars if there aren't any vars
 
-            # add a trailing space so the split doesn't fail if the last thing is a var.
-            content = content + ' '
-
-            # sort varnames by length, so we get a chance to replace $longname before we replace $long
-            sorted_varnames = self.data.keys()
-            sorted_varnames.sort(key=len, reverse=True) # reverse => longest first
-
             replacements = 1
-            # keep repeatedly replacing the whole varialbe set until we didn't
+            # keep repeatedly replacing the whole variable set until we didn't
             # do any more replacements.  That means you can have a replacement
             # inside another varname.  For example, if you have this source:
             #
-            #     "Today you have to wake up at $$alarm_$$daytype_time sharp!"
+            #     "Today you have to wake up at {{alarm_{{daytype}}_time}} sharp!"
             #
             # And this data:
             # {   daytype:            'weekday',
@@ -98,29 +93,31 @@ class ProseMaker(object):
             #
             # But if you change the daytype to "weekend", you'll get 9am in the
             # result.  Cool hey.
-            #
+            def var_lookup(match):
+                if self.data[match.group(1)]:
+                    return self.data[match.group(1)]
+
             while (replacements > 0):
                 replacements = 0
-                for varname in sorted_varnames:
-                    if ('$$' + varname) in content:
-                        content = content.replace('$$' + varname, str(self.data[varname]))
-                        replacements += 1
 
-            # remember the trailing space we added at the start of this method, remove it here
-            content = content[:-1]
+                # this regex will catch {{placeholders}} that have no inner
+                # placeholders, so the most nested {{curlies}} get resolved
+                # first.
+                content, replacements = re.subn(
+                    r'{{\s*([^\{\}]+?)\s*}}',
+                    self.resolve_replacements,
+                    content
+                )
 
         return content
 
+    # ---------------------------------------------------------------
+    def resolve_replacements(self, match):
 
-
-
-
-
-
-
-
-
-
-
-
-
+        string = match.group(1)
+        if self.data[string]:
+            # if it's a var we know, replace it
+            return str(self.data[string])
+        else:
+            # otherwise just leave it in place
+            return match.group(0)
