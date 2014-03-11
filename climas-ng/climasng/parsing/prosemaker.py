@@ -108,7 +108,6 @@ class ProseMaker(object):
                     self.resolve_replacements,
                     content
                 )
-
         return content
 
     # ---------------------------------------------------------------
