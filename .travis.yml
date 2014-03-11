@@ -12,8 +12,12 @@ env:
 install:
   - cd climas-ng
   - pip install setuptools --upgrade
+  - pip install coveralls
   - python setup.py install
 
 script:
   # actually run the tests
   - python setup.py test
+  - coverage run setup.py test
+after_success:
+  - coveralls
