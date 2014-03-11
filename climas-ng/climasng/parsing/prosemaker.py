@@ -35,7 +35,7 @@ class ProseMaker(object):
     def source(self, value):
         self._source = value
 
-        raw_parts = self._source.split(r"[[")                                   ###]]" ### stupid Sublime syntax highlighter
+        raw_parts = self._source.split('[[')
         self._parts = [DocPart(raw_part) for raw_part in raw_parts]
 
         return self._source
