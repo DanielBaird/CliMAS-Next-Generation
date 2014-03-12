@@ -54,6 +54,10 @@ class ConditionVisitor(NodeVisitor):
         return Decimal(node.text)
 
 
+    def visit_percentage(self, node, children):
+        return Percentage(children[0])
+
+
     def visit_varname(self, node, children):
         if node.text in self._data:
             # the varname they specified is known to us..
@@ -63,10 +67,10 @@ class ConditionVisitor(NodeVisitor):
 
 
     def visit_range(self, node, children):
-        if children[1] == "%":
-            return Percentage(node.text)
-        # otherwise raise the absolute value of the (numeric) child
-        return abs(children[0])
+        if isinstance(children[0], Percentage):
+            return children[0]
+        else:
+            return abs(children[0])
 
 
     def visit_comparison(self, node, children):
@@ -96,29 +100,44 @@ class ConditionVisitor(NodeVisitor):
 
 
     def visit_range_muchlessthan_comparison(self, node, (left, ws1, pre, range, post, ws2, right)):
+        if isinstance(range, Percentage):
+            range = right * range / Decimal(100)
+
         left_max = right - range
         return (left < left_max)
 
 
     def visit_range_leftrocket_comparison(self, node, (left, ws1, pre, range, post, ws2, right)):
+        if isinstance(range, Percentage):
+            range = right * range / Decimal(100)
+
         left_min = right - range
         left_max = right
         return (left_min <= left < left_max)
 
 
     def visit_range_eq_comparison(self, node, (left, ws1, pre, range, post, ws2, right)):
+        if isinstance(range, Percentage):
+            range = right * range / Decimal(100)
+
         left_min = right - range
         left_max = right + range
         return (left_min <= left <= left_max)
 
 
     def visit_range_rightrocket_comparison(self, node, (left, ws1, pre, range, post, ws2, right)):
+        if isinstance(range, Percentage):
+            range = right * range / Decimal(100)
+
         left_min = right
         left_max = right + range
         return (left_min < left <= left_max)
 
 
     def visit_range_muchgreaterthan_comparison(self, node, (left, ws1, pre, range, post, ws2, right)):
+        if isinstance(range, Percentage):
+            range = right * range / Decimal(100)
+
         left_min = right + range
         return (left > left_min)
 
@@ -178,11 +197,13 @@ class ConditionParser(object):
 
             value = numeric / varname
 
-            numeric = ~"\d+(\.\d+)?"
+            numeric = ~"[+-]?\d+(\.\d+)?"
             varname = ~"[a-z_][a-z0-9_]*"i
 
-            range = numeric percent_sign
-            percent_sign = ~"%?"
+            range = percentage / numeric
+
+            percentage = numeric percent_sign
+            percent_sign = "%"
 
             comparison = range_eq_comparison / range_leftrocket_comparison / range_rightrocket_comparison / range_muchlessthan_comparison / range_muchgreaterthan_comparison / simple_comparison
 
@@ -221,11 +242,3 @@ class ConditionParser(object):
         v = ConditionVisitor(self.data)
 
         return v.visit(tree)[0]
-
-
-
-
-
-
-
-

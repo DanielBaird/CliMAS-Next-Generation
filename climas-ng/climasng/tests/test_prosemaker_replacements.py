@@ -56,5 +56,7 @@ class TestProseMakerReplacements(ProseMakerTestCase):
         self.assertParses('{{hasinnerword}}', 'has inner word')
         self.assertParses('{{strInner}}', 'inner')
         self.assertParses('{{has{{strInner}}word}}', 'has inner word')
+        self.assertParses('{{has{{ strInner }}word}}', 'has inner word')
+        self.assertParses('{{ has{{strInner }}word}}', 'has inner word')
 
 # ===================================================================
