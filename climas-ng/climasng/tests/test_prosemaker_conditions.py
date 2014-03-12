@@ -264,6 +264,24 @@ class TestProseMakerConditions(ProseMakerTestCase):
             for sample_doc in sample_docs:
                 self.assertParses(sample_doc, sample_result)
     # ------------------------------------------------------- test --
+    def test_pm_condition_rangeequality_varnum_comparison(self):
+        self.pm.data = { 'one': 1, 'two': 2, 'aten': 10 }
+        samples = {
+            # these sources should result in 'showing'
+            'showing':  [   '[[aten =2= 11]]showing',
+                            '[[11 =2= aten]]showing',
+                            '[[aten =5= 6]]showing',
+                            '[[1 =0= one]]showing'
+            ],
+            # all these docs should result in ''
+            '':         [   '[[aten =3= 6]]hiding',
+                            '[[6 =3= aten]]hiding'
+            ]
+        }
+        for sample_result, sample_docs in samples.items():
+            for sample_doc in sample_docs:
+                self.assertParses(sample_doc, sample_result)
+    # ------------------------------------------------------- test --
     def test_pm_condition_rangeleftrocket_litnum_comparison(self):
         samples = {
             # these sources should result in 'showing'
@@ -279,6 +297,27 @@ class TestProseMakerConditions(ProseMakerTestCase):
                             '[[6 <3= 10]]hiding',
                             '[[1 <0= 1.01]]hiding',
                             '[[1 <0.1= 1.2]]hiding',
+            ]
+        }
+        for sample_result, sample_docs in samples.items():
+            for sample_doc in sample_docs:
+                self.assertParses(sample_doc, sample_result)
+    # ------------------------------------------------------- test --
+    def test_pm_condition_rangeleftrocket_varnum_comparison(self):
+        self.pm.data = { 'one': 1, 'two': 2, 'aten': 10 }
+        samples = {
+            # these sources should result in 'showing'
+            'showing':  [   '[[aten <2= 11]]showing',
+                            '[[6 <5= aten]]showing',
+                            '[[one <0.1= 1.1]]showing',
+            ],
+            # all these docs should result in ''
+            '':         [   '[[aten <3= 6]]hiding',
+                            '[[one <0= one]]hiding',
+                            '[[aten <5= 6]]hiding',
+                            '[[11 <2= aten]]hiding',
+                            '[[6 <3= aten]]hiding',
+                            '[[one <0.1= 1.2]]hiding',
             ]
         }
         for sample_result, sample_docs in samples.items():

@@ -76,23 +76,25 @@ class ProseMaker(object):
         if len(self.data) > 0: # no need to insert vars if there aren't any vars
 
             replacements = 1
-            # keep repeatedly replacing the whole variable set until we didn't
-            # do any more replacements.  That means you can have a replacement
-            # inside another varname.  For example, if you have this source:
+            # repeatedly perform variable replacement until we didn't do any
+            # replacements.  That means you can have a replacement inside
+            # a varname.  For example, if you have this source:
             #
             #     "Today you have to wake up at {{alarm_{{daytype}}_time}} sharp!"
             #
             # And this data:
+            #
             # {   daytype:            'weekday',
             #     alarm_weekday_time: '6am',
             #     alarm_weekend_time: '9am'    }
             #
-            #
             # Your result will be:
+            #
             #     "Today you have to wake up at 6am sharp!"
             #
             # But if you change the daytype to "weekend", you'll get 9am in the
             # result.  Cool hey.
+            #
             def var_lookup(match):
                 if self.data[match.group(1)]:
                     return self.data[match.group(1)]
