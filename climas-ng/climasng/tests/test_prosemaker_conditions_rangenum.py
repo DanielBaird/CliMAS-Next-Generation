@@ -37,10 +37,13 @@ class TestProseMakerConditions(ProseMakerTestCase):
                             '[[10 =15%= 11]]showing',
                             '[[1000 =15%= 1100]]showing',
                             '[[79 =25%= 100]]showing',
+                            '[[1234 =1%= 1236]]showing',
             ],
             # all these docs should result in ''
             '':         [   '[[10 =10%= 6]]hiding',
                             '[[100 =25%= 79]]hiding',
+                            '[[1.01 =10%= 10]]hiding',
+                            '[[99.5 =0.1%= 100]]hiding',
             ]
         }
         for sample_result, sample_docs in samples.items():

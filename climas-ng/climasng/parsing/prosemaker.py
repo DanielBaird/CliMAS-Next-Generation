@@ -107,18 +107,49 @@ class ProseMaker(object):
                 # first.
                 content, replacements = re.subn(
                     r'{{\s*([^\{\}]+?)\s*}}',
-                    self.resolve_replacements,
+                    self.resolve_replacement,
                     content
                 )
         return content
 
     # ---------------------------------------------------------------
-    def resolve_replacements(self, match):
+    def resolve_replacement(self, match):
 
-        string = match.group(1)
-        if self.data[string]:
-            # if it's a var we know, replace it
-            return str(self.data[string])
+        # match.group(1) is a comma-separated list of stuff.  the 1st
+        # thing is the varname.  That's optionally followed by
+        # a list of transformations.
+
+        transforms = re.split('\s*,\s*', match.group(1))
+        start_value = transforms.pop(0)
+
+        if self.data[start_value]:
+            # if it's a var we know, we can do something with it
+            val = self.data[start_value]
+
+            for transform in transforms:
+
+                trans_bits = transform.split()
+                trans_name = trans_bits.pop(0).lower()
+
+                if trans_name == 'absolute':
+                    val = abs(val)
+
+            return str(val)
         else:
-            # otherwise just leave it in place
-            return match.group(0)
+            # if we didn't recognise the start value, just leave the entire placeholder as is
+            return str(match.group(0))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
