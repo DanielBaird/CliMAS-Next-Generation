@@ -10,18 +10,6 @@ from climasng.parsing.prosemaker import ProseMaker
 class TestProseMakerConditions(ProseMakerTestCase):
 
     # ------------------------------------------------------- test --
-    def test_pm_properties(self):
-        some_data = {'a': 'Aaa', 'b': 'Bbb'}
-        a_string = 'test source string'
-
-        self.pm.data = some_data
-        self.pm.source = a_string
-
-        self.assertEqual(self.pm.data, some_data)
-        self.assertEqual(self.pm.source, a_string)
-        self.assertEqual(self.pm.doc, a_string)
-
-    # ------------------------------------------------------- test --
     def test_pm_condition_always(self):
         samples = {
             # these sources should result in 'showing'

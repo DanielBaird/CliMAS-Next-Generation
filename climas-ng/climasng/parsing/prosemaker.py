@@ -1,5 +1,7 @@
 
 import re
+import json
+import decimal
 
 from docpart import DocPart
 from conditionparser import ConditionParser
@@ -7,7 +9,8 @@ from conditionparser import ConditionParser
 class ProseMaker(object):
 
     def __init__(self):
-        self._data   = {}
+        self._data = {}
+        self._json = ''
         self._source = ''
 
     ## data property ------------------------------------------------
@@ -19,10 +22,28 @@ class ProseMaker(object):
     @data.setter
     def data(self, value):
         self._data = value
+        self._json = json.dumps(value, indent=4)
         return self._data
 
     @data.deleter
     def data(self):
+        del self._data
+
+    ## dataJSON property --------------------------------------------
+    @property
+    def dataJSON(self):
+        """ 'dataJSON' property, data as a JSON string """
+        return self._json
+
+    @dataJSON.setter
+    def dataJSON(self, value):
+        self._json = value
+        self._data = json.loads(value, parse_float=decimal.Decimal)
+        return self._json
+
+    @dataJSON.deleter
+    def dataJSON(self):
+        del self._json
         del self._data
 
     ## source property ----------------------------------------------
@@ -126,13 +147,36 @@ class ProseMaker(object):
             # if it's a var we know, we can do something with it
             val = self.data[start_value]
 
+            try:
+                # Decimal(1.1) gives 1.100000000000000088817841970012523233890533447265625
+                # Decimal(repr(1.1)) gives 1.1
+                val = decimal.Decimal(repr(val))
+            except decimal.InvalidOperation:
+                # that's okay, it doesn't want to be a Decimal
+                pass
+
             for transform in transforms:
 
-                trans_bits = transform.split()
+                trans_bits = transform.split() # strips whitespace too
                 trans_name = trans_bits.pop(0).lower()
 
                 if trans_name == 'absolute':
                     val = abs(val)
+                    continue
+
+                if trans_name == 'round':
+                    val = val.quantize(decimal.Decimal('1'), context=decimal.Context(rounding=decimal.ROUND_HALF_EVEN))
+                    continue
+
+                if trans_name == 'roundup':
+                    val = val.quantize(decimal.Decimal('1'), context=decimal.Context(rounding=decimal.ROUND_UP))
+                    continue
+
+                if trans_name == 'rounddown':
+                    val = val.quantize(decimal.Decimal('1'), context=decimal.Context(rounding=decimal.ROUND_DOWN))
+                    continue
+
+                raise Exception('transformation "%s" is not implemented.' % trans_name)
 
             return str(val)
         else:

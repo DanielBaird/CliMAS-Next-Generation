@@ -15,6 +15,7 @@ class TestProseMakerReplacements(ProseMakerTestCase):
             'a':             'Aaa',
             'b':             'Bbb',
             'one':            1,
+            'oneandabit':     1.00001,
             'onePone':        1.1,
             'onePsix':        1.6,
             'two':            2,
@@ -42,6 +43,7 @@ class TestProseMakerReplacements(ProseMakerTestCase):
     # ------------------------------------------------------- test --
     def test_pm_basic_number_subs(self):
         self.assertParses('{{one}}', '1')
+        self.assertParses('{{oneandabit}}', '1.00001')
         self.assertParses('{{a}}{{one}}', 'Aaa1')
         self.assertParses('{{onePone}}', '1.1')
 
