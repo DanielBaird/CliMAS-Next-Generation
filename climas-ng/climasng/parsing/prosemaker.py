@@ -1,7 +1,7 @@
 
 import re
 import json
-import decimal
+from decimal import *
 
 from docpart import DocPart
 from conditionparser import ConditionParser
@@ -38,7 +38,7 @@ class ProseMaker(object):
     @dataJSON.setter
     def dataJSON(self, value):
         self._json = value
-        self._data = json.loads(value, parse_float=decimal.Decimal)
+        self._data = json.loads(value, parse_float=Decimal)
         return self._json
 
     @dataJSON.deleter
@@ -150,8 +150,8 @@ class ProseMaker(object):
             try:
                 # Decimal(1.1) gives 1.100000000000000088817841970012523233890533447265625
                 # Decimal(repr(1.1)) gives 1.1
-                val = decimal.Decimal(repr(val))
-            except decimal.InvalidOperation:
+                val = Decimal(repr(val))
+            except InvalidOperation:
                 # that's okay, it doesn't want to be a Decimal
                 pass
 
@@ -165,15 +165,22 @@ class ProseMaker(object):
                     continue
 
                 if trans_name == 'round':
-                    val = val.quantize(decimal.Decimal('1'), context=decimal.Context(rounding=decimal.ROUND_HALF_EVEN))
+                    val = val.quantize(Decimal('1'), context=Context(rounding=ROUND_HALF_EVEN))
                     continue
 
                 if trans_name == 'roundup':
-                    val = val.quantize(decimal.Decimal('1'), context=decimal.Context(rounding=decimal.ROUND_UP))
+                    val = val.quantize(Decimal('1'), context=Context(rounding=ROUND_UP))
                     continue
 
                 if trans_name == 'rounddown':
-                    val = val.quantize(decimal.Decimal('1'), context=decimal.Context(rounding=decimal.ROUND_DOWN))
+                    val = val.quantize(Decimal('1'), context=Context(rounding=ROUND_DOWN))
+                    continue
+
+                if trans_name == 'plural':
+                    if val == 1:
+                        val = ''
+                    else:
+                        val = 's'
                     continue
 
                 raise Exception('transformation "%s" is not implemented.' % trans_name)

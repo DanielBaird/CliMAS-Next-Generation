@@ -62,4 +62,10 @@ class TestProseMakerReplacements(ProseMakerTestCase):
         self.assertParses('{{negonePone, rounddown}}', '-1')
         self.assertParses('{{negonePsix, rounddown}}', '-1')
 
+    # ------------------------------------------------------- test --
+    def test_pm_transform_plural(self):
+        self.assertParses('{{one, plural}}', '')
+        self.assertParses('{{onePsix, plural}}', 's')
+        self.assertParses('{{negone, plural}}', 's')
+
 # ===================================================================
