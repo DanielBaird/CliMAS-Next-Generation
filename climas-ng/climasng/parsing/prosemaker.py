@@ -155,37 +155,65 @@ class ProseMaker(object):
                 # that's okay, it doesn't want to be a Decimal
                 pass
 
+            # function for doing rounding
+            def round(val, unit, method):
+                unit = Decimal(unit)
+                val = val / unit
+                val = val.quantize(Decimal('1'), context=Context(rounding=method))
+                val = val * unit
+                # turn -0 into 0
+                if val.is_zero():
+                    val = Decimal('0')
+                return val
+
             for transform in transforms:
 
-                trans_bits = transform.split() # strips whitespace too
-                trans_name = trans_bits.pop(0).lower()
+                trans_args = transform.split() # strips whitespace too
+                trans_name = trans_args.pop(0).lower()
 
                 if trans_name == 'absolute':
                     val = abs(val)
                     continue
 
                 if trans_name == 'round':
-                    val = val.quantize(Decimal('1'), context=Context(rounding=ROUND_HALF_EVEN))
+
+                    unit = Decimal(trans_args[0]) if len(trans_args) > 0 else Decimal('1')
+                    val = round(val, unit, ROUND_HALF_EVEN)
+                    # val = val / unit
+                    # val = val.quantize(Decimal('1'), context=Context(rounding=ROUND_HALF_EVEN))
+                    # val = val * unit
+                    # # turn -0 into 0 and 1.00 into 1
+                    # val = Decimal('0') if val.is_zero() else val.normalize()
                     continue
 
                 if trans_name == 'roundup':
-                    val = val.quantize(Decimal('1'), context=Context(rounding=ROUND_UP))
+                    unit = Decimal(trans_args[0]) if len(trans_args) > 0 else Decimal('1')
+                    val = round(val, unit, ROUND_UP)
                     continue
 
                 if trans_name == 'rounddown':
-                    val = val.quantize(Decimal('1'), context=Context(rounding=ROUND_DOWN))
+                    unit = Decimal(trans_args[0]) if len(trans_args) > 0 else Decimal('1')
+                    val = val = round(val, unit, ROUND_DOWN)
                     continue
 
                 if trans_name == 'plural':
+                    plural_part = trans_args[0] if len(trans_args) > 0 else 's'
+                    single_part = trans_args[1] if len(trans_args) > 1 else ''
                     if val == 1:
-                        val = ''
+                        val = single_part
                     else:
-                        val = 's'
+                        val = plural_part
                     continue
 
                 raise Exception('transformation "%s" is not implemented.' % trans_name)
 
+                # loop repeats for each transform
+
+            if isinstance(val, Decimal):
+                val = val.normalize()      # turns 1.00 into 1
+                val = '{0:f}'.format(val)  # turns 1E+1 into 10
             return str(val)
+
         else:
             # if we didn't recognise the start value, just leave the entire placeholder as is
             return str(match.group(0))
