@@ -1,128 +1,114 @@
 <!DOCTYPE html>
 <html class="no-js" xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal">
 <head>
-	<meta charset="utf-8" />
-	<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
-	<title>
-		CliMAS Next Generation
-	</title>
-	<meta content="width=device-width" name="viewport" />
-	<link href="${request.static_path('climasng:static/images/favicon-trans.png')}" rel="shortcut icon" />
-	<link href="${request.static_path('climasng:static/css/normalize.min.css')}" rel="stylesheet" />
-    <script src="${request.static_path('climasng:static/lib/jquery-1.11.0.js')}"></script>
-    <script src="${request.static_path('climasng:static/lib/jquery-ui-1.10.4.custom.min.js')}"></script>
+    <meta charset="utf-8" />
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
+    <title>
+        CliMAS Next Generation
+    </title>
+    <meta content="width=device-width" name="viewport" />
+    <script>
+        window.climasSettings = {
+            assetUrlPrefix: "${request.static_path('climasng:static/assets/')}",
+            regionDataUrlPrefix: "/olddata/regions/",
+            speciesDataUrlPrefix: "/oldspecies/",
+            reflectorUrl: "/reflector/",
+            vizUrlPrefix: "//118.138.243.53:10600/api/raster/1/default?data_url=",
+            staticUrlPrefix: "${request.static_path('climasng:static/')}",
+            regionTypeList: [{
+                "regiontype":"IBRA",
+                "regiontypename_singular":"IBRA bioregion",
+                "regiontypename_plural":"IBRA bioregions",
+                "regiontypeurl":"http://www.environment.gov.au/parks/nrs/science/bioregion-framework/ibra/"},{"regiontype":"NRM",
+                "regiontypename_singular":"Natural Resource Management (NRM) region",
+                "regiontypename_plural":"Natural Resource Management (NRM) regions",
+                "regiontypeurl":"http://www.nrm.gov.au/about/nrm/regions/"},{"regiontype":"National",
+                "regiontypename_singular":"country",
+                "regiontypename_plural":"countries",
+                "regiontypeurl":"http://australia.gov.au/"},{"regiontype":"State",
+                "regiontypename_singular":"state of Australia",
+                "regiontypename_plural":"states of Australia",
+                "regiontypeurl":"http://www.gov.au/"}],
+            regionList: [{
+                "reportable":true,
+                "includes_significant_sea":true,
+                "simplified_polygon":null,
+                "long_name":"New South Wales",
+                "type_local_code":null,
+                "name":"New South Wales",
+                "shapefile_id":1,
+                "region_type_regiontype":"State",
+                "state":null,
+                "id":2,
+                "governing_body":null
+            },{
+                "reportable":true,
+                "includes_significant_sea":true,
+                "simplified_polygon":null,
+                "long_name":"Victoria",
+                "type_local_code":null,
+                "name":"VIC",
+                "shapefile_id":89,
+                "region_type_regiontype":"IBRA",
+                "state":null,
+                "id":165,
+                "governing_body":null
+            }]
+        }
+    </script>
 
-	<script src="${request.static_path('climasng:static/js/menusandpanels.js')}"></script>
-    <link href="${request.static_path('climasng:static/css/menusandpanels.css')}" rel="stylesheet" />
+    <link href="${request.static_path('climasng:static/images/favicon-trans.png')}" rel="shortcut icon" />
+    <link href='http://fonts.googleapis.com/css?family=Advent+Pro:100' rel='stylesheet' type='text/css'>
 
-	<style>
+    <!-- this page's css -->
+    <link href="${request.static_path('climasng:static/css/page-oldreport.css')}" rel="stylesheet" />
 
-        /* add some colours for the demo */
-        .mspp-main-menu * {
-            background: rgba(0,0,0, 0.1);
-        }
-        .mspp-main-menu li.current {
-            background: rgba(0,100,0, 0.33);
-        }
-        .mspp-main-menu li a:hover {
-            background: rgba(0,100,255, 0.2);
-        }
-        .mspp-panel * {
-            background: rgba(0,0,0, 0.1);
-        }
-        .mspp-panel {
-            background: rgba(0,0,0, 0.1);
-        }
-        .mspp-panel .mspp-page.current {
-            background: rgba(0,100,0, 0.33);
-        }
-	</style>
-
+    <!-- the old reports used require.js, so here it is -->
+    <script data-main="${request.static_path('climasng:static/js/mapview/main')}" src="${request.static_path('climasng:static/lib/require.js')}"></script>
 </head>
 
-<body class="map">
+<body>
+    <header class="page clearfix">
+        <h1>CliMAS</h1>
+        <a href="http://tropicaldatahub.org/">
+            <img class="logo" src="${request.static_path('climasng:static/images/tdhlogo.png')}" />
+        </a>
+        <p>Climate change and biodiversity in Australia</p>
+        <nav>
+            <ul class="main menu clearfix">
+                <li>
+                    <a href="${request.route_path('map')}">View Maps</a>
+                </li>
+                <li class="current">
+                    <a>Create Reports</a>
+                </li>
+                <li>
+                    <a href="${request.route_path('map')}">About CliMAS</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
 
-
-<ul id="menu">
-    <li class="current">
-        <a>Main First Item</a>
-        <ul>
-            <li class="current">
-                <a data-targetpanel="panel1a">sub item 1 (panel 1-1)</a>
-            </li>
-            <li><a data-targetpanel="panel1b">sub item 2</a></li>
-        </ul>
-    </li>
-
-    <li><a href="#">main item 2</a></li>
-
-    <li>
-        <a>main item 3</a>
-        <ul>
-            <li>
-                <a data-targetpanel="panel2">sub2 item 1 (panel 2-1)</a>
-            </li>
-            <li class="current"><a>sub item 2</a></li>
-        </ul>
-
-    </li>
-</ul>
-
-<div id="panel1a" class="mspp-panel">
-    <div id="page1a-1" class="mspp-page current">
-        <p>This is the first page of panel 1a.</p>
-        <p>This is the first page of panel 1a.</p>
-        <button type="button" data-targetpage="page1a-2">show page 2</button>
+    <div id="content" class="content">
+        <!-- generated form will go here -->
     </div>
-    <div id="page1a-2" class="mspp-page">
-        <p>This is the other page of panel 1a. #######################</p>
-        <p>This is the other page of panel 1a.</p>
-        <p>This is the other page of panel 1a.</p>
-        <p>This is the other page of panel 1a.</p>
-        <p>This is the other page of panel 1a.</p>
-        <p>This is the other page of panel 1a.</p>
-        <p>This is the other page of panel 1a.</p>
-        <p>This is the other page of panel 1a.</p>
-        <a data-targetpage="page1a-1">see the first page again</a>
+
+    <footer class="page clearfix">
         <p>
-            <button type="button" onclick="$(this).parent().height( $(this).parent().height() + 100 );">grow</button>
-            <button type="button" onclick="$(this).parent().height( $(this).parent().height() - 100 );">shrink</button>
+            <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/deed.en_US">
+                <img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/4.0/80x15.png" />
+            </a>
+            This work is licensed under a
+            <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/deed.en_US">
+                Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License
+            </a>.
         </p>
-    </div>
-</div>
-<div id="panel1b" class="mspp-panel">
-    <div id="page1b-1" class="mspp-page current">
-        This is the first page of panel 1b.
-        <button type="button" data-targetpage="page1b-2">show page 2</button>
-    </div>
-    <div id="page1b-2" class="mspp-page">
-        This is the other page.
-        <a data-targetpage="page1b-1">see the first page again</a>
-    </div>
-</div>
+    </footer>
 
-<div id="panel2" class="mspp-panel">
-    <div id="page2-1" class="mspp-page current">
-        <p>This is the first page of panel 2.</p>
-        <p>This is the first page of panel 2.</p>
-        <p>This is the first page of panel 2.</p>
-        <p>This is the first page of panel 2.</p>
-        <button type="button" data-targetpage="page2-2">show page 2</button>
-    </div>
-    <div id="page2-2" class="mspp-page">
-        This is the other page.
-        <a data-targetpage="page2-1">see the first page again</a>
-    </div>
-</div>
-
-<script>
-	$('#menu').mspp({animationFactor: 0.5});
-</script>
-
+    <!-- JS goes down here, where civilised people put it -->
+    <script src="${request.static_path('climasng:static/lib/modernizr.2.7.1.js')}"></script>
+    <script src="${request.static_path('climasng:static/lib/jquery-1.11.0.js')}"></script>
+    <script src="${request.static_path('climasng:static/lib/jquery-ui-1.10.4.custom.min.js')}"></script>
+    <script src="${request.static_path('climasng:static/js/page-oldreport.js')}"></script>
 </body>
 </html>
-
-
-
-
-

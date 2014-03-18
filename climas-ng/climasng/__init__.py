@@ -11,9 +11,7 @@ import sqlite3
 from .models import (
     DBSession,
     Base,
-
     )
-
 
 def notfound(request):
     # set the 404 page up here

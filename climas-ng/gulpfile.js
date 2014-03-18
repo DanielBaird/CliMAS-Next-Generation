@@ -20,7 +20,7 @@ var jsLintablePaths = jsSourcePaths.concat([
     'gulpfile.js'
 ]);
 var coffeeSourcePaths = [
-    'climasng/src/js/oldreports/**/*.coffee'
+    'climasng/src/js/**/*.coffee'
 ];
 
 // returns a string consisting of prefix + filePath + postfix,
@@ -130,7 +130,7 @@ gulp.task('coffeebuild', [], function() {
     return gulp.src(coffeeSourcePaths)
         .pipe(plugins.coffee({ bare: true }))
         .on('error', gutil.log).on('error', gutil.beep)
-        .pipe(gulp.dest('climasng/static/js/oldreports/')) ;
+        .pipe(gulp.dest('climasng/static/js/')) ;
 });
 
 // ===================================================== meta stuff..
