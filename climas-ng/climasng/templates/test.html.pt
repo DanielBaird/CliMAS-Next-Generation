@@ -2,69 +2,18 @@
 <html class="no-js" xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal">
 <head>
     <meta charset="utf-8" />
-    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
     <title>
         CliMAS Next Generation
     </title>
     <meta content="width=device-width" name="viewport" />
-    <script>
-        window.climasSettings = {
-            assetUrlPrefix: "${request.static_path('climasng:static/assets/')}",
-            regionDataUrlPrefix: "/olddata/regions/",
-            speciesDataUrlPrefix: "/oldspecies/",
-            reflectorUrl: "/reflector/",
-            vizUrlPrefix: "//118.138.243.53:10600/api/raster/1/default?data_url=",
-            staticUrlPrefix: "${request.static_path('climasng:static/')}",
-            regionTypeList: [{
-                "regiontype":"IBRA",
-                "regiontypename_singular":"IBRA bioregion",
-                "regiontypename_plural":"IBRA bioregions",
-                "regiontypeurl":"http://www.environment.gov.au/parks/nrs/science/bioregion-framework/ibra/"},{"regiontype":"NRM",
-                "regiontypename_singular":"Natural Resource Management (NRM) region",
-                "regiontypename_plural":"Natural Resource Management (NRM) regions",
-                "regiontypeurl":"http://www.nrm.gov.au/about/nrm/regions/"},{"regiontype":"National",
-                "regiontypename_singular":"country",
-                "regiontypename_plural":"countries",
-                "regiontypeurl":"http://australia.gov.au/"},{"regiontype":"State",
-                "regiontypename_singular":"state of Australia",
-                "regiontypename_plural":"states of Australia",
-                "regiontypeurl":"http://www.gov.au/"}],
-            regionList: [{
-                "reportable":true,
-                "includes_significant_sea":true,
-                "simplified_polygon":null,
-                "long_name":"New South Wales",
-                "type_local_code":null,
-                "name":"New South Wales",
-                "shapefile_id":1,
-                "region_type_regiontype":"State",
-                "state":null,
-                "id":2,
-                "governing_body":null
-            },{
-                "reportable":true,
-                "includes_significant_sea":true,
-                "simplified_polygon":null,
-                "long_name":"Victoria",
-                "type_local_code":null,
-                "name":"VIC",
-                "shapefile_id":89,
-                "region_type_regiontype":"IBRA",
-                "state":null,
-                "id":165,
-                "governing_body":null
-            }]
-        }
-    </script>
 
     <link href="${request.static_path('climasng:static/images/favicon-trans.png')}" rel="shortcut icon" />
     <link href='http://fonts.googleapis.com/css?family=Advent+Pro:100' rel='stylesheet' type='text/css'>
+    <link href="${request.static_path('climasng:static/lib/leaflet.css')}" rel="stylesheet" />
 
     <!-- this page's css -->
     <link href="${request.static_path('climasng:static/css/page-oldreport.css')}" rel="stylesheet" />
-
-    <!-- the old reports used require.js, so here it is -->
-    <script data-main="${request.static_path('climasng:static/js/mapview/main')}" src="${request.static_path('climasng:static/lib/require.js')}"></script>
 </head>
 
 <body>
@@ -90,7 +39,7 @@
     </header>
 
     <div id="content" class="content">
-        <!-- generated form will go here -->
+        <!-- generated stuff will go here -->
     </div>
 
     <footer class="page clearfix">
@@ -106,9 +55,11 @@
     </footer>
 
     <!-- JS goes down here, where civilised people put it -->
-    <script src="${request.static_path('climasng:static/lib/modernizr.2.7.1.js')}"></script>
     <script src="${request.static_path('climasng:static/lib/jquery-1.11.0.js')}"></script>
     <script src="${request.static_path('climasng:static/lib/jquery-ui-1.10.4.custom.min.js')}"></script>
-    <script src="${request.static_path('climasng:static/js/page-oldreport.js')}"></script>
+    <script src="${request.static_path('climasng:static/lib/lodash.compat.js')}"></script>
+    <script src="${request.static_path('climasng:static/lib/backbone.js')}"></script>
+    <script src="${request.static_path('climasng:static/lib/leaflet-src.js')}"></script>
+    <script src="${request.static_path('climasng:static/js/page-splitmap.js')}"></script>
 </body>
 </html>

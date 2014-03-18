@@ -13,15 +13,13 @@ var cssSourcePaths = [
     'climasng/src/css/*.less',
     'climasng/src/css/*.css'
 ];
-var jsSourcePaths = [
-    'climasng/src/js/page-*.js'
-];
+var coffeeSourcePaths = ['climasng/src/coffee/**/*.coffee'];
+var jsRootPaths = ['climasng/src/js/page-*.js'];
+var jsSourcePaths = ['climasng/src/js/**/*.js'];
 var jsLintablePaths = jsSourcePaths.concat([
     'gulpfile.js'
 ]);
-var coffeeSourcePaths = [
-    'climasng/src/js/**/*.coffee'
-];
+var oldCoffeeSourcePaths = ['climasng/src/js/oldreports/*.coffee'];
 
 // returns a string consisting of prefix + filePath + postfix,
 // with colour highlighting of the filepath.
@@ -44,7 +42,7 @@ function colorFileMsg(prefix, filePath, postfix) {
 function adviseOfEvent(message) {
     return (function(event) {
         var msg = message || 'Handling';
-        gutil.log(colorFileMsg(msg + ' ', event.path, ' for you...'));
+        gutil.log(colorFileMsg(msg + ' ', event.path, ' for you..'));
     });
 }
 
@@ -61,7 +59,7 @@ gulp.task('default', ['build', 'watch'], function() {
 });
 
 // --------------------------------------------- build ALL the things
-gulp.task('build', ['cssbuild', 'jsbuild', 'coffeebuild']);
+gulp.task('build', ['cssbuild', 'coffeebuild', 'jsbuild', 'oldcoffeebuild']);
 
 // ------------------------------------------------- lint your source
 gulp.task('lint', ['jslint']);
@@ -77,8 +75,11 @@ gulp.task('watch', function() {
     gulp.watch(jsSourcePaths, ['jsbuild'])
         .on('change', adviseOfEvent('Building'));
 
-    gulp.watch(coffeeSourcePaths, ['coffeebuild'])
+    gulp.watch(oldCoffeeSourcePaths, ['oldcoffeebuild'])
         .on('change', adviseOfEvent('Compiling'));
+
+    gulp.watch(coffeeSourcePaths, ['coffeebuild'])
+        .on('change', adviseOfEvent('Brewing'));
 });
 
 // ------------------------------------------------------ compile css
@@ -101,7 +102,7 @@ gulp.task('cssclean', function() {
 
 // ------------------------------------------------------- compile js
 gulp.task('jsbuild', ['jsclean', 'jslint'], function() {
-    return gulp.src(jsSourcePaths)
+    return gulp.src(jsRootPaths)
         .pipe(plugins.browserify({
             debug: !gutil.env.production
         }))
@@ -121,39 +122,55 @@ gulp.task('jslint', function() {
 
 // -------------------------------------------------- delete built js
 gulp.task('jsclean', function() {
-    return gulp.src(['climasng/static/js/*.js'], {read: false})
+    return gulp.src(['climasng/static/js/**/*.js'], {read: false})
         .pipe(plugins.clean());
 });
 
 // --------------------------------------------- compile coffeescript
-gulp.task('coffeebuild', [], function() {
+gulp.task('oldcoffeebuild', function() {
+    return gulp.src(oldCoffeeSourcePaths)
+        .pipe(plugins.coffee({ bare: true }))
+        .on('error', gutil.log).on('error', gutil.beep)
+        .pipe(gulp.dest('climasng/static/js/oldreports/')) ;
+});
+
+// --------------------------------------------- compile coffeescript
+gulp.task('coffeebuild', function() {
     return gulp.src(coffeeSourcePaths)
         .pipe(plugins.coffee({ bare: true }))
         .on('error', gutil.log).on('error', gutil.beep)
-        .pipe(gulp.dest('climasng/static/js/')) ;
+        .pipe(gulp.dest('climasng/src/js/')) ;
 });
 
 // ===================================================== meta stuff..
 
 // --------------------------------------------- show available tasks
 gulp.task('tasks', function() {
-    console.log(gutil.linefeed + 'Available tasks:');
+
+    var columnTitles = 'Available tasks:';
+
     var taskNames = Object.keys(gulp.tasks);
+
     var maxLen = taskNames.reduce(function(prev, current) {
         return Math.max(prev, current.length);
-    }, 0);
+    }, columnTitles.length);
+
+    columnTitles = columnTitles + Array(maxLen - columnTitles.length + 1).join(' ');
+    columnTitles += '      Dependencies:';
+
+    console.log(gutil.linefeed + columnTitles + gutil.linefeed);
 
     taskNames.forEach( function(taskName) {
         var task = gulp.tasks[taskName];
         var depList = '';
         if (task.dep.length > 0) {
             depList = Array(maxLen - taskName.length + 1).join(' ');
-            depList = depList + '  (' + task.dep.join(', ') + ')';
+            depList = depList + '  ' + task.dep.join(' + ');
         }
         console.log('    ' + taskName + depList);
     });
-    console.log('execute "gulp <taskname>" to perform a task ' +
-        'or "gulp" to perform the default task).' +
+    console.log('\nexecute "gulp <taskname>" to perform a task ' +
+        '(or just "gulp" to perform the \'default\' task).' +
         gutil.linefeed
     );
 });

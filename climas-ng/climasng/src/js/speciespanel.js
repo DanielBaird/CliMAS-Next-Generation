@@ -10,7 +10,7 @@
         } else {
             $('#sppshowmap').addClass('disabled').prop('disabled', true); // DISable the button
         }
-    }
+    };
 
     // work out when to disable things
     var enableFutureFields = function() {
@@ -25,7 +25,7 @@
             $('input[name=sppscenario], input[name=sppgcm]').prop('disabled', false); // enable the future fields
             $('fieldset.sppscenario, fieldset.sppgcm').removeClass('disabled');
         }
-    }
+    };
 
     // -------------------------------------------------------------------------------------------
     // fetch the species list
