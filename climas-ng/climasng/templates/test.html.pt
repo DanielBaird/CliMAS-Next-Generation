@@ -11,9 +11,10 @@
     <link href="${request.static_path('climasng:static/images/favicon-trans.png')}" rel="shortcut icon" />
     <link href='http://fonts.googleapis.com/css?family=Advent+Pro:100' rel='stylesheet' type='text/css'>
     <link href="${request.static_path('climasng:static/lib/leaflet.css')}" rel="stylesheet" />
+    <link href="${request.static_path('climasng:static/lib/jqueryui-css/ui-lightness/jquery-ui-1.10.4.custom.min.css')}" rel="stylesheet" />
 
     <!-- this page's css -->
-    <link href="${request.static_path('climasng:static/css/page-oldreport.css')}" rel="stylesheet" />
+    <link href="${request.static_path('climasng:static/css/page-splitmap.css')}" rel="stylesheet" />
 </head>
 
 <body>
@@ -25,20 +26,20 @@
         <p>Climate change and biodiversity in Australia</p>
         <nav>
             <ul class="main menu clearfix">
-                <li>
-                    <a href="${request.route_path('map')}">View Maps</a>
-                </li>
                 <li class="current">
+                    <a>View Maps</a>
+                </li>
+                <li>
                     <a>Create Reports</a>
                 </li>
                 <li>
-                    <a href="${request.route_path('map')}">About CliMAS</a>
+                    <a>About CliMAS</a>
                 </li>
             </ul>
         </nav>
     </header>
 
-    <div id="content" class="content">
+    <div id="contentwrap" class="contentwrap">
         <!-- generated stuff will go here -->
     </div>
 

@@ -1,0 +1,272 @@
+
+// This is the master css for the map page.
+//
+// running 'gulp css' will compile this less file and it's @imports into a single minified css file.
+
+// include other css-es used on the map page
+@import (less) "components/normalize.css";
+@import (less) "components/h5bp.css";
+
+// our jq plugin css for the menubar and panels
+@import (less) "components/menusandpanels.css";
+
+@import (less) "components/common.less";       // common styles
+
+
+/* body  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+body { height: 100% }
+
+
+/* map content - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+.contentwrap {
+    position: absolute;
+    top: @headerheight;
+    // box-shadow: 0 6px 12px -6px rgba(0,0,0, 0.5);
+    right: 0;
+    bottom: @footerheight;
+    left: 0;
+    z-index: 1;
+    min-height: 100px;
+    padding: 0;
+    // background: @background;
+}
+
+.splitmap {
+    @tagheight: 3em;
+
+    @right_z: 10000;
+    @left_z: (@right_z + 1);
+    @splitter_z: (@left_z + 1);
+
+    @splitlinewidth: 0.33em;
+    @splitthumbwidth: 3em;
+
+    height: 100%;
+    width: 100%;
+
+    .tag {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        left: 0;
+        background: #efe6c5;
+        height: @tagheight;
+        &.left { text-align: left;   z-index: @left_z }
+        &.right { text-align: right; z-index: @right_z; background: green }
+    }
+
+    #mapwrapper {
+        position: absolute;
+        top: @tagheight;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    .splitthumb, .splitline {
+        position: absolute;
+        left: 66%;
+        z-index: -1; // stay hidden unless active
+        &.active { z-index: @splitter_z; }
+    }
+
+    .splitline {
+        background: rgba(255,0,0, 0.75);
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: @splitlinewidth;
+        margin-left: (-0.5 * @splitlinewidth);
+    }
+
+    .splitthumb {
+        text-align: center;
+        overflow: hidden;
+        background: red;
+        top: 50%;
+        width: @splitthumbwidth;
+        height: @splitthumbwidth;
+        border-radius: 50%;
+        cursor: ew-resize; // IE doesn't recognise col-resize
+        cursor: col-resize;
+        span {
+            @thumbtextsize: 1.66;
+            font-size: (@thumbtextsize * 100%);
+            line-height: (@splitthumbwidth / @thumbtextsize);
+            color: white;
+            white-space: nowrap;
+        }
+    }
+
+}
+
+/* panel - - - - - - - - - - - - - - - - - - - - */
+/* these are also styled by the mspp css */
+div.mspp-panel {
+    z-index: 2;
+    position: absolute;
+    top: (@headerheight);
+    box-shadow: 0 6px 12px -6px rgba(0,0,0, 0.5);
+    width: (100% - @sidepad - @sidepad);
+    left: @sidepad;
+    text-align: center;
+    box-sizing: border-box;
+    background: #efe6c5;
+    margin: 0;
+    padding: 0;
+    line-height: 1.4;
+    border-radius: 0 0 2px 2px;
+    overflow: hidden;
+
+    &.hidden {
+        // display: none;
+    }
+}
+
+/* panel pages - - - - - - - - - - - - - - - - - */
+
+div.mspp-panel > .mspp-page {
+    box-sizing: border-box;
+    padding: 2em @sidepad 1.5em;
+    margin: 0 auto;
+    text-align: left;
+
+    &.current {
+        display: inline-block;
+    }
+
+    /* specific pages - - - - - - - - - - - - - */
+    &.short {
+        // short pages get less top/bottom padding
+        padding: 0.5em @sidepad 0.75em;
+        p {
+            margin: 0.25em 0;
+        }
+    }
+
+    /* specific pages - - - - - - - - - - - - - */
+    &.speciesselect {
+        #speciesname {
+            box-sizing: border-box;
+            padding: 0.5em 1em;
+            margin: 0;
+            font-size: 125%;
+        }
+    }
+
+    /* forms on pages - - - - - - - - - - - - - */
+
+    input, select, option, button {
+        font-size: inherit;
+        font-family: inherit;
+    }
+
+    button {
+        margin: 0 1em;
+        padding: 0.5em 1em;
+    }
+
+    fieldset {
+        margin: 1em;
+        padding: 1em 0;
+    }
+
+    .disabled {
+        opacity: 0.5;
+    }
+
+    form.formblocks {
+        text-align: center;
+
+        fieldset.formblock {
+            display: inline-block;
+            *display: inline; /* ie fix */
+            padding: 0 0.5em 1em;
+            text-align: left;
+            vertical-align: top;
+            background: -webkit-radial-gradient(bottom right, ellipse farthest-side, rgba(0,0,0, 0.025), rgba(0,0,0, 0.0));
+            background: radial-gradient(ellipse farthest-side at bottom right, rgba(0,0,0, 0.025), rgba(0,0,0, 0.0));
+            border: 6px solid rgba(0,0,0,0.1);
+            border-width: 3px 0;
+            border-radius: 12px;
+            zoom: 1; /* ie fix */
+
+            h3 {
+                padding: 1em 0 0.75em;
+                margin: 0;
+                font-size: inherit;
+                font-weight: bold;
+                opacity: 0.8;
+            }
+
+            label {
+                display: block;
+            }
+
+            input[type="radio"] {
+                margin-right: 0.3em;
+            }
+        }
+
+        fieldset.wide {
+            box-sizing: border-box;
+            display: block;
+            input { width: 100%; }
+        }
+
+    }
+
+    .taxa_selector {
+        position: relative;
+        padding-bottom: 3em;
+    }
+
+    .formblock.taxon {
+        min-width: 11.5em; /* random estimate */
+    }
+
+    .taxa_dd {
+        position: absolute;
+        right: 0.5em;
+        bottom: 0.5em;
+        left: 1.25em;
+        padding: 0.25em 0;
+        clear: both; /* this is for IE6 :( */
+        visibility: hidden;
+        zoom: 1;     /* another dagger in my heart from IE */
+    }
+
+    /* logos area - - - - - - - - - - - - - - - */
+    .credits {
+        padding: 1.5em 0.5em 2em;
+        // spread back over the normal page padding so we're edge-to-edge
+        margin: 0 -(100% * @sidepad / (100% - @sidepad - @sidepad));
+        text-align: center;
+        background: white;
+        -webkit-box-shadow: inset 0 0.5em 0.5em -0.25em rgba(0,0,0, 0.25), inset 0 -0.5em 0.5em -0.25em rgba(0,0,0, 0.25);
+        -moz-box-shadow:    inset 0 0.5em 0.5em -0.25em rgba(0,0,0, 0.25), inset 0 -0.5em 0.5em -0.25em rgba(0,0,0, 0.25);
+        box-shadow:         inset 0 0.5em 0.5em -0.25em rgba(0,0,0, 0.25), inset 0 -0.5em 0.5em -0.25em rgba(0,0,0, 0.25);
+
+        a {
+            display: inline-block;
+            margin: 1em 2em;
+            vertical-align: middle;
+        }
+
+        img { border: none; }
+    }
+}
+
+
+
+
+
+
+
+
+
