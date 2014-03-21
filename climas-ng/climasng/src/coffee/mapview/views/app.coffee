@@ -12,18 +12,28 @@ AppView = Backbone.View.extend {
     tagName: 'div'
     className: 'splitmap'
     id: 'splitmap'
+
+    # tracking the splitter bar
+    trackSplitter: false
+    trackPeriod: 100
     # ---------------------------------------------------------------
     events:
-        'click #doit': 'activateSplitter'
+        'click #btn-change': 'toggleForms'
+        'click #btn-compare': 'toggleSplitter'
     # ---------------------------------------------------------------
     initialize: ()->
         @mapLayer = new MapLayer 'left', 'Left Map', 'left.map'
         _.bindAll this
 
-        @fetchSpeciesInfo()
+        @speciesInfoFetchProcess = @fetchSpeciesInfo()
     # ---------------------------------------------------------------
     render: ()->
-        @$el.append AppView.layout()
+        @$el.append AppView.templates.layout {
+            leftTag: AppView.templates.leftTag()
+            rightTag: AppView.templates.rightTag()
+
+            leftForm: AppView.templates.leftForm()
+        }
         $('#contentwrap').append @$el
 
         @map = L.map 'map', {
@@ -35,13 +45,36 @@ AppView = Backbone.View.extend {
         }).addTo @map
 
         @leftForm = @$el.find '.left.form'
-        @buildLeftForm @leftForm
+        @buildLeftForm()
 
         @leftTag = @$el.find '.left.tag'
         @rightTag = @$el.find '.right.tag'
 
         @splitLine = @$el.find '.splitline'
         @splitThumb = @$el.find '.splitthumb'
+
+    # ---------------------------------------------------------------
+    # UI actions
+    # ---------------------------------------------------------------
+    centreMap: (repeatedlyFor)->
+        repeatedlyFor = 500 unless repeatedlyFor
+        setTimeout(
+            ()=> @map.invalidateSize(false)
+            later
+        ) for later in [0..repeatedlyFor] by 25
+
+    # ---------------------------------------------------------------
+    toggleForms: ()->
+        @$el.toggleClass 'showforms'
+        @centreMap()
+    # ---------------------------------------------------------------
+    toggleSplitter: ()->
+        @$el.toggleClass 'split'
+        if @$el.hasClass 'split'
+            @activateSplitter()
+        else
+            @deactivateSplitter()
+        @centreMap()
 
     # ---------------------------------------------------------------
     # ajaxy stuff
@@ -72,12 +105,9 @@ AppView = Backbone.View.extend {
     # ---------------------------------------------------------------
     # form creation
     # ---------------------------------------------------------------
-    buildLeftForm: (wrapper)->
-        # build a form inside the wrapper
-        wrapper.append AppView.leftForm()
-
-        if @speciesLookupList
-            @$el.find('#speciesname').autocomplete {
+    buildLeftForm: ()->
+        @speciesInfoFetchProcess.done =>
+            @$el.find('#leftmapthing').autocomplete {
                 source: @speciesLookupList
             }
 
@@ -85,59 +115,80 @@ AppView = Backbone.View.extend {
     # splitter handling
     # ---------------------------------------------------------------
     startSplitterTracking: ()->
-        @stopSplitterTracking() if @splitterTrackId
+        @trackSplitter = true
+        @splitLine.addClass 'dragging'
 
-        @splitterTrackId = setInterval ()=>
+        @locateSplitter()
+    # ---------------------------------------------------------------
+    locateSplitter: ()->
+        if @trackSplitter
             @resizeThings()
-        , 200
-        true
+            # decrement remaining track count, unless it's true
+            if @trackSplitter == 0
+                @trackSplitter = false
+            else if @trackSplitter != true
+                @trackSplitter -= 1
+            setTimeout @locateSplitter, @trackPeriod
     # ---------------------------------------------------------------
     stopSplitterTracking: ()->
-        clearInterval @splitterTrackId
-        @resizeThings
+        @splitLine.removeClass 'dragging'
+        @trackSplitter = 5 # five more resizings, then stop
     # ---------------------------------------------------------------
     activateSplitter: ()->
         @splitThumb.draggable {
-            # axis: 'x'
-            # containment: 'parent'
-            # handle: '.thumb'
-            containment: @$el
+            containment: $ '#mapwrapper'
             scroll: false
             start: @startSplitterTracking
             drag: @resizeThings
             stop: @stopSplitterTracking
         }
         @resizeThings()
-        @splitLine.addClass 'active'
-        @splitThumb.addClass 'active'
     # ---------------------------------------------------------------
     deactivateSplitter: ()->
-        @splitThumb.removeClass 'active'
-        @splitLine.removeClass 'active'
         @splitThumb.draggable 'destroy'
+        @resizeThings()
     # ---------------------------------------------------------------
     resizeThings: ()->
-        newWidth = @splitThumb.position().left + (@splitThumb.width() / 2.0)
-        @splitLine.css 'left', newWidth
-        @leftTag.css 'clip', 'rect(0 ' + newWidth + 'px auto 0)'
+        if @$el.hasClass 'split'
+            # we're still in split mode
+            newWidth = @splitThumb.position().left + (@splitThumb.width() / 2.0)
+            @splitLine.css 'left', newWidth
+            @leftTag.css 'clip', 'rect(0 ' + newWidth + 'px auto 0)'
+        else
+            # we're not in split mode, so go full left side only.
+            @leftTag.css 'clip', 'rect(auto auto auto auto)'
 
     # ---------------------------------------------------------------
-},{ # ===============================================================
+},{ templates: { # ==================================================
     # templates here
     # ---------------------------------------------------------------
     layout: _.template """
         <div class="splitline"></div>
         <div class="splitthumb"><span>&#x276e; &#x276f;</span></div>
-        <div class="left tag">left tag<button id="doit">do it</button></div>
-        <div class="right tag">right tag</div>
+        <div class="left tag"><%= leftTag %></div>
+        <div class="right tag"><%= rightTag %></div>
         <div class="left form"></div>
+        <div class="right form"></div>
         <div id="mapwrapper"><div id="map"></div></div>
     """
     # ---------------------------------------------------------------
-    leftForm: _.template """
-        <input id="speciesname" name="speciesname" placeholder="&hellip; type a species name &hellip;" />
+    leftTag: _.template """
+        <div>
+            <input id="leftmapthing" name="leftmapthing" placeholder="&hellip; start typing species or group name &hellip;" />
+            <button id="btn-change">change</button>
+            <button id="btn-compare">compare</button>
+        </div>
     """
     # ---------------------------------------------------------------
-}
+    rightTag: _.template """
+        <div>
+            <input id="rightmapthing" name="rightmapthing" placeholder="&hellip; start typing species or group name &hellip;" />
+        </div>
+    """
+    # ---------------------------------------------------------------
+    leftForm: _.template """
+    """
+    # ---------------------------------------------------------------
+}}
 
 module.exports = AppView

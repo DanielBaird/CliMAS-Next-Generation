@@ -6,16 +6,23 @@ AppView = Backbone.View.extend({
   tagName: 'div',
   className: 'splitmap',
   id: 'splitmap',
+  trackSplitter: false,
+  trackPeriod: 100,
   events: {
-    'click #doit': 'activateSplitter'
+    'click #btn-change': 'toggleForms',
+    'click #btn-compare': 'toggleSplitter'
   },
   initialize: function() {
     this.mapLayer = new MapLayer('left', 'Left Map', 'left.map');
     _.bindAll(this);
-    return this.fetchSpeciesInfo();
+    return this.speciesInfoFetchProcess = this.fetchSpeciesInfo();
   },
   render: function() {
-    this.$el.append(AppView.layout());
+    this.$el.append(AppView.templates.layout({
+      leftTag: AppView.templates.leftTag(),
+      rightTag: AppView.templates.rightTag(),
+      leftForm: AppView.templates.leftForm()
+    }));
     $('#contentwrap').append(this.$el);
     this.map = L.map('map', {
       center: [-20, 136],
@@ -25,11 +32,39 @@ AppView = Backbone.View.extend({
       maxZoom: 18
     }).addTo(this.map);
     this.leftForm = this.$el.find('.left.form');
-    this.buildLeftForm(this.leftForm);
+    this.buildLeftForm();
     this.leftTag = this.$el.find('.left.tag');
     this.rightTag = this.$el.find('.right.tag');
     this.splitLine = this.$el.find('.splitline');
     return this.splitThumb = this.$el.find('.splitthumb');
+  },
+  centreMap: function(repeatedlyFor) {
+    var later, _i, _results;
+    if (!repeatedlyFor) {
+      repeatedlyFor = 500;
+    }
+    _results = [];
+    for (later = _i = 0; _i <= repeatedlyFor; later = _i += 25) {
+      _results.push(setTimeout((function(_this) {
+        return function() {
+          return _this.map.invalidateSize(false);
+        };
+      })(this), later));
+    }
+    return _results;
+  },
+  toggleForms: function() {
+    this.$el.toggleClass('showforms');
+    return this.centreMap();
+  },
+  toggleSplitter: function() {
+    this.$el.toggleClass('split');
+    if (this.$el.hasClass('split')) {
+      this.activateSplitter();
+    } else {
+      this.deactivateSplitter();
+    }
+    return this.centreMap();
   },
   fetchSpeciesInfo: function() {
     return $.ajax({
@@ -60,55 +95,66 @@ AppView = Backbone.View.extend({
       };
     })(this));
   },
-  buildLeftForm: function(wrapper) {
-    wrapper.append(AppView.leftForm());
-    if (this.speciesLookupList) {
-      return this.$el.find('#speciesname').autocomplete({
-        source: this.speciesLookupList
-      });
-    }
+  buildLeftForm: function() {
+    return this.speciesInfoFetchProcess.done((function(_this) {
+      return function() {
+        return _this.$el.find('#leftmapthing').autocomplete({
+          source: _this.speciesLookupList
+        });
+      };
+    })(this));
   },
   startSplitterTracking: function() {
-    if (this.splitterTrackId) {
-      this.stopSplitterTracking();
+    this.trackSplitter = true;
+    this.splitLine.addClass('dragging');
+    return this.locateSplitter();
+  },
+  locateSplitter: function() {
+    if (this.trackSplitter) {
+      this.resizeThings();
+      if (this.trackSplitter === 0) {
+        this.trackSplitter = false;
+      } else if (this.trackSplitter !== true) {
+        this.trackSplitter -= 1;
+      }
+      return setTimeout(this.locateSplitter, this.trackPeriod);
     }
-    this.splitterTrackId = setInterval((function(_this) {
-      return function() {
-        return _this.resizeThings();
-      };
-    })(this), 200);
-    return true;
   },
   stopSplitterTracking: function() {
-    clearInterval(this.splitterTrackId);
-    return this.resizeThings;
+    this.splitLine.removeClass('dragging');
+    return this.trackSplitter = 5;
   },
   activateSplitter: function() {
     this.splitThumb.draggable({
-      containment: this.$el,
+      containment: $('#mapwrapper'),
       scroll: false,
       start: this.startSplitterTracking,
       drag: this.resizeThings,
       stop: this.stopSplitterTracking
     });
-    this.resizeThings();
-    this.splitLine.addClass('active');
-    return this.splitThumb.addClass('active');
+    return this.resizeThings();
   },
   deactivateSplitter: function() {
-    this.splitThumb.removeClass('active');
-    this.splitLine.removeClass('active');
-    return this.splitThumb.draggable('destroy');
+    this.splitThumb.draggable('destroy');
+    return this.resizeThings();
   },
   resizeThings: function() {
     var newWidth;
-    newWidth = this.splitThumb.position().left + (this.splitThumb.width() / 2.0);
-    this.splitLine.css('left', newWidth);
-    return this.leftTag.css('clip', 'rect(0 ' + newWidth + 'px auto 0)');
+    if (this.$el.hasClass('split')) {
+      newWidth = this.splitThumb.position().left + (this.splitThumb.width() / 2.0);
+      this.splitLine.css('left', newWidth);
+      return this.leftTag.css('clip', 'rect(0 ' + newWidth + 'px auto 0)');
+    } else {
+      return this.leftTag.css('clip', 'rect(auto auto auto auto)');
+    }
   }
 }, {
-  layout: _.template("<div class=\"splitline\"></div>\n<div class=\"splitthumb\"><span>&#x276e; &#x276f;</span></div>\n<div class=\"left tag\">left tag<button id=\"doit\">do it</button></div>\n<div class=\"right tag\">right tag</div>\n<div class=\"left form\"></div>\n<div id=\"mapwrapper\"><div id=\"map\"></div></div>"),
-  leftForm: _.template("<input id=\"speciesname\" name=\"speciesname\" placeholder=\"&hellip; type a species name &hellip;\" />")
+  templates: {
+    layout: _.template("<div class=\"splitline\"></div>\n<div class=\"splitthumb\"><span>&#x276e; &#x276f;</span></div>\n<div class=\"left tag\"><%= leftTag %></div>\n<div class=\"right tag\"><%= rightTag %></div>\n<div class=\"left form\"></div>\n<div class=\"right form\"></div>\n<div id=\"mapwrapper\"><div id=\"map\"></div></div>"),
+    leftTag: _.template("<div>\n    <input id=\"leftmapthing\" name=\"leftmapthing\" placeholder=\"&hellip; start typing species or group name &hellip;\" />\n    <button id=\"btn-change\">change</button>\n    <button id=\"btn-compare\">compare</button>\n</div>"),
+    rightTag: _.template("<div>\n    <input id=\"rightmapthing\" name=\"rightmapthing\" placeholder=\"&hellip; start typing species or group name &hellip;\" />\n</div>"),
+    leftForm: _.template("")
+  }
 });
 
 module.exports = AppView;

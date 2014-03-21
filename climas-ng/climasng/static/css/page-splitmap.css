@@ -1011,7 +1011,8 @@ body {
   width: 100%;
   left: 0;
   background: #efe6c5;
-  height: 3em;
+  height: 4em;
+  overflow: hidden;
 }
 .splitmap .tag.left {
   text-align: left;
@@ -1022,16 +1023,61 @@ body {
   z-index: 10000;
   background: #008000;
 }
+.splitmap .tag > div {
+  position: absolute;
+  top: 0.4em;
+  left: 4%;
+  bottom: 0.4em;
+  right: 4%;
+}
+.splitmap .tag > div input {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  font-size: 150%;
+  height: 100%;
+  width: 15em;
+}
+.splitmap .tag > div #btn-compare {
+  position: absolute;
+  right: 1em;
+  width: auto;
+  top: 50%;
+  height: 2em;
+  margin-top: -1em;
+}
+.splitmap .form {
+  position: absolute;
+  background: #efe6c5;
+  top: 4em;
+  bottom: 0;
+  width: 15em;
+}
+.splitmap .form.left {
+  left: 0;
+}
+.splitmap .form.right {
+  right: 0;
+}
 .splitmap #mapwrapper {
   position: absolute;
-  top: 3em;
+  top: 4em;
   left: 0;
   right: 0;
   bottom: 0;
+  min-width: 10em;
+  -webkit-transition: all 0.33s;
+  transition: all 0.33s;
 }
 .splitmap #mapwrapper #map {
   width: 100%;
   height: 100%;
+}
+.splitmap.showforms #mapwrapper {
+  left: 15em;
+}
+.splitmap.split.showforms #mapwrapper {
+  right: 15em;
 }
 .splitmap .splitthumb,
 .splitmap .splitline {
@@ -1039,8 +1085,10 @@ body {
   left: 66%;
   z-index: -1;
 }
-.splitmap .splitthumb.active,
-.splitmap .splitline.active {
+.splitmap.split .splitthumb {
+  z-index: 10002;
+}
+.splitmap.split .splitline {
   z-index: 10002;
 }
 .splitmap .splitline {
@@ -1048,8 +1096,14 @@ body {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 0.33em;
-  margin-left: -0.165em;
+  width: 0.4em;
+  margin-left: -0.2em;
+  -webkit-transition: width 0.33s, margin 0.33s;
+  transition: width 0.33s, margin 0.33s;
+}
+.splitmap .splitline.dragging {
+  width: 0.132em;
+  margin-left: -0.066em;
 }
 .splitmap .splitthumb {
   text-align: center;
@@ -1067,150 +1121,4 @@ body {
   line-height: 1.80722892em;
   color: white;
   white-space: nowrap;
-}
-/* panel - - - - - - - - - - - - - - - - - - - - */
-/* these are also styled by the mspp css */
-div.mspp-panel {
-  z-index: 2;
-  position: absolute;
-  top: 120px;
-  -webkit-box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.5);
-  box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.5);
-  width: 92%;
-  left: 4%;
-  text-align: center;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  background: #efe6c5;
-  margin: 0;
-  padding: 0;
-  line-height: 1.4;
-  border-radius: 0 0 2px 2px;
-  overflow: hidden;
-}
-/* panel pages - - - - - - - - - - - - - - - - - */
-div.mspp-panel > .mspp-page {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  padding: 2em 4% 1.5em;
-  margin: 0 auto;
-  text-align: left;
-  /* specific pages - - - - - - - - - - - - - */
-  /* specific pages - - - - - - - - - - - - - */
-  /* forms on pages - - - - - - - - - - - - - */
-  /* logos area - - - - - - - - - - - - - - - */
-}
-div.mspp-panel > .mspp-page.current {
-  display: inline-block;
-}
-div.mspp-panel > .mspp-page.short {
-  padding: 0.5em 4% 0.75em;
-}
-div.mspp-panel > .mspp-page.short p {
-  margin: 0.25em 0;
-}
-div.mspp-panel > .mspp-page.speciesselect #speciesname {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  padding: 0.5em 1em;
-  margin: 0;
-  font-size: 125%;
-}
-div.mspp-panel > .mspp-page input,
-div.mspp-panel > .mspp-page select,
-div.mspp-panel > .mspp-page option,
-div.mspp-panel > .mspp-page button {
-  font-size: inherit;
-  font-family: inherit;
-}
-div.mspp-panel > .mspp-page button {
-  margin: 0 1em;
-  padding: 0.5em 1em;
-}
-div.mspp-panel > .mspp-page fieldset {
-  margin: 1em;
-  padding: 1em 0;
-}
-div.mspp-panel > .mspp-page .disabled {
-  opacity: 0.5;
-}
-div.mspp-panel > .mspp-page form.formblocks {
-  text-align: center;
-}
-div.mspp-panel > .mspp-page form.formblocks fieldset.formblock {
-  display: inline-block;
-  *display: inline;
-  /* ie fix */
-  padding: 0 0.5em 1em;
-  text-align: left;
-  vertical-align: top;
-  background: -webkit-radial-gradient(bottom right, ellipse farthest-side, rgba(0, 0, 0, 0.025), rgba(0, 0, 0, 0));
-  background: -webkit-radial-gradient(ellipse farthest-side at bottom right, rgba(0, 0, 0, 0.025), rgba(0, 0, 0, 0));
-  background: radial-gradient(ellipse farthest-side at bottom right, rgba(0, 0, 0, 0.025), rgba(0, 0, 0, 0));
-  border: 6px solid rgba(0, 0, 0, 0.1);
-  border-width: 3px 0;
-  border-radius: 12px;
-  zoom: 1;
-  /* ie fix */
-}
-div.mspp-panel > .mspp-page form.formblocks fieldset.formblock h3 {
-  padding: 1em 0 0.75em;
-  margin: 0;
-  font-size: inherit;
-  font-weight: bold;
-  opacity: 0.8;
-}
-div.mspp-panel > .mspp-page form.formblocks fieldset.formblock label {
-  display: block;
-}
-div.mspp-panel > .mspp-page form.formblocks fieldset.formblock input[type="radio"] {
-  margin-right: 0.3em;
-}
-div.mspp-panel > .mspp-page form.formblocks fieldset.wide {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  display: block;
-}
-div.mspp-panel > .mspp-page form.formblocks fieldset.wide input {
-  width: 100%;
-}
-div.mspp-panel > .mspp-page .taxa_selector {
-  position: relative;
-  padding-bottom: 3em;
-}
-div.mspp-panel > .mspp-page .formblock.taxon {
-  min-width: 11.5em;
-  /* random estimate */
-}
-div.mspp-panel > .mspp-page .taxa_dd {
-  position: absolute;
-  right: 0.5em;
-  bottom: 0.5em;
-  left: 1.25em;
-  padding: 0.25em 0;
-  clear: both;
-  /* this is for IE6 :( */
-  visibility: hidden;
-  zoom: 1;
-  /* another dagger in my heart from IE */
-}
-div.mspp-panel > .mspp-page .credits {
-  padding: 1.5em 0.5em 2em;
-  margin: 0 -4.34782609%;
-  text-align: center;
-  background: white;
-  -webkit-box-shadow: inset 0 0.5em 0.5em -0.25em rgba(0, 0, 0, 0.25), inset 0 -0.5em 0.5em -0.25em rgba(0, 0, 0, 0.25);
-  box-shadow: inset 0 0.5em 0.5em -0.25em rgba(0, 0, 0, 0.25), inset 0 -0.5em 0.5em -0.25em rgba(0, 0, 0, 0.25);
-}
-div.mspp-panel > .mspp-page .credits a {
-  display: inline-block;
-  margin: 1em 2em;
-  vertical-align: middle;
-}
-div.mspp-panel > .mspp-page .credits img {
-  border: none;
 }
