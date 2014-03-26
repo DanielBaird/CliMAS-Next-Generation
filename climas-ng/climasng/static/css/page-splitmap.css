@@ -1021,30 +1021,65 @@ body {
 .splitmap .tag.right {
   text-align: right;
   z-index: 10000;
-  background: #008000;
 }
 .splitmap .tag > div {
   position: absolute;
-  top: 0.4em;
+  top: 0.5em;
   left: 4%;
-  bottom: 0.4em;
+  height: 3em;
   right: 4%;
+  -webkit-transition: 0.25s;
+  transition: 0.25s;
 }
-.splitmap .tag > div input {
+.splitmap .tag > div button {
+  font-size: inherit;
+  vertical-align: middle;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  font-size: 150%;
-  height: 100%;
-  width: 15em;
-}
-.splitmap .tag > div #btn-compare {
-  position: absolute;
-  right: 1em;
-  width: auto;
-  top: 50%;
   height: 2em;
-  margin-top: -1em;
+  line-height: 2em;
+  padding: 0 1em;
+  margin: 0 0 0 0.5em;
+}
+.splitmap .tag > div input {
+  vertical-align: middle;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  font-size: 125%;
+  height: 100%;
+  padding: 0 0.5em;
+  width: 36%;
+  margin: 0;
+}
+.splitmap .tag > div.edit {
+  line-height: 3em;
+}
+.splitmap .tag > div.show {
+  line-height: 1.5em;
+}
+.splitmap .tag > div.show button {
+  font-size: 80%;
+  opacity: 0.9;
+  display: inline;
+  padding: 0;
+  margin: 0 0.5em 0 0;
+  background: none;
+  border: none;
+  text-decoration: underline;
+}
+.splitmap.showforms .tag > div.edit {
+  top: 0.5em;
+}
+.splitmap.showforms .tag > div.show {
+  top: 4em;
+}
+.splitmap .tag > div.edit {
+  top: -4em;
+}
+.splitmap .tag > div.show {
+  top: 0.5em;
 }
 .splitmap .form {
   position: absolute;
@@ -1054,10 +1089,14 @@ body {
   width: 15em;
 }
 .splitmap .form.left {
+  text-align: left;
   left: 0;
+  padding-left: 4%;
 }
 .splitmap .form.right {
+  text-align: right;
   right: 0;
+  padding-right: 4%;
 }
 .splitmap #mapwrapper {
   position: absolute;
@@ -1070,6 +1109,12 @@ body {
   transition: all 0.33s;
 }
 .splitmap #mapwrapper #map {
+  width: 100%;
+  height: 100%;
+}
+.splitmap #mapwrapper #map .leaflet-map-pane,
+.splitmap #mapwrapper #map .leaflet-tile-pane,
+.splitmap #mapwrapper #map .leaflet-layer {
   width: 100%;
   height: 100%;
 }
@@ -1092,23 +1137,23 @@ body {
   z-index: 10002;
 }
 .splitmap .splitline {
-  background: rgba(255, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.67);
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 0.4em;
-  margin-left: -0.2em;
+  width: 6px;
+  margin-left: -3px;
   -webkit-transition: width 0.33s, margin 0.33s;
   transition: width 0.33s, margin 0.33s;
 }
 .splitmap .splitline.dragging {
-  width: 0.132em;
-  margin-left: -0.066em;
+  width: 2px;
+  margin-left: -1px;
 }
 .splitmap .splitthumb {
   text-align: center;
   overflow: hidden;
-  background: red;
+  background: #000000;
   top: 50%;
   width: 3em;
   height: 3em;

@@ -46,6 +46,14 @@ function adviseOfEvent(message) {
     });
 }
 
+// handles errors by logging and beeping, then returning 'end'
+// see:  https://github.com/gulpjs/gulp/issues/259
+function bail(error) {
+    gutil.log(error);
+    gutil.beep();
+    this.emit('end');
+}
+
 // ----------------------------------------------------- default task
 gulp.task('default', ['build', 'watch'], function() {
     console.log('Running the default task.');
@@ -86,7 +94,7 @@ gulp.task('watch', function() {
 gulp.task('cssbuild', ['cssclean'], function() {
     return gulp.src(cssSourcePaths)
         .pipe(plugins.less())
-        .on('error', gutil.log).on('error', gutil.beep)
+        .on('error', bail)
         .pipe(plugins.autoprefixer())
         .pipe(gulp.dest('climasng/static/css/'))
         .pipe(plugins.rename({suffix: '.min'}))
@@ -106,7 +114,7 @@ gulp.task('jsbuild', ['jsclean', 'jslint'], function() {
         .pipe(plugins.browserify({
             debug: !gutil.env.production
         }))
-        .on('error', gutil.log).on('error', gutil.beep)
+        .on('error', bail)
         .pipe(gulp.dest('climasng/static/js/'))
         .pipe(plugins.rename({suffix: '.min'}))
         .pipe(plugins.uglify())
@@ -130,7 +138,7 @@ gulp.task('jsclean', function() {
 gulp.task('oldcoffeebuild', function() {
     return gulp.src(oldCoffeeSourcePaths)
         .pipe(plugins.coffee({ bare: true }))
-        .on('error', gutil.log).on('error', gutil.beep)
+        .on('error', bail)
         .pipe(gulp.dest('climasng/static/js/oldreports/')) ;
 });
 
@@ -138,7 +146,7 @@ gulp.task('oldcoffeebuild', function() {
 gulp.task('coffeebuild', function() {
     return gulp.src(coffeeSourcePaths)
         .pipe(plugins.coffee({ bare: true }))
-        .on('error', gutil.log).on('error', gutil.beep)
+        .on('error', bail)
         .pipe(gulp.dest('climasng/src/js/')) ;
 });
 

@@ -3,14 +3,38 @@
 # _ = require 'lodash'
 # Backbone = require 'backbone'
 # L = require 'leaflet'
-
 MapLayer = require '../models/maplayer'
+
+# disable the jshint warning about "did you mean to return a
+# conditional" which crops up all the time in coffeescript compiled
+# code.
+### jshint -W093 ###
+
+# -------------------------------------------------------------------
+debug = (itemToLog, itemLevel)->
+    levels = ['debug', 'message', 'warning']
+
+    threshold = 'debug'
+    # threshold = 'message'
+    itemLevel = levels[0] unless itemLevel
+
+    thresholdNum = levels.indexOf threshold
+    messageNum = levels.indexOf itemLevel
+    return if thresholdNum > messageNum
+
+    if itemToLog + '' == itemToLog
+        # it's a string..
+        console.log "[#{itemLevel}] #{itemToLog}"
+    else
+        console.log itemToLog
+# -------------------------------------------------------------------
+# -------------------------------------------------------------------
 
 AppView = Backbone.View.extend {
     # ---------------------------------------------------------------
     # this view's base element
     tagName: 'div'
-    className: 'splitmap'
+    className: 'splitmap showforms'
     id: 'splitmap'
 
     # tracking the splitter bar
@@ -18,21 +42,41 @@ AppView = Backbone.View.extend {
     trackPeriod: 100
     # ---------------------------------------------------------------
     events:
-        'click #btn-change': 'toggleForms'
-        'click #btn-compare': 'toggleSplitter'
+        'click .btn-change': 'toggleForms'
+        'click .btn-compare': 'toggleSplitter'
+        'leftmapupdate': 'leftSideUpdate'
+        'rightmapupdate': 'rightSideUpdate'
+        'change select.left': 'leftSideUpdate'
+        'change select.right': 'rightSideUpdate'
+    # ---------------------------------------------------------------
+    tick: ()->
+        # if @map
+        if false
+            debug @map.getPixelOrigin()
+        setTimeout(@tick, 2000)
     # ---------------------------------------------------------------
     initialize: ()->
-        @mapLayer = new MapLayer 'left', 'Left Map', 'left.map'
-        _.bindAll this
+        debug 'AppView.initialize'
 
+        @mapLayer = new MapLayer 'left', 'Left Map', 'left.map'
+
+        # more annoying version of bindAll requires this concat stuff
+        _.bindAll.apply _, [this].concat _.functions(this)
+
+        # kick off the fetching of the species list
         @speciesInfoFetchProcess = @fetchSpeciesInfo()
+
+        # @tick()
     # ---------------------------------------------------------------
     render: ()->
+        debug 'AppView.render'
+
         @$el.append AppView.templates.layout {
             leftTag: AppView.templates.leftTag()
             rightTag: AppView.templates.rightTag()
 
             leftForm: AppView.templates.leftForm()
+            rightForm: AppView.templates.rightForm()
         }
         $('#contentwrap').append @$el
 
@@ -40,60 +84,226 @@ AppView = Backbone.View.extend {
             center: [-20, 136]
             zoom: 5
         }
-        L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {
+        @map.on 'move', @resizeThings
+        L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {
+            subdomains: '1234'
             maxZoom: 18
+            attribution: '''
+            Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>,
+            tiles &copy; <a href="http://www.mapquest.com/" target="_blank">MapQuest</a>
+            '''
         }).addTo @map
 
-        @leftForm = @$el.find '.left.form'
+        @leftForm = @$ '.left.form'
         @buildLeftForm()
 
-        @leftTag = @$el.find '.left.tag'
-        @rightTag = @$el.find '.right.tag'
+        @rightForm = @$ '.right.form'
+        @buildRightForm()
 
-        @splitLine = @$el.find '.splitline'
-        @splitThumb = @$el.find '.splitthumb'
+        @leftTag = @$ '.left.tag'
+        @rightTag = @$ '.right.tag'
 
+        @splitLine = @$ '.splitline'
+        @splitThumb = @$ '.splitthumb'
+
+    # ---------------------------------------------------------------
+    # ---------------------------------------------------------------
+    # map interaction
+    # ---------------------------------------------------------------
+    leftSideUpdate: ()->
+        debug 'AppView.leftSideUpdate'
+
+        sppName = @$('#leftmapspp').val()
+
+        # bail if that's not a real species
+        return false unless sppName in @speciesSciNameList
+
+        newLeftInfo = {
+            speciesName: sppName
+            year: @$('#leftmapyear').val()
+            scenario: @$('#leftmapscenario').val()
+            gcm: @$('#leftmapgcm').val()
+        }
+
+        # bail if nothing changed
+        return false if @leftInfo and _.isEqual newLeftInfo, @leftInfo
+
+        # also bail if they're both same species at baseline
+        if (
+            @leftInfo and
+            newLeftInfo.speciesName == @leftInfo.speciesName and
+            newLeftInfo.year == @leftInfo.year and
+            newLeftInfo.year == 'baseline'
+        )
+            return false
+
+        # save the new setup
+        @leftInfo = newLeftInfo
+
+        # apply the changes to the map
+        @addMapLayer 'left'
+
+        # apply the changes to the tag
+        @addMapTag 'left'
+    # ---------------------------------------------------------------
+    rightSideUpdate: ()->
+        debug 'AppView.rightSideUpdate'
+
+        sppName = @$('#rightmapspp').val()
+
+        # bail if that's not a real species
+        return false unless sppName in @speciesSciNameList
+
+        newRightInfo = {
+            speciesName: sppName
+            year: @$('#rightmapyear').val()
+            scenario: @$('#rightmapscenario').val()
+            gcm: @$('#rightmapgcm').val()
+        }
+
+        # bail if nothing changed
+        return false if @rightInfo and _.isEqual newRightInfo, @rightInfo
+
+        # also bail if they're both same species at baseline
+        if (
+            @rightInfo and
+            newRightInfo.speciesName == @rightInfo.speciesName and
+            newRightInfo.year == @rightInfo.year and
+            newRightInfo.year == 'baseline'
+        )
+            return false
+
+        # save the new setup
+        @rightInfo = newRightInfo
+
+        # apply the changes to the map
+        @addMapLayer 'right'
+
+        # apply the changes to the tag
+        @addMapTag 'right'
+    # ---------------------------------------------------------------
+    addMapTag: (side)->
+        debug 'AppView.addMapTag'
+
+        info = @leftInfo if side == 'left'
+        info = @rightInfo if side == 'right'
+
+        tag = "<b><i>#{info.speciesName}</i></b>"
+
+        if info.year is 'baseline'
+            tag = "current #{tag} distribution"
+        else if info.gcm is 'all'
+            tag = "<b>median</b> projections for #{tag} in <b>#{info.year}</b> if <b>#{info.scenario}</b>"
+        else
+            tag = "<b>#{info.gcm}</b> projections for #{tag} in <b>#{info.year}</b> if <b>#{info.scenario}</b>"
+
+
+        if side == 'left'
+            @leftTag.find('.leftlayername').html tag
+
+        if side == 'right'
+            @rightTag.find('.rightlayername').html tag
+    # ---------------------------------------------------------------
+    addMapLayer: (side)->
+        debug 'AppView.addMapLayer'
+
+        sideInfo = @leftInfo if side == 'left'
+        sideInfo = @rightInfo if side == 'right'
+
+        futureModelPoint = [
+            sideInfo.scenario
+            sideInfo.gcm
+            sideInfo.year
+        ].join '_'
+        futureModelPoint = '1990' if sideInfo.year == 'baseline'
+        rasterApiUrl = 'http://localhost:10600/api/raster/1/wms_data_url'
+        mapData = [
+            'http://localhost:6543/speciesdata'
+            sideInfo.speciesName.replace(' ', '_')
+            'output'
+            futureModelPoint + '.asc.gz'
+        ].join '/'
+
+        layer = L.tileLayer.wms rasterApiUrl, {
+            DATA_URL: mapData
+            # layers: 'Demo WMS'
+            layers: 'DEFAULT'
+            format: 'image/png'
+            transparent: true
+        }
+
+        layer.addTo @map
+
+        if side == 'left'
+            @map.removeLayer @leftLayer if @leftLayer
+            @leftLayer = layer
+
+        if side == 'right'
+            @map.removeLayer @rightLayer if @rightLayer
+            @rightLayer = layer
+
+        @resizeThings() # re-establish the splitter
+
+    # ---------------------------------------------------------------
     # ---------------------------------------------------------------
     # UI actions
     # ---------------------------------------------------------------
     centreMap: (repeatedlyFor)->
+        debug 'AppView.centreMap'
+
         repeatedlyFor = 500 unless repeatedlyFor
+        recentre = ()=>
+            @map.invalidateSize(false)
+            @resizeThings()
         setTimeout(
-            ()=> @map.invalidateSize(false)
-            later
+            recentre, later
         ) for later in [0..repeatedlyFor] by 25
 
     # ---------------------------------------------------------------
     toggleForms: ()->
+        debug 'AppView.toggleForms'
+
         @$el.toggleClass 'showforms'
         @centreMap()
     # ---------------------------------------------------------------
     toggleSplitter: ()->
+        debug 'AppView.toggleSplitter'
+
         @$el.toggleClass 'split'
         if @$el.hasClass 'split'
             @activateSplitter()
         else
             @deactivateSplitter()
         @centreMap()
-
+    # ---------------------------------------------------------------
     # ---------------------------------------------------------------
     # ajaxy stuff
     # ---------------------------------------------------------------
     fetchSpeciesInfo: ()->
+        debug 'AppView.fetchSpeciesInfo'
+
         return $.ajax({
-            url: '/data/species'
+            url: '/speciesdata/species.json'
         }).done (data)=>
             speciesLookupList = []
             speciesSciNameList = []
 
+            # in order to avoid making a function in the inner loop,
+            # here's a function returns a function that writes a
+            # common name into the given sciName.  This is partial
+            # function application, which is a bit like currying.
+            commonNameWriter = (sciName)=>
+                sciNamePostfix = " (#{sciName})"
+                return (cnIndex, cn)=>
+                    speciesLookupList.push {
+                        label: cn + sciNamePostfix
+                        value: sciName
+                    }
+
             $.each data, (sciName, commonNames)=>
                 speciesSciNameList.push sciName
                 if commonNames
-                    $.each commonNames, (cnIndex, cn)=>
-                        speciesLookupList.push {
-                            label: cn + ' (' + sciName + ')'
-                            value: sciName
-                        }
+                    $.each commonNames, commonNameWriter sciName
                 else
                     speciesLookupList.push {
                         label: sciName
@@ -103,24 +313,45 @@ AppView = Backbone.View.extend {
             @speciesLookupList = speciesLookupList
             @speciesSciNameList = speciesSciNameList
     # ---------------------------------------------------------------
+    # ---------------------------------------------------------------
     # form creation
     # ---------------------------------------------------------------
     buildLeftForm: ()->
-        @speciesInfoFetchProcess.done =>
-            @$el.find('#leftmapthing').autocomplete {
-                source: @speciesLookupList
-            }
+        debug 'AppView.buildLeftForm'
 
+        @speciesInfoFetchProcess.done =>
+            $leftmapspp = @$ '#leftmapspp'
+            $leftmapspp.autocomplete {
+                source: @speciesLookupList
+                appendTo: @$el
+                close: => @$el.trigger 'leftmapupdate'
+            }
+    # ---------------------------------------------------------------
+    buildRightForm: ()->
+        debug 'AppView.buildRightForm'
+
+        @speciesInfoFetchProcess.done =>
+            $rightmapspp = @$ '#rightmapspp'
+            $rightmapspp.autocomplete {
+                source: @speciesLookupList
+                appendTo: @$el
+                close: => @$el.trigger 'rightmapupdate'
+            }
+    # ---------------------------------------------------------------
     # ---------------------------------------------------------------
     # splitter handling
     # ---------------------------------------------------------------
     startSplitterTracking: ()->
+        debug 'AppView.startSplitterTracking'
+
         @trackSplitter = true
         @splitLine.addClass 'dragging'
 
         @locateSplitter()
     # ---------------------------------------------------------------
     locateSplitter: ()->
+        debug 'AppView.locateSplitter'
+
         if @trackSplitter
             @resizeThings()
             # decrement remaining track count, unless it's true
@@ -130,11 +361,58 @@ AppView = Backbone.View.extend {
                 @trackSplitter -= 1
             setTimeout @locateSplitter, @trackPeriod
     # ---------------------------------------------------------------
+    resizeThings: ()->
+        debug 'AppView.resizeThings'
+
+        if @leftLayer
+            leftMap = $ @leftLayer.getContainer()
+
+        if @rightLayer
+            rightMap = $ @rightLayer.getContainer()
+
+        if @$el.hasClass 'split'
+            # we're still in split mode
+            newLeftWidth = @splitThumb.position().left + (@splitThumb.width() / 2.0)
+
+            mapBox = @map.getContainer()
+            $mapBox = $ mapBox
+            mapBounds = mapBox.getBoundingClientRect()
+
+            topLeft = @map.containerPointToLayerPoint [0,0]
+            splitPoint = @map.containerPointToLayerPoint [newLeftWidth, 0]
+            bottomRight = @map.containerPointToLayerPoint [$mapBox.width(), $mapBox.height()]
+
+            layerTop = topLeft.y
+            layerBottom = bottomRight.y
+
+            splitX = splitPoint.x - mapBounds.left
+
+            leftLeft = topLeft.x - mapBounds.left
+            rightRight = bottomRight.x
+
+            @splitLine.css 'left', newLeftWidth
+            @leftTag.css 'clip', "rect(0 #{newLeftWidth}px auto 0)"
+            leftMap.css 'clip', "rect(#{layerTop}px #{splitX}px #{layerBottom}px #{leftLeft}px)" if @leftLayer
+            rightMap.css 'clip', "rect(#{layerTop}px #{rightRight}px #{layerBottom}px #{splitX}px)" if @rightLayer
+
+        else
+            # we're not in split mode (this is probably the last
+            # resizeThings call before exiting split mode), so go
+            # full left side only.
+            @leftTag.css 'clip', 'inherit'
+            leftMap.css 'clip', 'inherit' if @leftLayer
+            rightMap.css 'clip', 'rect(0,0,0,0)' if @rightLayer
+
+    # ---------------------------------------------------------------
     stopSplitterTracking: ()->
+        debug 'AppView.stopSplitterTracking'
+
         @splitLine.removeClass 'dragging'
         @trackSplitter = 5 # five more resizings, then stop
     # ---------------------------------------------------------------
     activateSplitter: ()->
+        debug 'AppView.activateSplitter'
+
         @splitThumb.draggable {
             containment: $ '#mapwrapper'
             scroll: false
@@ -145,18 +423,10 @@ AppView = Backbone.View.extend {
         @resizeThings()
     # ---------------------------------------------------------------
     deactivateSplitter: ()->
+        debug 'AppView.deactivateSplitter'
+
         @splitThumb.draggable 'destroy'
         @resizeThings()
-    # ---------------------------------------------------------------
-    resizeThings: ()->
-        if @$el.hasClass 'split'
-            # we're still in split mode
-            newWidth = @splitThumb.position().left + (@splitThumb.width() / 2.0)
-            @splitLine.css 'left', newWidth
-            @leftTag.css 'clip', 'rect(0 ' + newWidth + 'px auto 0)'
-        else
-            # we're not in split mode, so go full left side only.
-            @leftTag.css 'clip', 'rect(auto auto auto auto)'
 
     # ---------------------------------------------------------------
 },{ templates: { # ==================================================
@@ -167,26 +437,84 @@ AppView = Backbone.View.extend {
         <div class="splitthumb"><span>&#x276e; &#x276f;</span></div>
         <div class="left tag"><%= leftTag %></div>
         <div class="right tag"><%= rightTag %></div>
-        <div class="left form"></div>
-        <div class="right form"></div>
+        <div class="left form"><%= leftForm %></div>
+        <div class="right form"><%= rightForm %></div>
         <div id="mapwrapper"><div id="map"></div></div>
     """
     # ---------------------------------------------------------------
     leftTag: _.template """
-        <div>
-            <input id="leftmapthing" name="leftmapthing" placeholder="&hellip; start typing species or group name &hellip;" />
-            <button id="btn-change">change</button>
-            <button id="btn-compare">compare</button>
+        <div class="show">
+            <span class="leftlayername">plain map</span>
+            <br>
+            <button class="btn-change">settings</button>
+            <button class="btn-compare">show/hide comparison map</button>
+        </div>
+        <div class="edit">
+            <input id="leftmapspp" name="leftmapspp" placeholder="&hellip; species or group &hellip;" />
+            <button class="btn-change">done</button>
+            <button class="btn-compare">compare +/-</button>
         </div>
     """
     # ---------------------------------------------------------------
     rightTag: _.template """
-        <div>
-            <input id="rightmapthing" name="rightmapthing" placeholder="&hellip; start typing species or group name &hellip;" />
+        <div class="show">
+            <span class="rightlayername">(no distribution)</span>
+        </div>
+        <div class="edit">
+            <input id="rightmapspp" name="rightmapspp" placeholder="&hellip; species or group &hellip;" />
         </div>
     """
     # ---------------------------------------------------------------
     leftForm: _.template """
+        <p>
+        <select class="left" id="leftmapyear">
+            <option value="baseline">baseline</option>
+            <option value="2015">2015</option>
+            <option value="2035">2035</option>
+            <option value="2055">2055</option>
+            <option value="2075">2075</option>
+        </select>
+        </p><p>
+        <select class="left" id="leftmapscenario">
+            <option>RCP3PD</option>
+            <option>RCP6</option>
+        </select>
+        </p><p>
+        <select class="left" id="leftmapgcm">
+            <option value="all">median</option>
+            <option value="csiro-mk30">CSIRO Mark 3.0</option>
+        </select>
+        </p><p>
+        <button class="btn-change">done</button>
+        </p><p>
+        <button class="btn-compare">compare + / -</button>
+        </p>
+    """
+    # ---------------------------------------------------------------
+    rightForm: _.template """
+        <p>
+        <select class="right" id="rightmapyear">
+            <option value="baseline">baseline</option>
+            <option value="2015">2015</option>
+            <option value="2035">2035</option>
+            <option value="2055">2055</option>
+            <option value="2075">2075</option>
+        </select>
+        </p><p>
+        <select class="right" id="rightmapscenario">
+            <option>RCP3PD</option>
+            <option>RCP6</option>
+        </select>
+        </p><p>
+        <select class="right" id="rightmapgcm">
+            <option value="all">median</option>
+            <option value="csiro-mk30">CSIRO Mark 3.0</option>
+        </select>
+        </p><p>
+        <button class="btn-change">done</button>
+        </p><p>
+        <button class="btn-compare">compare +/-</button>
+        </p>
     """
     # ---------------------------------------------------------------
 }}
