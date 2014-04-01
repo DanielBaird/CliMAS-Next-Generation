@@ -1,17 +1,19 @@
+
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-
-var path = require('path');
 
 // this gulpfile uses gulp-load-plugins to load plugins, which saves
 // having to load everything separately.
 // info: https://github.com/jackfranklin/gulp-load-plugins
 var plugins = require('gulp-load-plugins')();
 
-// paths this project uses
+// paths this project uses ==========================================
+
+var path = require('path');
+
 var cssSourcePaths = [
-    'climasng/src/css/*.less',
-    'climasng/src/css/*.css'
+    'climasng/src/css/**/*.less',
+    'climasng/src/css/**/*.css'
 ];
 var coffeeSourcePaths = ['climasng/src/coffee/**/*.coffee'];
 var jsRootPaths = ['climasng/src/js/page-*.js'];
@@ -19,7 +21,9 @@ var jsSourcePaths = ['climasng/src/js/**/*.js'];
 var jsLintablePaths = jsSourcePaths.concat([
     'gulpfile.js'
 ]);
-var oldCoffeeSourcePaths = ['climasng/src/js/oldreports/*.coffee'];
+var oldCoffeeSourcePaths = ['climasng/src/js/oldreports/**/*.coffee'];
+
+// utility functions ================================================
 
 // returns a string consisting of prefix + filePath + postfix,
 // with colour highlighting of the filepath.
@@ -54,6 +58,8 @@ function bail(error) {
     this.emit('end');
 }
 
+// actual tasks =====================================================
+
 // ----------------------------------------------------- default task
 gulp.task('default', ['build', 'watch'], function() {
     console.log('Running the default task.');
@@ -67,7 +73,7 @@ gulp.task('default', ['build', 'watch'], function() {
 });
 
 // --------------------------------------------- build ALL the things
-gulp.task('build', ['cssbuild', 'coffeebuild', 'jsbuild', 'oldcoffeebuild']);
+gulp.task('build', ['cssbuild', 'coffeebuild', 'jsbuild', 'oldcsbuild']);
 
 // ------------------------------------------------- lint your source
 gulp.task('lint', ['jslint']);
@@ -83,7 +89,7 @@ gulp.task('watch', function() {
     gulp.watch(jsSourcePaths, ['jsbuild'])
         .on('change', adviseOfEvent('Building'));
 
-    gulp.watch(oldCoffeeSourcePaths, ['oldcoffeebuild'])
+    gulp.watch(oldCoffeeSourcePaths, ['oldcsbuild'])
         .on('change', adviseOfEvent('Compiling'));
 
     gulp.watch(coffeeSourcePaths, ['coffeebuild'])
@@ -125,19 +131,19 @@ gulp.task('jsbuild', ['jsclean', 'jslint'], function() {
 gulp.task('jslint', function() {
     return gulp.src(jsLintablePaths)
         .pipe(plugins.jshint())
-        .pipe(plugins.jshint.reporter('default'));
+        .pipe(plugins.jshint.reporter('default')) ;
 });
 
 // -------------------------------------------------- delete built js
 gulp.task('jsclean', function() {
-    return gulp.src(['climasng/static/js/**/*.js'], {read: false})
-        .pipe(plugins.clean());
+    return gulp.src(['climasng/static/js/**/*.js', '!climasng/static/js/oldreports/**'], {read: false})
+        .pipe(plugins.clean()) ;
 });
 
 // --------------------------------------------- compile coffeescript
-gulp.task('oldcoffeebuild', function() {
+gulp.task('oldcsbuild', function() {
     return gulp.src(oldCoffeeSourcePaths)
-        .pipe(plugins.coffee({ bare: true }))
+        .pipe(plugins.coffee())
         .on('error', bail)
         .pipe(gulp.dest('climasng/static/js/oldreports/')) ;
 });
@@ -145,18 +151,17 @@ gulp.task('oldcoffeebuild', function() {
 // --------------------------------------------- compile coffeescript
 gulp.task('coffeebuild', function() {
     return gulp.src(coffeeSourcePaths)
-        .pipe(plugins.coffee({ bare: true }))
+        .pipe(plugins.coffee())
         .on('error', bail)
         .pipe(gulp.dest('climasng/src/js/')) ;
 });
 
-// ===================================================== meta stuff..
+// meta type tasks ==================================================
 
 // --------------------------------------------- show available tasks
 gulp.task('tasks', function() {
 
     var columnTitles = 'Available tasks:';
-
     var taskNames = Object.keys(gulp.tasks);
 
     var maxLen = taskNames.reduce(function(prev, current) {
@@ -164,7 +169,7 @@ gulp.task('tasks', function() {
     }, columnTitles.length);
 
     columnTitles = columnTitles + Array(maxLen - columnTitles.length + 1).join(' ');
-    columnTitles += '      Dependencies:';
+    columnTitles += '    Dependencies:';
 
     console.log(gutil.linefeed + columnTitles + gutil.linefeed);
 
@@ -173,7 +178,7 @@ gulp.task('tasks', function() {
         var depList = '';
         if (task.dep.length > 0) {
             depList = Array(maxLen - taskName.length + 1).join(' ');
-            depList = depList + '  ' + task.dep.join(' + ');
+            depList = depList + task.dep.join(' + ');
         }
         console.log('    ' + taskName + depList);
     });
@@ -185,7 +190,7 @@ gulp.task('tasks', function() {
 
 // -------------------------------------- show all the loaded plugins
 gulp.task('plugins', function() {
-    // just outputs your loaded plugins
+    // just outputs your loaded plugins, are you using them all?
     console.log(gutil.linefeed + 'Available plugins:');
     Object.keys(plugins).forEach( function(pluginName) {
         console.log('    ' + pluginName);

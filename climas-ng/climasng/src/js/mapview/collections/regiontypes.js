@@ -1,9 +1,12 @@
-var RegionType, RegionTypes;
+(function() {
+  var RegionType, RegionTypes;
 
-RegionType = require('../models/regiontype');
+  RegionType = require('../models/regiontype');
 
-RegionTypes = Backbone.Collection.extend({
-  model: RegionType
-});
+  RegionTypes = Backbone.Collection.extend({
+    model: RegionType
+  });
 
-module.exports = RegionTypes;
+  module.exports = RegionTypes;
+
+}).call(this);

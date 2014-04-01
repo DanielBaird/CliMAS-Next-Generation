@@ -31,15 +31,23 @@ def main(global_config, **settings):
 
     config.add_static_view('static', 'static', cache_max_age=3600)
 
-    config.add_route('home', '/')
     config.add_route('test', '/test/')
-    config.add_route('map', '/map/')
-    config.add_route('oldreport', '/oldreport/')
-    config.add_route('oldspecies', '/oldspecies/{region}/{year}/speciestables.html')
-    config.add_route('form', '/request/')
-    config.add_route('report', '/report/')
+
+    config.add_route('home', '/')
+    config.add_route('science', '/science/')
+    config.add_route('credits', '/credits/')
+
+    config.add_route('maps', '/maps/')
+
+    config.add_route('reports', '/reports/')
+    config.add_route('reportcontent', '/reportcontent/')
+
     config.add_route('data', '/data/{data_name}/')
     config.add_route('doc', '/info/{doc_name}/')
+
+    config.add_route('oldmap', '/oldmap/')
+    config.add_route('oldspecies', '/oldspecies/{region}/{year}/speciestables.html')
+    config.add_route('oldreport', '/oldreport/')
     config.add_route('reflector', '/reflector/')
 
     config.add_route('speciesdata', '/speciesdata/{data_name:.*}')

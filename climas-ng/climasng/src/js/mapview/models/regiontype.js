@@ -1,5 +1,8 @@
-var RegionType;
+(function() {
+  var RegionType;
 
-RegionType = Backbone.Model.extend({});
+  RegionType = Backbone.Model.extend({});
 
-module.exports = RegionType;
+  module.exports = RegionType;
+
+}).call(this);

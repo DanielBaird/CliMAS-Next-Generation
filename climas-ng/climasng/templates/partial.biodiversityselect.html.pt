@@ -19,35 +19,35 @@
                         <select class="taxa_dd family" name="chosen_family_amphibians">
                             <option disabled="disabled" selected="selected" value="invalid">choose a family...</option>
                             <option value="BUFONIDAE">Bufonidae</option>
-<option value="HYLIDAE">Hylidae</option>
-<option value="MICROHYLIDAE">Microhylidae</option>
-<option value="MYOBATRACHIDAE">Myobatrachidae</option>
-<option value="RANIDAE">Ranidae</option>
+                            <option value="HYLIDAE">Hylidae</option>
+                            <option value="MICROHYLIDAE">Microhylidae</option>
+                            <option value="MYOBATRACHIDAE">Myobatrachidae</option>
+                            <option value="RANIDAE">Ranidae</option>
                         </select>
 
                         <label><input type="radio" class="taxa genus" name="amphibians_taxatype" value="genus">an amphibian genus</label>
                         <select class="taxa_dd genus" name="chosen_genus_amphibians">
                             <option disabled="disabled" selected="selected" value="invalid">choose a genus...</option>
                             <option value="Rhinella">Rhinella</option>
-<option value="Cyclorana">Cyclorana</option>
-<option value="Litoria">Litoria</option>
-<option value="Nyctimystes">Nyctimystes</option>
-<option value="Austrochaperina">Austrochaperina</option>
-<option value="Adelotus">Adelotus</option>
-<option value="Assa">Assa</option>
-<option value="Crinia">Crinia</option>
-<option value="Geocrinia">Geocrinia</option>
-<option value="Heleioporus">Heleioporus</option>
-<option value="Lechriodus">Lechriodus</option>
-<option value="Limnodynastes">Limnodynastes</option>
-<option value="Mixophyes">Mixophyes</option>
-<option value="Neobatrachus">Neobatrachus</option>
-<option value="Notaden">Notaden</option>
-<option value="Philoria">Philoria</option>
-<option value="Pseudophryne">Pseudophryne</option>
-<option value="Taudactylus">Taudactylus</option>
-<option value="Uperoleia">Uperoleia</option>
-<option value="Rana">Rana</option>
+                            <option value="Cyclorana">Cyclorana</option>
+                            <option value="Litoria">Litoria</option>
+                            <option value="Nyctimystes">Nyctimystes</option>
+                            <option value="Austrochaperina">Austrochaperina</option>
+                            <option value="Adelotus">Adelotus</option>
+                            <option value="Assa">Assa</option>
+                            <option value="Crinia">Crinia</option>
+                            <option value="Geocrinia">Geocrinia</option>
+                            <option value="Heleioporus">Heleioporus</option>
+                            <option value="Lechriodus">Lechriodus</option>
+                            <option value="Limnodynastes">Limnodynastes</option>
+                            <option value="Mixophyes">Mixophyes</option>
+                            <option value="Neobatrachus">Neobatrachus</option>
+                            <option value="Notaden">Notaden</option>
+                            <option value="Philoria">Philoria</option>
+                            <option value="Pseudophryne">Pseudophryne</option>
+                            <option value="Taudactylus">Taudactylus</option>
+                            <option value="Uperoleia">Uperoleia</option>
+                            <option value="Rana">Rana</option>
                         </select>
 
                     </div>

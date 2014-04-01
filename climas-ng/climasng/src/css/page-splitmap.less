@@ -12,10 +12,11 @@
 
 @import (less) "components/common.less";       // common styles
 
+// override the sidepad
+// @sidepad: 2%;
 
 /* body  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 body { height: 100% }
-
 
 /* map content - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
@@ -42,7 +43,7 @@ body { height: 100% }
     @left_z: (@right_z + 1);
     @splitter_z: (@left_z + 1);
 
-    @splitlinedragwidth: 2px;
+    @splitlinedragwidth: 1px;
     @splitlinestillwidth: 6px;
     @splitthumbwidth: 3em;
 
@@ -50,6 +51,8 @@ body { height: 100% }
     width: 100%;
 
     .tag {
+        // the tag is the strip at the top that says what
+        // map is showing.
         position: absolute;
         top: 0;
         width: 100%;
@@ -68,6 +71,10 @@ body { height: 100% }
             height: (@tagheight - @tagcontentpad - @tagcontentpad);
             right: @sidepad;
             transition: 0.25s;
+            > span {
+                // a span in a wrapper never has linebreaks
+                white-space: no-wrap;
+            }
             button {
                 font-size: inherit;
                 vertical-align: middle;
@@ -80,12 +87,13 @@ body { height: 100% }
             @inputfontzoom: 1.25;
             input {
                 // inputs in a tag are the species search box
+                text-align: inherit;
                 vertical-align: middle;
                 box-sizing: border-box;
                 font-size: (100% * @inputfontzoom);
                 height: 100%;
                 padding: 0 0.5em;
-                width: (40 - @sidepad);
+                width: (30 - @sidepad);
                 margin: 0;
             }
         }
@@ -106,6 +114,7 @@ body { height: 100% }
             }
         }
     }
+
     &.showforms .tag {
         > div.edit { top: @tagcontentpad; }
         > div.show { top: @tagheight; }
@@ -115,14 +124,65 @@ body { height: 100% }
         > div.show { top: @tagcontentpad; }
     }
 
+    @loaderimageheight: 24px;
+    @loaderpadding: 10px;
+    @loaderheight: (@loaderimageheight + @loaderpadding + @loaderpadding);
+    .loader {
+        z-index: @right_z;
+        opacity: 0;
+        box-sizing: border-box;
+        position: absolute;
+        background: @headerbackground;
+        top: 50%;
+        margin-top: 0;
+        height: 0;
+        width: 0;
+        transition: all 0.2s;
+        overflow: hidden;
+        img {
+            height: (@loaderimageheight / @loaderheight * 100%);
+            margin: (@loaderpadding / @loaderheight * 100%);
+        }
+    }
+    .loader.left {
+        left:  0;
+        border-top-right-radius: 50% 50%;
+        border-bottom-right-radius: 50% 50%;
+        img { float: right; }
+    }
+    &.showforms .loader.left { left: @sideformwidth; }
+    .loader.right {
+        right: 0;
+        border-top-left-radius: 50% 50%;
+        border-bottom-left-radius: 50% 50%;
+        img { float: left; }
+    }
+    &.split.showforms .loader.right { right: @sideformwidth; }
+    &.leftloading  .loader.left  { opacity: 0.5; width: @loaderheight; height: @loaderheight; margin-top: (-1 * @loaderheight / 2); }
+    &.rightloading .loader.right { opacity: 0.5; width: @loaderheight; height: @loaderheight; margin-top: (-1 * @loaderheight / 2); }
+
     .form {
         position: absolute;
+        box-sizing: border-box;
         background: #efe6c5;
         top: @tagheight;
         bottom: 0;
         width: @sideformwidth;
-        &.left { text-align: left;   left: 0;  padding-left: @sidepad; }
-        &.right { text-align: right; right: 0; padding-right: @sidepad; }
+        &.right { text-align: left;   right: 0;  padding-left: (@sidepad / 2); }
+        &.left  { text-align: right;  left: 0;   padding-right: (@sidepad / 2); }
+        input, select, option, button {
+            font-size: inherit;
+            font-family: inherit;
+        }
+    }
+    .form .btn-copy-rtl {
+        visibility: hidden;
+        opacity: 0;
+        transition: all 0.33s;
+    }
+    &.split .form .btn-copy-rtl {
+        visibility: visible;
+        opacity: 1;
     }
 
     #mapwrapper {
@@ -150,6 +210,8 @@ body { height: 100% }
         right: @sideformwidth;
     }
 
+
+
     .splitthumb, .splitline {
         position: absolute;
         left: 66%;
@@ -160,12 +222,14 @@ body { height: 100% }
 
     @splitcolor: rgb(0,0,0);
     .splitline {
+        background: @splitcolor; // for old IE
         background: fadeout(@splitcolor, 33%);
         position: absolute;
         top: 0;
         bottom: 0;
         width: @splitlinestillwidth;
         margin-left: (-0.5 * @splitlinestillwidth);
+        overflow: hidden;
         transition: width 0.33s, margin 0.33s;
     }
     .splitline.dragging {

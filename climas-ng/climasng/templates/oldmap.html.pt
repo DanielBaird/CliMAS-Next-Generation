@@ -23,14 +23,16 @@
 	<link href="${request.static_path('climasng:static/lib/jqueryui-css/smoothness/jquery-ui-1.10.4.custom.min.css')}" rel="stylesheet" />
 
 	<!-- this page's css -->
-	<!-- <link rel="stylesheet/less" type="text/css" href="${request.static_path('climasng:static/css/map.less')}" /> -->
-	<link href="${request.static_path('climasng:static/css/page-map.css')}" rel="stylesheet" />
+	<link href="${request.static_path('climasng:static/css/page-oldmap.css')}" rel="stylesheet" />
 
 	<!-- script shoudl be at the bottom but the awful biodiv code uses jquery -->
 	<script src="${request.static_path('climasng:static/lib/jquery-1.11.0.js')}"></script>
 </head>
 
 <body class="map">
+
+    <div metal:use-macro="load: partial.header.html.pt"></div><!-- ::partial:: -->
+
 	<header class="page clearfix">
 		<h1>CliMAS</h1>
 		<a href="http://tropicaldatahub.org/">

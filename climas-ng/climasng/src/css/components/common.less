@@ -2,10 +2,14 @@
 // css for the climas header.
 
 @background: #2d4048;
+@headerbackground: #242732;
+
+// go get Lato for much prettiness
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400,900,400italic);
 
 body {
     padding: 0;
-    font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Tahoma, "Arial Unicode MS", sans-serif; /* facebook fontstack */
+    font-family: Lato, "Arial Unicode MS", sans-serif;
     font-size: 100%;
     -webkit-font-smoothing: antialiased; /* light-text-on-dark is too bold on Macs */
     line-height: 1.4;
@@ -44,9 +48,9 @@ header.page {
         float: left;
         padding: 0 0 0 @sidepad;
         margin: 0;
-        font-family: 'Advent Pro', 'Helvetica Neue', sans-serif;
-        font-size: 60px;
-        font-weight: 100;
+        font-size: 50px;
+        letter-spacing: 0.1em;
+        font-weight: 300;
         line-height: (@headerheight - @navheight);
         text-align: left;
         text-shadow: 2px 2px 5px #000;
@@ -60,6 +64,14 @@ header.page {
         opacity: 0.25;
         transition: 0.5s ease-in-out;
 
+        @logoheight: min(55px, (@headerheight - @navheight - @logopad - @logopad));
+
+        height: @logoheight;
+        margin: (-0.5 * @logoheight) @sidepad 0;
+        position: absolute;
+        top: (0.5 * (@headerheight - @navheight));
+        right: 0;
+
         &:hover {
             opacity: 1;
         }
@@ -70,7 +82,7 @@ header.page {
         padding: 0 0 0 (@sidepad/2);
         margin: 0;
         font-size: inherit;
-        font-weight: 300;
+        font-weight: 400;
         line-height: (@headerheight - @navheight);
         text-shadow: 1px 1px 3px #000;
     }
@@ -79,7 +91,7 @@ header.page {
 /* navbar - - - - - - - - - - - - - - - - - - - - */
 
 /*
-    normal background: #242732 / 36,39,50
+    normal background: #242732 / 36,39,50 / @headerbackground
     darker: #1e212a / 30,33,42
     lighter: #2e3240 / 46,50,64
 */
@@ -91,7 +103,7 @@ nav {
     position: absolute;
     bottom: 0;
     width: 100%;
-    background: #242732;
+    background: @headerbackground;
 //    .background-linear-gradient(top, rgba(46,50,64, 1) 0, rgba(30,33,42, 1) 100%;);
     background: linear-gradient(top, rgba(46,50,64, 1) 0, rgba(30,33,42, 1) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#2e3240', endColorstr='#1e212a');
@@ -200,7 +212,50 @@ nav ul li ul {
     }
 }
 
+/* main content - - - - - - - - - - - - - - - - */
 
+.maincontent {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow-y: scroll;
+    margin: 0 @sidepad;
+    padding: @sidepad;
+    background: #efe6c5;
+    line-height: 1.6;
+
+    .textcolumn {
+        // limits the width of text to readable size.
+        max-width: 40em;
+        margin: 0 auto;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-weight: 900;
+    }
+
+    .credits {
+        padding: 1.5em 0.5em 2em;
+        // spread back over the normal page padding so we're edge-to-edge
+        margin: @sidepad (-50% * (@sidepad + @sidepad) / (100 - @sidepad - @sidepad) ) 0;
+
+        text-align: center;
+        background: white;
+        -webkit-box-shadow: inset 0 0.5em 0.5em -0.25em rgba(0,0,0, 0.25), inset 0 -0.5em 0.5em -0.25em rgba(0,0,0, 0.25);
+        -moz-box-shadow:    inset 0 0.5em 0.5em -0.25em rgba(0,0,0, 0.25), inset 0 -0.5em 0.5em -0.25em rgba(0,0,0, 0.25);
+        box-shadow:         inset 0 0.5em 0.5em -0.25em rgba(0,0,0, 0.25), inset 0 -0.5em 0.5em -0.25em rgba(0,0,0, 0.25);
+
+        a {
+            display: inline-block;
+            margin: 1em 2em;
+            vertical-align: middle;
+        }
+
+        img { border: none; }
+    }
+}
 
 /* footer - - - - - - - - - - - - - - - - - - - */
 
@@ -330,7 +385,7 @@ div.mspp-panel > .mspp-page {
                 padding: 1em 0 0.75em;
                 margin: 0;
                 font-size: inherit;
-                font-weight: bold;
+                font-weight: 900;
                 opacity: 0.8;
             }
 

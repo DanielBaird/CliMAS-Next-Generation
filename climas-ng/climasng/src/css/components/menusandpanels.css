@@ -71,6 +71,7 @@
 
 .mspp-main-menu li.current ul { /* -------------- current sub menu */
     display: block;
+    white-space: nowrap;
 }
 
 .mspp-main-menu ul li a { /* ------------------- submenu item text */

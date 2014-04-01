@@ -1,9 +1,12 @@
-var Region, Regions;
+(function() {
+  var Region, Regions;
 
-Region = require('../models/region');
+  Region = require('../models/region');
 
-Regions = Backbone.Collection.extend({
-  model: Region
-});
+  Regions = Backbone.Collection.extend({
+    model: Region
+  });
 
-module.exports = Regions;
+  module.exports = Regions;
+
+}).call(this);

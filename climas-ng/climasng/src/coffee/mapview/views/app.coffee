@@ -4,6 +4,7 @@
 # Backbone = require 'backbone'
 # L = require 'leaflet'
 MapLayer = require '../models/maplayer'
+require '../util/shims'
 
 # disable the jshint warning about "did you mean to return a
 # conditional" which crops up all the time in coffeescript compiled
@@ -12,11 +13,12 @@ MapLayer = require '../models/maplayer'
 
 # -------------------------------------------------------------------
 debug = (itemToLog, itemLevel)->
-    levels = ['debug', 'message', 'warning']
+    levels = ['verydebug', 'debug', 'message', 'warning']
 
-    threshold = 'debug'
+    threshold = 'verydebug'
+    # threshold = 'debug'
     # threshold = 'message'
-    itemLevel = levels[0] unless itemLevel
+    itemLevel = 'debug' unless itemLevel
 
     thresholdNum = levels.indexOf threshold
     messageNum = levels.indexOf itemLevel
@@ -36,7 +38,11 @@ AppView = Backbone.View.extend {
     tagName: 'div'
     className: 'splitmap showforms'
     id: 'splitmap'
-
+    # ---------------------------------------------------------------
+    # some settings
+    speciesDataUrl: "#{location.protocol}//#{location.host}/speciesdata"
+    rasterApiUrl: "#{location.protocol}//#{location.hostname}:10600/api/raster/1/wms_data_url"
+    # ---------------------------------------------------------------
     # tracking the splitter bar
     trackSplitter: false
     trackPeriod: 100
@@ -44,6 +50,8 @@ AppView = Backbone.View.extend {
     events:
         'click .btn-change': 'toggleForms'
         'click .btn-compare': 'toggleSplitter'
+        'click .btn-copy-ltr': 'copyMapLeftToRight'
+        'click .btn-copy-rtl': 'copyMapRightToLeft'
         'leftmapupdate': 'leftSideUpdate'
         'rightmapupdate': 'rightSideUpdate'
         'change select.left': 'leftSideUpdate'
@@ -110,13 +118,41 @@ AppView = Backbone.View.extend {
     # ---------------------------------------------------------------
     # map interaction
     # ---------------------------------------------------------------
+    copyMapLeftToRight: ()->
+        debug 'AppView.copyMapLeftToRight'
+
+        return unless @leftInfo
+
+        @$('#rightmapspp').val @leftInfo.speciesName
+        @$('#rightmapyear').val @leftInfo.year
+        @$('#rightmapscenario').val @leftInfo.scenario
+        @$('#rightmapgcm').val @leftInfo.gcm
+
+        @rightSideUpdate()
+    # ---------------------------------------------------------------
+    copyMapRightToLeft: ()->
+        debug 'AppView.copyMapRightToLeft'
+
+        return unless @rightInfo
+
+        @$('#leftmapspp').val @rightInfo.speciesName
+        @$('#leftmapyear').val @rightInfo.year
+        @$('#leftmapscenario').val @rightInfo.scenario
+        @$('#leftmapgcm').val @rightInfo.gcm
+
+        @leftSideUpdate()
+    # ---------------------------------------------------------------
     leftSideUpdate: ()->
         debug 'AppView.leftSideUpdate'
 
         sppName = @$('#leftmapspp').val()
 
         # bail if that's not a real species
-        return false unless sppName in @speciesSciNameList
+        if sppName in @speciesSciNameList
+            @$('.btn-copy-rtl').prop 'disabled', false
+        else
+            @$('.btn-copy-rtl').prop 'disabled', true
+            return false
 
         newLeftInfo = {
             speciesName: sppName
@@ -152,7 +188,11 @@ AppView = Backbone.View.extend {
         sppName = @$('#rightmapspp').val()
 
         # bail if that's not a real species
-        return false unless sppName in @speciesSciNameList
+        if sppName in @speciesSciNameList
+            @$('.btn-copy-ltr').prop 'disabled', false
+        else
+            @$('.btn-copy-ltr').prop 'disabled', true
+            return false
 
         newRightInfo = {
             speciesName: sppName
@@ -216,21 +256,25 @@ AppView = Backbone.View.extend {
             sideInfo.year
         ].join '_'
         futureModelPoint = '1990' if sideInfo.year == 'baseline'
-        rasterApiUrl = 'http://localhost:10600/api/raster/1/wms_data_url'
         mapData = [
-            'http://localhost:6543/speciesdata'
+            @speciesDataUrl
             sideInfo.speciesName.replace(' ', '_')
             'output'
             futureModelPoint + '.asc.gz'
         ].join '/'
 
-        layer = L.tileLayer.wms rasterApiUrl, {
+        layer = L.tileLayer.wms @rasterApiUrl, {
             DATA_URL: mapData
             # layers: 'Demo WMS'
             layers: 'DEFAULT'
             format: 'image/png'
             transparent: true
-        }
+            }
+
+        # add a class to our element when there's tiles loading
+        loadClass = '' + side + 'loading'
+        layer.on 'loading', ()=> @$el.addClass loadClass
+        layer.on 'load', ()=> @$el.removeClass loadClass
 
         layer.addTo @map
 
@@ -371,6 +415,7 @@ AppView = Backbone.View.extend {
             rightMap = $ @rightLayer.getContainer()
 
         if @$el.hasClass 'split'
+
             # we're still in split mode
             newLeftWidth = @splitThumb.position().left + (@splitThumb.width() / 2.0)
 
@@ -391,17 +436,29 @@ AppView = Backbone.View.extend {
             rightRight = bottomRight.x
 
             @splitLine.css 'left', newLeftWidth
-            @leftTag.css 'clip', "rect(0 #{newLeftWidth}px auto 0)"
-            leftMap.css 'clip', "rect(#{layerTop}px #{splitX}px #{layerBottom}px #{leftLeft}px)" if @leftLayer
-            rightMap.css 'clip', "rect(#{layerTop}px #{rightRight}px #{layerBottom}px #{splitX}px)" if @rightLayer
+
+            ##### have to use attr to set style, for this to work in frickin IE8.
+            # @leftTag.css 'clip', "rect(0, #{newLeftWidth}px, auto, 0)"
+            @leftTag.attr 'style', "clip: rect(0, #{newLeftWidth}px, auto, 0)"
+
+            ##### have to use attr to set style, for this to work in IE8.
+            # leftMap.css 'clip', "rect(#{layerTop}px, #{splitX}px, #{layerBottom}px, #{leftLeft}px)" if @leftLayer
+            # rightMap.css 'clip', "rect(#{layerTop}px, #{rightRight}px, #{layerBottom}px, #{splitX}px)" if @rightLayer
+            leftMap.attr 'style', "clip: rect(#{layerTop}px, #{splitX}px, #{layerBottom}px, #{leftLeft}px)" if @leftLayer
+            rightMap.attr 'style', "clip: rect(#{layerTop}px, #{rightRight}px, #{layerBottom}px, #{splitX}px)" if @rightLayer
 
         else
             # we're not in split mode (this is probably the last
             # resizeThings call before exiting split mode), so go
             # full left side only.
-            @leftTag.css 'clip', 'inherit'
-            leftMap.css 'clip', 'inherit' if @leftLayer
-            rightMap.css 'clip', 'rect(0,0,0,0)' if @rightLayer
+            ##### have to set style attr for IE8 to work.
+            # @leftTag.css 'clip', 'inherit'
+            # leftMap.css 'clip', 'inherit' if @leftLayer
+            # rightMap.css 'clip', 'rect(0,0,0,0)' if @rightLayer
+
+            @leftTag.attr 'style', 'clip: inherit'
+            leftMap.attr 'style', 'clip: inherit' if @leftLayer
+            rightMap.attr 'style', 'clip: rect(0,0,0,0)' if @rightLayer
 
     # ---------------------------------------------------------------
     stopSplitterTracking: ()->
@@ -433,12 +490,14 @@ AppView = Backbone.View.extend {
     # templates here
     # ---------------------------------------------------------------
     layout: _.template """
-        <div class="splitline"></div>
+        <div class="splitline">&nbsp;</div>
         <div class="splitthumb"><span>&#x276e; &#x276f;</span></div>
         <div class="left tag"><%= leftTag %></div>
         <div class="right tag"><%= rightTag %></div>
         <div class="left form"><%= leftForm %></div>
         <div class="right form"><%= rightForm %></div>
+        <div class="left loader"><img src="/static/images/spinner.loadinfo.net.gif" /></div>
+        <div class="right loader"><img src="/static/images/spinner.loadinfo.net.gif" /></div>
         <div id="mapwrapper"><div id="map"></div></div>
     """
     # ---------------------------------------------------------------
@@ -451,14 +510,19 @@ AppView = Backbone.View.extend {
         </div>
         <div class="edit">
             <input id="leftmapspp" name="leftmapspp" placeholder="&hellip; species or group &hellip;" />
-            <button class="btn-change">done</button>
+            <!--
+            <button class="btn-change">hide settings</button>
             <button class="btn-compare">compare +/-</button>
+            -->
         </div>
     """
     # ---------------------------------------------------------------
     rightTag: _.template """
         <div class="show">
             <span class="rightlayername">(no distribution)</span>
+            <br>
+            <button class="btn-change">settings</button>
+            <button class="btn-compare">show/hide comparison map</button>
         </div>
         <div class="edit">
             <input id="rightmapspp" name="rightmapspp" placeholder="&hellip; species or group &hellip;" />
@@ -467,6 +531,8 @@ AppView = Backbone.View.extend {
     # ---------------------------------------------------------------
     leftForm: _.template """
         <p>
+        <button class="btn-copy-rtl">copy right map &laquo;</button>
+        </p><p>
         <select class="left" id="leftmapyear">
             <option value="baseline">baseline</option>
             <option value="2015">2015</option>
@@ -485,14 +551,16 @@ AppView = Backbone.View.extend {
             <option value="csiro-mk30">CSIRO Mark 3.0</option>
         </select>
         </p><p>
-        <button class="btn-change">done</button>
+        <button class="btn-change">hide settings</button>
         </p><p>
-        <button class="btn-compare">compare + / -</button>
+        <button class="btn-compare">compare +/-</button>
         </p>
     """
     # ---------------------------------------------------------------
     rightForm: _.template """
         <p>
+        <button class="btn-copy-ltr">&raquo; copy left map</button>
+        </p><p>
         <select class="right" id="rightmapyear">
             <option value="baseline">baseline</option>
             <option value="2015">2015</option>
@@ -511,7 +579,7 @@ AppView = Backbone.View.extend {
             <option value="csiro-mk30">CSIRO Mark 3.0</option>
         </select>
         </p><p>
-        <button class="btn-change">done</button>
+        <button class="btn-change">hide settings</button>
         </p><p>
         <button class="btn-compare">compare +/-</button>
         </p>
