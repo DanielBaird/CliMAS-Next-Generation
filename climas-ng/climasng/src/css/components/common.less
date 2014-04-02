@@ -30,6 +30,8 @@ a {
 }
 
 @sidepad: 4%;
+// innersidepad is the size of sidepad, if you've been narrowed by the sidepad.
+@innersidepad: (100% * @sidepad / (100% - @sidepad - @sidepad) );
 
 /* header - - - - - - - - - - - - - - - - - - - - */
 
@@ -48,12 +50,22 @@ header.page {
         float: left;
         padding: 0 0 0 @sidepad;
         margin: 0;
-        font-size: 50px;
+        font-size: (@headerheight / 5);
         letter-spacing: 0.1em;
         font-weight: 300;
         line-height: (@headerheight - @navheight);
         text-align: left;
         text-shadow: 2px 2px 5px #000;
+    }
+    p { // p in the header is a subheading
+        color: lighten(#efe6c5, 8%);
+        float: left;
+        padding: 0 0 0 (@sidepad);
+        margin: 0;
+        font-size: inherit;
+        font-weight: 400;
+        line-height: (@headerheight - @navheight);
+        text-shadow: 1px 1px 3px #000;
     }
 
     @logopad: 8px;
@@ -77,15 +89,6 @@ header.page {
         }
     }
 
-    p { // p in the header is a subheading
-        float: left;
-        padding: 0 0 0 (@sidepad/2);
-        margin: 0;
-        font-size: inherit;
-        font-weight: 400;
-        line-height: (@headerheight - @navheight);
-        text-shadow: 1px 1px 3px #000;
-    }
 }
 
 /* navbar - - - - - - - - - - - - - - - - - - - - */
@@ -104,8 +107,7 @@ nav {
     bottom: 0;
     width: 100%;
     background: @headerbackground;
-//    .background-linear-gradient(top, rgba(46,50,64, 1) 0, rgba(30,33,42, 1) 100%;);
-    background: linear-gradient(top, rgba(46,50,64, 1) 0, rgba(30,33,42, 1) 100%);
+    background: linear-gradient(to bottom, rgba(46,50,64, 1) 0, rgba(30,33,42, 1) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#2e3240', endColorstr='#1e212a');
 }
 
@@ -237,9 +239,9 @@ nav ul li ul {
     }
 
     .credits {
-        padding: 1.5em 0.5em 2em;
+        padding: 1.5em 0 2em;
         // spread back over the normal page padding so we're edge-to-edge
-        margin: @sidepad (-50% * (@sidepad + @sidepad) / (100 - @sidepad - @sidepad) ) 0;
+        margin: @sidepad (-1 * @innersidepad) 0;
 
         text-align: center;
         background: white;

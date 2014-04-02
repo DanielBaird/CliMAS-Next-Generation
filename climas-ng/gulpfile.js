@@ -101,7 +101,7 @@ gulp.task('cssbuild', ['cssclean'], function() {
     return gulp.src(cssSourcePaths)
         .pipe(plugins.less())
         .on('error', bail)
-        .pipe(plugins.autoprefixer())
+        .pipe(plugins.autoprefixer("> 1%", "last 3 versions", "ie > 7", "ff > 20", "Opera 12.1"))
         .pipe(gulp.dest('climasng/static/css/'))
         .pipe(plugins.rename({suffix: '.min'}))
         .pipe(plugins.minifyCss())

@@ -680,12 +680,22 @@ header.page h1 {
   float: left;
   padding: 0 0 0 4%;
   margin: 0;
-  font-size: 50px;
+  font-size: 24px;
   letter-spacing: 0.1em;
   font-weight: 300;
   line-height: 75px;
   text-align: left;
   text-shadow: 2px 2px 5px #000;
+}
+header.page p {
+  color: #f8f4e5;
+  float: left;
+  padding: 0 0 0 4%;
+  margin: 0;
+  font-size: inherit;
+  font-weight: 400;
+  line-height: 75px;
+  text-shadow: 1px 1px 3px #000;
 }
 header.page img.logo {
   float: right;
@@ -703,15 +713,6 @@ header.page img.logo {
 header.page img.logo:hover {
   opacity: 1;
 }
-header.page p {
-  float: left;
-  padding: 0 0 0 2%;
-  margin: 0;
-  font-size: inherit;
-  font-weight: 400;
-  line-height: 75px;
-  text-shadow: 1px 1px 3px #000;
-}
 /* navbar - - - - - - - - - - - - - - - - - - - - */
 /*
     normal background: #242732 / 36,39,50 / @headerbackground
@@ -723,9 +724,9 @@ nav {
   bottom: 0;
   width: 100%;
   background: #242732;
-  background: -webkit-gradient(linear, left top, left bottom, from(top), color-stop(0, #2e3240), to(#1e212a));
+  background: -webkit-gradient(linear, left top, left bottom, from(#2e3240), to(#1e212a));
   background: -webkit-linear-gradient(top, #2e3240 0, #1e212a 100%);
-  background: linear-gradient(top, #2e3240 0, #1e212a 100%);
+  background: linear-gradient(to bottom, #2e3240 0, #1e212a 100%);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#2e3240', endColorstr='#1e212a');
 }
 nav ul {
@@ -842,7 +843,7 @@ nav ul li ul > li:hover {
   font-weight: 900;
 }
 .maincontent .credits {
-  padding: 1.5em 0.5em 2em;
+  padding: 1.5em 0 2em;
   margin: 4% -4.34782609% 0;
   text-align: center;
   background: white;
