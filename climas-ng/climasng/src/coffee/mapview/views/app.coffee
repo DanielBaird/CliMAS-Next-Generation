@@ -41,7 +41,7 @@ AppView = Backbone.View.extend {
     # ---------------------------------------------------------------
     # some settings
     speciesDataUrl: "#{location.protocol}//#{location.host}/speciesdata"
-    rasterApiUrl: "#{location.protocol}//#{location.hostname}:10600/api/raster/1/wms_data_url"
+    rasterApiUrl: "#{location.protocol}//localhost:10600/api/raster/1/wms_data_url"
     # ---------------------------------------------------------------
     # tracking the splitter bar
     trackSplitter: false
