@@ -33,7 +33,7 @@
     className: 'splitmap showforms',
     id: 'splitmap',
     speciesDataUrl: "" + location.protocol + "//" + location.host + "/speciesdata",
-    rasterApiUrl: "" + location.protocol + "//" + location.hostname + ":10600/api/raster/1/wms_data_url",
+    rasterApiUrl: "" + location.protocol + "//localhost:10600/api/raster/1/wms_data_url",
     trackSplitter: false,
     trackPeriod: 100,
     events: {

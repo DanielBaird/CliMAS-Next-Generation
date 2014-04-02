@@ -41,8 +41,10 @@ define [
                         if r.get('region_type_regiontype') == rt.get('regiontype')
                             region_list.push AppView.region_option(r.attributes)
 
+                    disabled = (rt.get('regiontype') isnt 'State')
+
                     # merge the region list into the region type attributes
-                    info = _.extend({regions: region_list.join('')}, rt.attributes)
+                    info = _.extend({regions: region_list.join(''), disabled: disabled}, rt.attributes)
                     type_choices.push AppView.type_choice(info)
 
             form_parts.push AppView.type_chooser({ regiontypes: type_choices.join('') })
@@ -384,7 +386,7 @@ Let us know if you think we're missing data for your region.
         # -----------------------------------------------------------
         type_choice: _.template """
                 <div class="regiontypeselector">
-                    <label><input type="radio" class="rtype" name="regiontyperadio"
+                    <label><input type="radio" class="rtype" name="regiontyperadio" <% if (disabled) { print('disabled="true"'); } %>
                             value="<%= regiontype %>"><%= regiontypename_plural %></label>
                     <select class="regionselect" name="chosen_<%= regiontype %>" id="chosen_<%= regiontype %>">
                         <option disabled="disabled" selected="selected" value="invalid">choose a region...</option>

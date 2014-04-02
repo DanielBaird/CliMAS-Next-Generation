@@ -45,9 +45,11 @@ def main(global_config, **settings):
     config.add_route('data', '/data/{data_name}/')
     config.add_route('doc', '/info/{doc_name}/')
 
+    config.add_route('oldreports', '/oldreports/')
+
+
     config.add_route('oldmap', '/oldmap/')
     config.add_route('oldspecies', '/oldspecies/{region}/{year}/speciestables.html')
-    config.add_route('oldreport', '/oldreport/')
     config.add_route('reflector', '/reflector/')
 
     config.add_route('speciesdata', '/speciesdata/{data_name:.*}')

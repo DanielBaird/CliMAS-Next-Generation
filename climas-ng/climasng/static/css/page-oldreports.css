@@ -669,7 +669,7 @@ a:hover {
 header.page {
   position: relative;
   z-index: 10;
-  height: 120px;
+  height: 200px;
   padding: 0;
   margin: 0;
   overflow: hidden;
@@ -683,13 +683,13 @@ header.page h1 {
   font-size: 50px;
   letter-spacing: 0.1em;
   font-weight: 300;
-  line-height: 75px;
+  line-height: 155px;
   text-align: left;
   text-shadow: 2px 2px 5px #000;
 }
 header.page img.logo {
   float: right;
-  height: 59px;
+  height: 139px;
   margin: 8px 4% 0;
   opacity: 0.25;
   -webkit-transition: 0.5s ease-in-out;
@@ -697,7 +697,7 @@ header.page img.logo {
   height: 55px;
   margin: -27.5px 4% 0;
   position: absolute;
-  top: 37.5px;
+  top: 77.5px;
   right: 0;
 }
 header.page img.logo:hover {
@@ -709,7 +709,7 @@ header.page p {
   margin: 0;
   font-size: inherit;
   font-weight: 400;
-  line-height: 75px;
+  line-height: 155px;
   text-shadow: 1px 1px 3px #000;
 }
 /* navbar - - - - - - - - - - - - - - - - - - - - */
@@ -892,7 +892,7 @@ footer.page a {
 div.mspp-panel {
   z-index: 2;
   position: absolute;
-  top: 120px;
+  top: 200px;
   -webkit-box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.5);
   box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.5);
   width: 92%;
@@ -1145,7 +1145,7 @@ body {
 }
 .content {
   position: absolute;
-  top: 120px;
+  top: 200px;
   -webkit-box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.5);
   box-shadow: 0 6px 12px -6px rgba(0, 0, 0, 0.5);
   right: 4%;

@@ -20,7 +20,7 @@
         form_parts = [];
         type_choices = [];
         this.region_types.each(function(rt) {
-          var info, region_list;
+          var disabled, info, region_list;
           if (rt.get('regiontype') !== 'National') {
             region_list = [];
             me.regions.each(function(r) {
@@ -28,8 +28,10 @@
                 return region_list.push(AppView.region_option(r.attributes));
               }
             });
+            disabled = rt.get('regiontype') !== 'State';
             info = _.extend({
-              regions: region_list.join('')
+              regions: region_list.join(''),
+              disabled: disabled
             }, rt.attributes);
             return type_choices.push(AppView.type_choice(info));
           }
@@ -304,7 +306,7 @@
       format_chooser: _.template("<div class=\"onefield formatselection formsection\">\n    <h3>Select an output format</h3>\n    <%= formats %>\n    <button class=\"generate\">generate report</button>\n</div>"),
       year_option: _.template("<label><input type=\"radio\" class=\"year\" name=\"yearradio\" value=\"<%= year %>\">\n    <%= year %>\n</label>"),
       year_chooser: _.template("<div class=\"onefield yearselection formsection\">\n    <h3>Select a year</h3>\n    <%= years %>\n</div>"),
-      type_choice: _.template("<div class=\"regiontypeselector\">\n    <label><input type=\"radio\" class=\"rtype\" name=\"regiontyperadio\"\n            value=\"<%= regiontype %>\"><%= regiontypename_plural %></label>\n    <select class=\"regionselect\" name=\"chosen_<%= regiontype %>\" id=\"chosen_<%= regiontype %>\">\n        <option disabled=\"disabled\" selected=\"selected\" value=\"invalid\">choose a region...</option>\n        <%= regions %>\n    </select>\n</div>"),
+      type_choice: _.template("<div class=\"regiontypeselector\">\n    <label><input type=\"radio\" class=\"rtype\" name=\"regiontyperadio\" <% if (disabled) { print('disabled=\"true\"'); } %>\n            value=\"<%= regiontype %>\"><%= regiontypename_plural %></label>\n    <select class=\"regionselect\" name=\"chosen_<%= regiontype %>\" id=\"chosen_<%= regiontype %>\">\n        <option disabled=\"disabled\" selected=\"selected\" value=\"invalid\">choose a region...</option>\n        <%= regions %>\n    </select>\n</div>"),
       region_option: _.template("<option value=\"<%= id %>\"><%= name %></option>"),
       type_chooser: _.template("<div class=\"onefield regiontypeselection formsection\">\n    <h3>Select a region</h3>\n    <%= regiontypes %>\n    <a id=\"regiondownloadlink\" href=\"\">download region data</a>\n</div>")
     });
