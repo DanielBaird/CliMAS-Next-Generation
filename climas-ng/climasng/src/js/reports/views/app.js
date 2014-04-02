@@ -1,8 +1,6 @@
 (function() {
-  var AppView, MapLayer, debug,
+  var AppView, debug,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
-
-  MapLayer = require('../models/maplayer');
 
   require('../util/shims');
 

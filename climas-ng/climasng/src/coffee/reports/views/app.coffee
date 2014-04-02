@@ -3,7 +3,8 @@
 # _ = require 'lodash'
 # Backbone = require 'backbone'
 # L = require 'leaflet'
-MapLayer = require '../models/maplayer'
+
+# MapLayer = require '../models/maplayer'
 require '../util/shims'
 
 # disable the jshint warning about "did you mean to return a
