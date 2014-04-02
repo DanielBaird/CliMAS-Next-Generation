@@ -40,22 +40,14 @@
 				<a href="${request.route_path('reports')}">Create Reports</a>
 			</li>
 
-			<!-- old stuff - - - - - - - - - - - - - - - - - - -  -->
-			<!--
- 			<li tal:condition="request.matched_route.name in ['oldmap', 'oldreport']" class="current">
-				<a>old CliMAS tools</a>
-				<ul>
-					<li tal:condition="request.matched_route.name == 'oldreport'" class="current"><a>old reports</a></li>
-					<li tal:condition="not:request.matched_route.name == 'oldreport'"><a href="${request.route_path('oldreport')}">old reports</a></li>
+			<!-- reports  - - - - - - - - - - - - - - - - - - - - -->
+			<li tal:condition="request.matched_route.name == 'oldreports'" class="current">
+				<a>(old reports)</a>
+			</li>
+			<li tal:condition="not:request.matched_route.name == 'oldreports'">
+				<a href="${request.route_path('oldreports')}">(old reports)</a>
+			</li>
 
-					<li tal:condition="request.matched_route.name == 'oldmap'" class="current"><a>old maps</a></li>
-					<li tal:condition="not:request.matched_route.name == 'oldmap'"><a href="${request.route_path('oldmap')}">old maps</a></li>
-				</ul>
-			</li>
-			<li tal:condition="not:request.matched_route.name in ['oldmap', 'oldspecies', 'oldreport']">
-				<a href="${request.route_path('oldreport')}">old CliMAS tools</a>
-			</li>
-			-->
 		</ul>
 	</nav>
 </header>

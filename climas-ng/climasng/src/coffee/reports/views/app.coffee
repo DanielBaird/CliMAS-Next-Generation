@@ -3,7 +3,8 @@
 # _ = require 'lodash'
 # Backbone = require 'backbone'
 # L = require 'leaflet'
-MapLayer = require '../models/maplayer'
+
+# MapLayer = require '../models/maplayer'
 require '../util/shims'
 
 # disable the jshint warning about "did you mean to return a
@@ -15,9 +16,9 @@ require '../util/shims'
 debug = (itemToLog, itemLevel)->
     levels = ['verydebug', 'debug', 'message', 'warning']
 
-    # threshold = 'verydebug'
+    threshold = 'verydebug'
     # threshold = 'debug'
-    threshold = 'message'
+    # threshold = 'message'
     itemLevel = 'debug' unless itemLevel
 
     thresholdNum = levels.indexOf threshold

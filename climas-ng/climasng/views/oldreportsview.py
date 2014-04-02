@@ -7,12 +7,12 @@ import pyramid.httpexceptions as httpexceptions
 
 # -------------------------------------------------------------------
 
-class OldReportView(object):
+class OldReportsView(object):
 
     def __init__(self, request):
         self.request = request
 
-    @view_config(route_name='oldreport', renderer='../templates/oldreport.html.pt')
+    @view_config(route_name='oldreports', renderer='../templates/oldreports.html.pt')
     def __call__(self):
         return {}
 

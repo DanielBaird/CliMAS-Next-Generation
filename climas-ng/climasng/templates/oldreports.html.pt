@@ -21,37 +21,16 @@
 	</script>
 
 	<link href="${request.static_path('climasng:static/images/favicon-trans.png')}" rel="shortcut icon" />
-	<link href='http://fonts.googleapis.com/css?family=Advent+Pro:100' rel='stylesheet' type='text/css'>
 
 	<!-- this page's css -->
-	<link href="${request.static_path('climasng:static/css/page-oldreport.css')}" rel="stylesheet" />
+	<link href="${request.static_path('climasng:static/css/page-oldreports.css')}" rel="stylesheet" />
 
 	<!-- the old reports used require.js, so here it is -->
 	<script data-main="${request.static_path('climasng:static/js/oldreports/main')}" src="${request.static_path('climasng:static/lib/require.js')}"></script>
 </head>
 
 <body>
-	<header class="page clearfix">
-		<h1>CliMAS</h1>
-		<a href="http://tropicaldatahub.org/">
-			<img class="logo" src="${request.static_path('climasng:static/images/tdhlogo.png')}" />
-		</a>
-		<p>Climate change and biodiversity in Australia</p>
-		<nav>
-			<ul class="main menu clearfix">
-				<li>
-					<a href="${request.route_path('map')}">View Maps</a>
-				</li>
-				<li class="current">
-					<a>Create Reports</a>
-				</li>
-				<li>
-					<a href="${request.route_path('map')}">About CliMAS</a>
-				</li>
-			</ul>
-		</nav>
-	</header>
-
+    <div metal:use-macro="load: partial.header.html.pt"></div><!-- ::partial:: -->
 	<div id="content" class="content">
 		<!-- generated form will go here -->
 	</div>
