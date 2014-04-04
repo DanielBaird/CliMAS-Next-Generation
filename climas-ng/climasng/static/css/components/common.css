@@ -185,7 +185,7 @@ nav ul li ul > li:hover {
   right: 0;
   overflow-y: scroll;
   margin: 0 4%;
-  padding: 4%;
+  padding: 3em 4%;
   background: #efe6c5;
   line-height: 1.6;
 }

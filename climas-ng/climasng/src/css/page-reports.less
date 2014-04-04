@@ -31,6 +31,100 @@ body { height: 100% }
     padding: 0;
 }
 
+#reportform {
+
+    .sectionlist {
+        width: 40%;
+        min-width: 30em;
+
+        .sectionselector {
+            margin-left: 4em;
+            border-top-right-radius: 2px;
+            border-bottom-right-radius: 2px;
+            background-image: linear-gradient(to left, rgba(0,200,0, 0.1), rgba(255,255,255, 0) 66%);
+
+            .name {
+                background: @bodybackground;
+                float: left;
+                font-weight: 900;
+                padding: 0.5em 0.5em 0.25em;
+                margin: 0 0.33em 0 -4em;
+                cursor: pointer;
+                border-radius: 2px;
+
+                &:after {
+                    content: ': ';
+                }
+
+                &:hover {
+                    background: lighten(@bodybackground, 5%);
+                }
+
+                input {
+                    margin: 0 0.5em 0 0;
+                }
+            }
+
+            .description {
+                padding: 0.5em 0.5em 0.66em 0;
+                margin: 0 0 0 1em;
+            }
+
+            .subsections {
+                margin-left: 2em;
+                padding: 0 0 1em 1em;
+                overflow: hidden;
+                transition: all 1s;
+
+                .subsectionintro {
+                    margin: 0 0 0.5em;
+                    font-style: italic;
+                }
+            }
+
+            &.hassubsections {
+                background-image: none;
+                border-left: 1px solid #ccc;
+                > .name {
+                    border-bottom: 1px solid #ccc;
+                }
+                &:after {
+                    // this makes a little horizontal tail at the bottom
+                    display: block;
+                    content: ' ';
+                    height: 1px;
+                    width: 1em;
+                    border-bottom: 1px solid #ccc;
+                }
+            }
+        }
+
+        .sectionselector .sectionselector {
+            // all nested sections have a little spacing at the
+            // botom to help the left-border line clearly include
+            // the contents.
+            // margin-bottom: 1em;
+        }
+
+        // vertical padding gets smaller for more-nested sections
+        .sectionselector { margin: 2em 0 2em 4em; }
+        .subsections .sectionselector { margin: 1em 0 1em 4em; }
+        .subsections .subsections .sectionselector { margin: 0.5em 0 0.5em 4em; }
+
+        .sectionselector.unselected {
+            background-image: linear-gradient(to left, rgba(200,0,0, 0.1), rgba(255,255,255, 0) 66%);
+
+            .description { opacity: 0.66; transition: all 0.25s; }
+            &:hover .description { opacity: 1; }
+
+            &.hassubsections { border-left: 1px solid rgba(255,255,255, 0.0001); }
+            > .subsections, > .subsectionintro, &:after {
+                display: none;
+            }
+        }
+    }
+}
+
 
 
 

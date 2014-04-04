@@ -3,6 +3,7 @@
 
 @background: #2d4048;
 @headerbackground: #242732;
+@bodybackground: #efe6c5;
 
 // go get Lato for much prettiness
 @import url(http://fonts.googleapis.com/css?family=Lato:300,400,900,400italic);
@@ -58,7 +59,7 @@ header.page {
         text-shadow: 2px 2px 5px #000;
     }
     p { // p in the header is a subheading
-        color: lighten(#efe6c5, 8%);
+        color: lighten(@bodybackground, 8%);
         float: left;
         padding: 0 0 0 (@sidepad);
         margin: 0;
@@ -171,7 +172,7 @@ nav .main.menu {
 
         > a {
 //            line-height: @navheight;
-            color: #efe6c5;
+            color: @bodybackground;
             text-shadow: 0 1px 0 rgba(46,50,64, 1), 0 -1px 0 rgba(30,33,42, 1);
             opacity: 0.5;
             filter: alpha(opacity=50);
@@ -209,7 +210,7 @@ nav ul li ul {
         border-radius: 3px 3px 0 0;
 
         &.current, &:hover {
-            background: #efe6c5;
+            background: @bodybackground;
         }
     }
 }
@@ -224,8 +225,8 @@ nav ul li ul {
     right: 0;
     overflow-y: scroll;
     margin: 0 @sidepad;
-    padding: @sidepad;
-    background: #efe6c5;
+    padding: 3em @sidepad;
+    background: @bodybackground;
     line-height: 1.6;
 
     .textcolumn {
@@ -303,7 +304,7 @@ div.mspp-panel {
     left: @sidepad;
     text-align: center;
     box-sizing: border-box;
-    background: #efe6c5;
+    background: @bodybackground;
     margin: 0;
     padding: 0;
     line-height: 1.4;

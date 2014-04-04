@@ -826,7 +826,7 @@ nav ul li ul > li:hover {
   right: 0;
   overflow-y: scroll;
   margin: 0 4%;
-  padding: 4%;
+  padding: 3em 4%;
   background: #efe6c5;
   line-height: 1.6;
 }
@@ -1048,4 +1048,93 @@ body {
   z-index: 1;
   min-height: 100px;
   padding: 0;
+}
+#reportform .sectionlist {
+  width: 40%;
+  min-width: 30em;
+}
+#reportform .sectionlist .sectionselector {
+  margin-left: 4em;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+  background-image: -webkit-gradient(linear, right top, left top, from(rgba(0, 200, 0, 0.1)), to(rgba(255, 255, 255, 0)));
+  background-image: -webkit-linear-gradient(right, rgba(0, 200, 0, 0.1), rgba(255, 255, 255, 0) 66%);
+  background-image: linear-gradient(to left, rgba(0, 200, 0, 0.1), rgba(255, 255, 255, 0) 66%);
+}
+#reportform .sectionlist .sectionselector .name {
+  background: #efe6c5;
+  float: left;
+  font-weight: 900;
+  padding: 0.5em 0.5em 0.25em;
+  margin: 0 0.33em 0 -4em;
+  cursor: pointer;
+  border-radius: 2px;
+}
+#reportform .sectionlist .sectionselector .name:after {
+  content: ': ';
+}
+#reportform .sectionlist .sectionselector .name:hover {
+  background: #f5efd9;
+}
+#reportform .sectionlist .sectionselector .name input {
+  margin: 0 0.5em 0 0;
+}
+#reportform .sectionlist .sectionselector .description {
+  padding: 0.5em 0.5em 0.66em 0;
+  margin: 0 0 0 1em;
+}
+#reportform .sectionlist .sectionselector .subsections {
+  margin-left: 2em;
+  padding: 0 0 1em 1em;
+  overflow: hidden;
+  -webkit-transition: all 1s;
+  transition: all 1s;
+}
+#reportform .sectionlist .sectionselector .subsections .subsectionintro {
+  margin: 0 0 0.5em;
+  font-style: italic;
+}
+#reportform .sectionlist .sectionselector.hassubsections {
+  background-image: none;
+  border-left: 1px solid #ccc;
+}
+#reportform .sectionlist .sectionselector.hassubsections > .name {
+  border-bottom: 1px solid #ccc;
+}
+#reportform .sectionlist .sectionselector.hassubsections:after {
+  display: block;
+  content: ' ';
+  height: 1px;
+  width: 1em;
+  border-bottom: 1px solid #ccc;
+}
+#reportform .sectionlist .sectionselector {
+  margin: 2em 0 2em 4em;
+}
+#reportform .sectionlist .subsections .sectionselector {
+  margin: 1em 0 1em 4em;
+}
+#reportform .sectionlist .subsections .subsections .sectionselector {
+  margin: 0.5em 0 0.5em 4em;
+}
+#reportform .sectionlist .sectionselector.unselected {
+  background-image: -webkit-gradient(linear, right top, left top, from(rgba(200, 0, 0, 0.1)), to(rgba(255, 255, 255, 0)));
+  background-image: -webkit-linear-gradient(right, rgba(200, 0, 0, 0.1), rgba(255, 255, 255, 0) 66%);
+  background-image: linear-gradient(to left, rgba(200, 0, 0, 0.1), rgba(255, 255, 255, 0) 66%);
+}
+#reportform .sectionlist .sectionselector.unselected .description {
+  opacity: 0.66;
+  -webkit-transition: all 0.25s;
+  transition: all 0.25s;
+}
+#reportform .sectionlist .sectionselector.unselected:hover .description {
+  opacity: 1;
+}
+#reportform .sectionlist .sectionselector.unselected.hassubsections {
+  border-left: 1px solid rgba(255, 255, 255, 0.0001);
+}
+#reportform .sectionlist .sectionselector.unselected > .subsections,
+#reportform .sectionlist .sectionselector.unselected > .subsectionintro,
+#reportform .sectionlist .sectionselector.unselected:after {
+  display: none;
 }
