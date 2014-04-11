@@ -22,7 +22,7 @@ debug = (itemToLog, itemLevel)->
 
     # threshold = 'verydebug'
     threshold = 'debug'
-    threshold = 'message'
+    # threshold = 'message'
     itemLevel = 'debug' unless itemLevel
 
     thresholdNum = levels.indexOf threshold

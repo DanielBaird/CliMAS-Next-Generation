@@ -13,7 +13,6 @@
     var levels, messageNum, threshold, thresholdNum;
     levels = ['verydebug', 'debug', 'message', 'warning'];
     threshold = 'debug';
-    threshold = 'message';
     if (!itemLevel) {
       itemLevel = 'debug';
     }
