@@ -41,7 +41,7 @@ define [
                         if r.get('region_type_regiontype') == rt.get('regiontype')
                             region_list.push AppView.region_option(r.attributes)
 
-                    disabled = (rt.get('regiontype') isnt 'State')
+                    disabled = (rt.get('regiontype') is 'IBRA')
 
                     # merge the region list into the region type attributes
                     info = _.extend({regions: region_list.join(''), disabled: disabled}, rt.attributes)

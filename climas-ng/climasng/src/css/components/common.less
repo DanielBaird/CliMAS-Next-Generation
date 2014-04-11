@@ -3,10 +3,10 @@
 
 @background: #2d4048;
 @headerbackground: #242732;
-@bodybackground: #efe6c5;
+@bodybackground: lighten(#efe6c5, 2%);
 
 // go get Lato for much prettiness
-@import url(http://fonts.googleapis.com/css?family=Lato:300,400,900,400italic);
+@import (less) url(http://fonts.googleapis.com/css?family=Lato:300,400,900,400italic);
 
 body {
     padding: 0;
@@ -34,10 +34,56 @@ a {
 // innersidepad is the size of sidepad, if you've been narrowed by the sidepad.
 @innersidepad: (100% * @sidepad / (100% - @sidepad - @sidepad) );
 
+/* disclaimer overlay - - - - - - - - - - - - - - */
+
+.disclaimer {
+    opacity: 0.66;
+    border-radius: 1em;
+    border: dotted black 2px;
+    transform: rotate(3deg);
+    position: absolute;
+    right: (3 * @sidepad);
+    top: -36em;
+    z-index: 10000;
+    box-sizing: border-box;
+    width: 18em;
+    height: 40em;
+    padding-top: 5em;
+    background: yellow;
+    transition: all 0.11s;
+
+    &.show {
+        opacity: 1;
+        top: -5em;
+        right: (3.5 * @sidepad);
+        transition: all 0.33s;
+    }
+    p {
+        margin: 0;
+        padding: 0.75em 2em;
+    }
+    h1 {
+        margin: 0;
+        padding: 0.5em 1em;
+        font-size: inherit;
+        letter-spacing: 0.1em;
+        display: block;
+        text-transform: uppercase;
+        text-align: center;
+    }
+    .bottom {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+}
+
 /* header - - - - - - - - - - - - - - - - - - - - */
 
 @headerheight: 120px;
 header.page {
+    opacity: 0.99;
     position: relative;
     z-index: 10;
     height: @headerheight;
@@ -108,7 +154,7 @@ nav {
     bottom: 0;
     width: 100%;
     background: @headerbackground;
-    background: linear-gradient(to bottom, rgba(46,50,64, 1) 0, rgba(30,33,42, 1) 100%);
+    background: linear-gradient(to bottom, rgb(46,50,64) 0, rgb(30,33,42) 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#2e3240', endColorstr='#1e212a');
 }
 
