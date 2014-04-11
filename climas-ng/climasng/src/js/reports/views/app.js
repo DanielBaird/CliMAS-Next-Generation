@@ -691,7 +691,7 @@
       regionSelector: _.template("<option value=\"<%= id %>\"><%= name %></option>"),
       yearSelector: _.template("<div class=\"yearrow\" id=\"year-<%= year %>\">\n    <label class=\"name\"><input\n        class=\"yearselector\"\n        name=\"yearselector\"\n        type=\"radio\"\n        value=\"<%= year %>\"\n    /> <%= year %></label>\n</div>"),
       sectionSelector: _.template("<div class=\"sectionselector\" id=\"section-<%= id %>\">\n    <label class=\"name\"\n        <% if (presence == 'required') { print('title=\"This section is required\"'); } %>\n    ><input\n        type=\"checkbox\"\n        value=\"<%= id %>\"\n        checked=\"checked\"\n        <% if (presence == 'required') { print('disabled=\"disabled\"'); } %>\n    /> <%= name %></label>\n    <p class=\"description\"><%= description %></p>\n\n</div>"),
-      subsections: _.template("<div class=\"subsections clearfix\">\n    <p class=\"subsectionintro\">Contains these subsections:</p>\n</div>")
+      subsections: _.template("<div class=\"subsections clearfix\">\n</div>")
     }
   });
 

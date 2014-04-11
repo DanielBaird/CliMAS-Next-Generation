@@ -660,7 +660,6 @@ AppView = Backbone.View.extend {
     # ---------------------------------------------------------------
     subsections: _.template """
         <div class="subsections clearfix">
-            <p class="subsectionintro">Contains these subsections:</p>
         </div>
     """
     # ---------------------------------------------------------------
