@@ -12,13 +12,17 @@ require '../util/shims'
 # code.
 ### jshint -W093 ###
 
+# disable the jshint warning about "use !== to compare with null"
+# which coffeescript compiled code sometimes triggers.
+### jshint -W041 ###
+
 # -------------------------------------------------------------------
 debug = (itemToLog, itemLevel)->
     levels = ['verydebug', 'debug', 'message', 'warning']
 
-    threshold = 'verydebug'
-    # threshold = 'debug'
-    # threshold = 'message'
+    # threshold = 'verydebug'
+    threshold = 'debug'
+    threshold = 'message'
     itemLevel = 'debug' unless itemLevel
 
     thresholdNum = levels.indexOf threshold
@@ -121,37 +125,83 @@ AppView = Backbone.View.extend {
                     },{
                         id: 'biodiversity'
                         name: 'Biodiversity Review'
-                        description: 'a description of the region\'s current and projected biodiversity. A description of the region\'s current and projected biodiversity. A description of the region\'s current and projected biodiversity. A description of the region\'s current and projected biodiversity.'
+                        description: 'a description of the region\'s current and projected biodiversity.'
                         presence: 'optional'
                         sections: [
                             {
                                 id: 'overall'
                                 name: 'Overall'
-                                description: 'current and projected biodiversity over all modelled species'
+                                description: 'current and projected biodiversity over all modelled species.'
                                 presence: 'optional'
                                 sections: []
                             },{
                                 id: 'mammals'
                                 name: 'Mammals'
-                                description: 'current and projected biodiversity over mammal species'
+                                description: 'current and projected biodiversity over mammal species.'
                                 presence: 'optional'
                                 sections: []
                             },{
                                 id: 'amphibians'
                                 name: 'Amphibians'
-                                description: 'current and projected biodiversity over amphibian species'
+                                description: 'current and projected biodiversity over amphibian species.'
                                 presence: 'optional'
-                                sections: []
+                                sections: [{
+                                        id: 'allamphibians'
+                                        name: 'All'
+                                        description: 'current and projected biodiversity over all amphibian species.'
+                                        presence: 'optional'
+                                        sections: []
+                                    },{
+                                        id: 'streamfrogs'
+                                        name: 'Stream frogs'
+                                        description: 'current and projected biodiversity over stream frogs.'
+                                        presence: 'optional'
+                                        sections: []
+                                    }
+                                ]
                             },{
                                 id: 'reptiles'
                                 name: 'Reptiles'
-                                description: 'current and projected biodiversity over reptile species'
+                                description: 'current and projected biodiversity over reptile species.'
                                 presence: 'optional'
-                                sections: []
+                                sections: [{
+                                        id: 'allreptiles'
+                                        name: 'All'
+                                        description: 'current and projected biodiversity over all reptile species.'
+                                        presence: 'optional'
+                                        sections: []
+                                    },{
+                                        id: 'turtles'
+                                        name: 'Turtles'
+                                        description: 'current and projected biodiversity over turtles.'
+                                        presence: 'optional'
+                                        sections: []
+                                    }
+                                ]
                             },{
                                 id: 'birds'
                                 name: 'Birds'
-                                description: 'current and projected biodiversity over bird species'
+                                description: 'current and projected biodiversity over bird species.'
+                                presence: 'optional'
+                                sections: []
+                            },{
+                                id: 'freshwaterfish'
+                                name: 'Freshwater fish'
+                                description: 'current and projected biodiversity over freshwater fish species.'
+                                presence: 'optional'
+                                sections: []
+                            }
+                        ]
+                    },{
+                        id: 'pests'
+                        name: 'Pest Species'
+                        description: 'climate suitability and distribution of pest species.'
+                        presence: 'optional'
+                        sections: [
+                            {
+                                id: 'pestplants'
+                                name: 'Pest Plants'
+                                description: 'summary of projections for selected pest plants.'
                                 presence: 'optional'
                                 sections: []
                             }
@@ -175,9 +225,21 @@ AppView = Backbone.View.extend {
                                 presence: 'optional'
                                 sections: []
                             },{
+                                id: 'observedstreamfrogslist'
+                                name: 'Steam Frogs Present'
+                                description: 'list of stream frogs currently or projected to be present in region.'
+                                presence: 'optional'
+                                sections: []
+                            },{
                                 id: 'observedreptileslist'
                                 name: 'Reptiles Present'
                                 description: 'list of reptiles currently or projected to be present in region.'
+                                presence: 'optional'
+                                sections: []
+                            },{
+                                id: 'observedturtleslist'
+                                name: 'Turtles Present'
+                                description: 'list of turtles currently or projected to be present in region.'
                                 presence: 'optional'
                                 sections: []
                             },{
@@ -235,8 +297,6 @@ AppView = Backbone.View.extend {
                 selector.removeClass 'unselected'
             else
                 selector.addClass 'unselected'
-
-            debug "handling #{ parent }.#{ selectionControl.val() }"
 
             if item.sections?.length > 0
                 @handleSectionSelection item.sections, item.id
@@ -325,6 +385,10 @@ AppView = Backbone.View.extend {
                         name: 'IBRA bioregion'
                         regions: []
                     },{
+                        id: 'park'
+                        name: 'Parks, reserves'
+                        regions: []
+                    },{
                         id: 'state'
                         name: 'State, territory'
                         regions: [
@@ -382,8 +446,7 @@ AppView = Backbone.View.extend {
                 else
                     selector.addClass 'regionselected'
                     # note the region data for later..
-                    debug @selectedRegion
-                    @selectedRegionInfo = _.find regionType.regions, (region)=> debug region; region.id == @selectedRegion
+                    @selectedRegionInfo = _.find regionType.regions, (region)=> region.id == @selectedRegion
             else
                 selector.removeClass 'typeselected'
 
@@ -466,15 +529,14 @@ AppView = Backbone.View.extend {
         parentage = $(sectionDom).parents '.sectionselector'
         parentIds = parentage.map( (i, elem)=>
             @sectionId elem
-        ).get()
+        ).get().reverse()
         # add this section's own id
         parentIds.push @sectionId(sectionDom)
 
         # now walk into the sections hierarchy
         info = { sections: @possibleSections }
+
         parentIds.forEach (id)->
-            debug 'id is ' + id
-            debug info
             info = _.filter(info.sections, (section)-> section.id == id)[0]
 
         # finally we have a pointer to the info for this section
@@ -486,7 +548,6 @@ AppView = Backbone.View.extend {
         list = []
         subsections = $(sectionDom).children('.subsections')
         subsections.children('.sectionselector').not('.unselected').each (i, elem)=>
-            debug 'doing ' + elem.innerHTML
             name = @sectionName(elem)
             subs = @subSectionList(elem)
             if subs isnt ''

@@ -6,10 +6,14 @@
 
   /* jshint -W093 */
 
+
+  /* jshint -W041 */
+
   debug = function(itemToLog, itemLevel) {
     var levels, messageNum, threshold, thresholdNum;
     levels = ['verydebug', 'debug', 'message', 'warning'];
-    threshold = 'verydebug';
+    threshold = 'debug';
+    threshold = 'message';
     if (!itemLevel) {
       itemLevel = 'debug';
     }
@@ -96,37 +100,85 @@
             }, {
               id: 'biodiversity',
               name: 'Biodiversity Review',
-              description: 'a description of the region\'s current and projected biodiversity. A description of the region\'s current and projected biodiversity. A description of the region\'s current and projected biodiversity. A description of the region\'s current and projected biodiversity.',
+              description: 'a description of the region\'s current and projected biodiversity.',
               presence: 'optional',
               sections: [
                 {
                   id: 'overall',
                   name: 'Overall',
-                  description: 'current and projected biodiversity over all modelled species',
+                  description: 'current and projected biodiversity over all modelled species.',
                   presence: 'optional',
                   sections: []
                 }, {
                   id: 'mammals',
                   name: 'Mammals',
-                  description: 'current and projected biodiversity over mammal species',
+                  description: 'current and projected biodiversity over mammal species.',
                   presence: 'optional',
                   sections: []
                 }, {
                   id: 'amphibians',
                   name: 'Amphibians',
-                  description: 'current and projected biodiversity over amphibian species',
+                  description: 'current and projected biodiversity over amphibian species.',
                   presence: 'optional',
-                  sections: []
+                  sections: [
+                    {
+                      id: 'allamphibians',
+                      name: 'All',
+                      description: 'current and projected biodiversity over all amphibian species.',
+                      presence: 'optional',
+                      sections: []
+                    }, {
+                      id: 'streamfrogs',
+                      name: 'Stream frogs',
+                      description: 'current and projected biodiversity over stream frogs.',
+                      presence: 'optional',
+                      sections: []
+                    }
+                  ]
                 }, {
                   id: 'reptiles',
                   name: 'Reptiles',
-                  description: 'current and projected biodiversity over reptile species',
+                  description: 'current and projected biodiversity over reptile species.',
                   presence: 'optional',
-                  sections: []
+                  sections: [
+                    {
+                      id: 'allreptiles',
+                      name: 'All',
+                      description: 'current and projected biodiversity over all reptile species.',
+                      presence: 'optional',
+                      sections: []
+                    }, {
+                      id: 'turtles',
+                      name: 'Turtles',
+                      description: 'current and projected biodiversity over turtles.',
+                      presence: 'optional',
+                      sections: []
+                    }
+                  ]
                 }, {
                   id: 'birds',
                   name: 'Birds',
-                  description: 'current and projected biodiversity over bird species',
+                  description: 'current and projected biodiversity over bird species.',
+                  presence: 'optional',
+                  sections: []
+                }, {
+                  id: 'freshwaterfish',
+                  name: 'Freshwater fish',
+                  description: 'current and projected biodiversity over freshwater fish species.',
+                  presence: 'optional',
+                  sections: []
+                }
+              ]
+            }, {
+              id: 'pests',
+              name: 'Pest Species',
+              description: 'climate suitability and distribution of pest species.',
+              presence: 'optional',
+              sections: [
+                {
+                  id: 'pestplants',
+                  name: 'Pest Plants',
+                  description: 'summary of projections for selected pest plants.',
                   presence: 'optional',
                   sections: []
                 }
@@ -150,9 +202,21 @@
                   presence: 'optional',
                   sections: []
                 }, {
+                  id: 'observedstreamfrogslist',
+                  name: 'Steam Frogs Present',
+                  description: 'list of stream frogs currently or projected to be present in region.',
+                  presence: 'optional',
+                  sections: []
+                }, {
                   id: 'observedreptileslist',
                   name: 'Reptiles Present',
                   description: 'list of reptiles currently or projected to be present in region.',
+                  presence: 'optional',
+                  sections: []
+                }, {
+                  id: 'observedturtleslist',
+                  name: 'Turtles Present',
+                  description: 'list of turtles currently or projected to be present in region.',
                   presence: 'optional',
                   sections: []
                 }, {
@@ -206,7 +270,6 @@
           } else {
             selector.addClass('unselected');
           }
-          debug("handling " + parent + "." + (selectionControl.val()));
           if (((_ref = item.sections) != null ? _ref.length : void 0) > 0) {
             return _this.handleSectionSelection(item.sections, item.id);
           }
@@ -408,6 +471,10 @@
               name: 'IBRA bioregion',
               regions: []
             }, {
+              id: 'park',
+              name: 'Parks, reserves',
+              regions: []
+            }, {
               id: 'state',
               name: 'State, territory',
               regions: [
@@ -485,9 +552,7 @@
               return selector.removeClass('regionselected');
             } else {
               selector.addClass('regionselected');
-              debug(_this.selectedRegion);
               return _this.selectedRegionInfo = _.find(regionType.regions, function(region) {
-                debug(region);
                 return region.id === _this.selectedRegion;
               });
             }
@@ -560,14 +625,12 @@
         return function(i, elem) {
           return _this.sectionId(elem);
         };
-      })(this)).get();
+      })(this)).get().reverse();
       parentIds.push(this.sectionId(sectionDom));
       info = {
         sections: this.possibleSections
       };
       parentIds.forEach(function(id) {
-        debug('id is ' + id);
-        debug(info);
         return info = _.filter(info.sections, function(section) {
           return section.id === id;
         })[0];
@@ -582,7 +645,6 @@
       subsections.children('.sectionselector').not('.unselected').each((function(_this) {
         return function(i, elem) {
           var name, subs;
-          debug('doing ' + elem.innerHTML);
           name = _this.sectionName(elem);
           subs = _this.subSectionList(elem);
           if (subs !== '') {
