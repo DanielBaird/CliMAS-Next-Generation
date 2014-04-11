@@ -1,4 +1,27 @@
-@import url(http://fonts.googleapis.com/css?family=Lato:300,400,900,400italic);
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Lato Light'), local('Lato-Light'), url(http://themes.googleusercontent.com/static/fonts/lato/v7/nj47mAZe0mYUIySgfn0wpQ.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Lato Regular'), local('Lato-Regular'), url(http://themes.googleusercontent.com/static/fonts/lato/v7/v0SdcGFAl2aezM9Vq_aFTQ.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 900;
+  src: local('Lato Black'), local('Lato-Black'), url(http://themes.googleusercontent.com/static/fonts/lato/v7/4cKlrioa77J2iqTqBgkRWg.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Lato';
+  font-style: italic;
+  font-weight: 400;
+  src: local('Lato Italic'), local('Lato-Italic'), url(http://themes.googleusercontent.com/static/fonts/lato/v7/LqowQDslGv4DmUBAfWa2Vw.ttf) format('truetype');
+}
 body {
   padding: 0;
   font-family: Lato, "Arial Unicode MS", sans-serif;
@@ -24,8 +47,60 @@ a {
 a:hover {
   text-decoration: underline;
 }
+/* disclaimer overlay - - - - - - - - - - - - - - */
+.disclaimer {
+  opacity: 0.66;
+  border-radius: 1em;
+  border: dotted black 2px;
+  -webkit-transform: rotate(3deg);
+  -ms-transform: rotate(3deg);
+  transform: rotate(3deg);
+  position: absolute;
+  right: 12%;
+  top: -35em;
+  z-index: 10000;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 19em;
+  height: 40em;
+  padding-top: 5em;
+  background: yellow;
+  -webkit-transition: all 0.11s;
+  transition: all 0.11s;
+}
+.disclaimer:hover {
+  opacity: 1;
+}
+.disclaimer.show {
+  opacity: 1;
+  top: -5em;
+  right: 14%;
+  -webkit-transition: all 0.33s;
+  transition: all 0.33s;
+}
+.disclaimer p {
+  margin: 0;
+  padding: 0.75em 2em;
+}
+.disclaimer h1 {
+  margin: 0;
+  padding: 0.5em 1em;
+  font-size: inherit;
+  letter-spacing: 0.1em;
+  display: block;
+  text-transform: uppercase;
+  text-align: center;
+}
+.disclaimer .bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
 /* header - - - - - - - - - - - - - - - - - - - - */
 header.page {
+  opacity: 0.99;
   position: relative;
   z-index: 10;
   height: 120px;
@@ -47,7 +122,7 @@ header.page h1 {
   text-shadow: 2px 2px 5px #000;
 }
 header.page p {
-  color: #f8f4e5;
+  color: #faf7ed;
   float: left;
   padding: 0 0 0 4%;
   margin: 0;
@@ -140,7 +215,7 @@ nav .main.menu > li.current a {
   opacity: 1;
 }
 nav .main.menu > li > a {
-  color: #efe6c5;
+  color: #f1e9cd;
   text-shadow: 0 1px 0 #2e3240, 0 -1px 0 #1e212a;
   opacity: 0.5;
   filter: alpha(opacity=50);
@@ -174,7 +249,7 @@ nav ul li ul > li {
 }
 nav ul li ul > li.current,
 nav ul li ul > li:hover {
-  background: #efe6c5;
+  background: #f1e9cd;
 }
 /* main content - - - - - - - - - - - - - - - - */
 .maincontent {
@@ -185,8 +260,8 @@ nav ul li ul > li:hover {
   right: 0;
   overflow-y: scroll;
   margin: 0 4%;
-  padding: 4%;
-  background: #efe6c5;
+  padding: 3em 4%;
+  background: #f1e9cd;
   line-height: 1.6;
 }
 .maincontent .textcolumn {
@@ -261,7 +336,7 @@ div.mspp-panel {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  background: #efe6c5;
+  background: #f1e9cd;
   margin: 0;
   padding: 0;
   line-height: 1.4;

@@ -28,7 +28,7 @@
                 return region_list.push(AppView.region_option(r.attributes));
               }
             });
-            disabled = rt.get('regiontype') !== 'State';
+            disabled = rt.get('regiontype') === 'IBRA';
             info = _.extend({
               regions: region_list.join(''),
               disabled: disabled

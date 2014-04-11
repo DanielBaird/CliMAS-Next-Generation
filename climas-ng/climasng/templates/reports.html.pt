@@ -23,7 +23,7 @@
 
     <div id="contentwrap" class="contentwrap">
         <div class="maincontent">
-            reports form.
+            <!-- dynamic form goes here -->
         </div>
     </div>
 

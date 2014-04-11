@@ -533,20 +533,29 @@ AppView = Backbone.View.extend {
         </p><p>
         <select class="left" id="leftmapyear">
             <option value="baseline">baseline</option>
-            <option value="2015">2015</option>
-            <option value="2035">2035</option>
-            <option value="2055">2055</option>
-            <option value="2075">2075</option>
+            <option>2015</option>
+            <option>2025</option>
+            <option>2035</option>
+            <option>2045</option>
+            <option>2055</option>
+            <option>2065</option>
+            <option>2075</option>
+            <option>2085</option>
         </select>
         </p><p>
         <select class="left" id="leftmapscenario">
-            <option>RCP3PD</option>
-            <option>RCP6</option>
+            <option value="RCP3PD">RCP 3PD</option>
+            <option value="RCP45">RCP 4.5</option>
+            <option value="RCP6">RCP 6</option>
+            <option value="RCP85" selected="selected">RCP 8.5</option>
         </select>
         </p><p>
         <select class="left" id="leftmapgcm">
             <option value="all">median</option>
             <option value="csiro-mk30">CSIRO Mark 3.0</option>
+            <option value="giss-modeleh">GISS E20/HYCOM</option>
+            <option value="ncar-ccsm30">NCAR CCSM 3.0</option>
+            <option value="ukmo-hadgem1">UK Met Office HadGEM1</option>
         </select>
         </p><p>
         <button class="btn-change">hide settings</button>
@@ -561,20 +570,29 @@ AppView = Backbone.View.extend {
         </p><p>
         <select class="right" id="rightmapyear">
             <option value="baseline">baseline</option>
-            <option value="2015">2015</option>
-            <option value="2035">2035</option>
-            <option value="2055">2055</option>
-            <option value="2075">2075</option>
+            <option>2015</option>
+            <option>2025</option>
+            <option>2035</option>
+            <option>2045</option>
+            <option>2055</option>
+            <option>2065</option>
+            <option>2075</option>
+            <option>2085</option>
         </select>
         </p><p>
         <select class="right" id="rightmapscenario">
-            <option>RCP3PD</option>
-            <option>RCP6</option>
+            <option value="RCP3PD">RCP 3PD</option>
+            <option value="RCP45">RCP 4.5</option>
+            <option value="RCP6">RCP 6</option>
+            <option value="RCP85" selected="selected">RCP 8.5</option>
         </select>
         </p><p>
         <select class="right" id="rightmapgcm">
             <option value="all">median</option>
             <option value="csiro-mk30">CSIRO Mark 3.0</option>
+            <option value="giss-modeleh">GISS E20/HYCOM</option>
+            <option value="ncar-ccsm30">NCAR CCSM 3.0</option>
+            <option value="ukmo-hadgem1">UK Met Office HadGEM1</option>
         </select>
         </p><p>
         <button class="btn-change">hide settings</button>

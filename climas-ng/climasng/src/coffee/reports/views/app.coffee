@@ -12,13 +12,17 @@ require '../util/shims'
 # code.
 ### jshint -W093 ###
 
+# disable the jshint warning about "use !== to compare with null"
+# which coffeescript compiled code sometimes triggers.
+### jshint -W041 ###
+
 # -------------------------------------------------------------------
 debug = (itemToLog, itemLevel)->
     levels = ['verydebug', 'debug', 'message', 'warning']
 
-    threshold = 'verydebug'
-    # threshold = 'debug'
-    # threshold = 'message'
+    # threshold = 'verydebug'
+    threshold = 'debug'
+    threshold = 'message'
     itemLevel = 'debug' unless itemLevel
 
     thresholdNum = levels.indexOf threshold
@@ -36,9 +40,9 @@ debug = (itemToLog, itemLevel)->
 AppView = Backbone.View.extend {
     # ---------------------------------------------------------------
     # this view's base element
-    tagName: 'div'
-    className: 'splitmap showforms'
-    id: 'splitmap'
+    tagName: 'form'
+    className: ''
+    id: 'reportform'
     # ---------------------------------------------------------------
     # some settings
     speciesDataUrl: "#{location.protocol}//#{location.host}/speciesdata"
@@ -49,20 +53,10 @@ AppView = Backbone.View.extend {
     trackPeriod: 100
     # ---------------------------------------------------------------
     events:
-        'click .btn-change': 'toggleForms'
-        'click .btn-compare': 'toggleSplitter'
-        'click .btn-copy-ltr': 'copyMapLeftToRight'
-        'click .btn-copy-rtl': 'copyMapRightToLeft'
-        'leftmapupdate': 'leftSideUpdate'
-        'rightmapupdate': 'rightSideUpdate'
-        'change select.left': 'leftSideUpdate'
-        'change select.right': 'rightSideUpdate'
-    # ---------------------------------------------------------------
-    tick: ()->
-        # if @map
-        if false
-            debug @map.getPixelOrigin()
-        setTimeout(@tick, 2000)
+        'change .sectionselector input': 'updateSectionSelection'
+        'change .regionselect input': 'updateRegionSelection'
+        'change .regionselect select': 'updateRegionSelection'
+        'change .yearselect input': 'updateYearSelection'
     # ---------------------------------------------------------------
     initialize: ()->
         debug 'AppView.initialize'
@@ -70,518 +64,603 @@ AppView = Backbone.View.extend {
         # more annoying version of bindAll requires this concat stuff
         _.bindAll.apply _, [this].concat _.functions(this)
 
-        # kick off the fetching of the species list
-        @speciesInfoFetchProcess = @fetchSpeciesInfo()
+        # kick off the fetching of stuff
+        @fetchReportSections()
+        @fetchRegions()
+        @fetchYears()
 
         # @tick()
     # ---------------------------------------------------------------
     render: ()->
         debug 'AppView.render'
 
-        @$el.append AppView.templates.layout {
-            leftTag: AppView.templates.leftTag()
-            rightTag: AppView.templates.rightTag()
-
-            leftForm: AppView.templates.leftForm()
-            rightForm: AppView.templates.rightForm()
-        }
-        $('#contentwrap').append @$el
-
-        @map = L.map 'map', {
-            center: [-20, 136]
-            zoom: 5
-        }
-        @map.on 'move', @resizeThings
-        L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.png', {
-            subdomains: '1234'
-            maxZoom: 18
-            attribution: '''
-            Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>,
-            tiles &copy; <a href="http://www.mapquest.com/" target="_blank">MapQuest</a>
-            '''
-        }).addTo @map
-
-        @leftForm = @$ '.left.form'
-        @buildLeftForm()
-
-        @rightForm = @$ '.right.form'
-        @buildRightForm()
-
-        @leftTag = @$ '.left.tag'
-        @rightTag = @$ '.right.tag'
-
-        @splitLine = @$ '.splitline'
-        @splitThumb = @$ '.splitthumb'
+        @$el.append AppView.templates.layout {}
+        $('#contentwrap .maincontent').append @$el
 
     # ---------------------------------------------------------------
+    # deal with report sections
     # ---------------------------------------------------------------
-    # map interaction
-    # ---------------------------------------------------------------
-    copyMapLeftToRight: ()->
-        debug 'AppView.copyMapLeftToRight'
+    fetchReportSections: ()->
+        debug 'AppView.fetchReportSections'
 
-        return unless @leftInfo
+        # later this will be an ajax call, for now make a deferred object
+        fetch = $.Deferred()
 
-        @$('#rightmapspp').val @leftInfo.speciesName
-        @$('#rightmapyear').val @leftInfo.year
-        @$('#rightmapscenario').val @leftInfo.scenario
-        @$('#rightmapgcm').val @leftInfo.gcm
+        fetch.done (data)=>
+            @possibleSections = data.sections
+            sectionselect = @$ '.sectionselect'
+            sectionselect.empty().removeClass 'loading'
+            @buildReportSectionList @possibleSections, sectionselect
 
-        @rightSideUpdate()
-    # ---------------------------------------------------------------
-    copyMapRightToLeft: ()->
-        debug 'AppView.copyMapRightToLeft'
-
-        return unless @rightInfo
-
-        @$('#leftmapspp').val @rightInfo.speciesName
-        @$('#leftmapyear').val @rightInfo.year
-        @$('#leftmapscenario').val @rightInfo.scenario
-        @$('#leftmapgcm').val @rightInfo.gcm
-
-        @leftSideUpdate()
-    # ---------------------------------------------------------------
-    leftSideUpdate: ()->
-        debug 'AppView.leftSideUpdate'
-
-        sppName = @$('#leftmapspp').val()
-
-        # bail if that's not a real species
-        if sppName in @speciesSciNameList
-            @$('.btn-copy-rtl').prop 'disabled', false
-        else
-            @$('.btn-copy-rtl').prop 'disabled', true
-            return false
-
-        newLeftInfo = {
-            speciesName: sppName
-            year: @$('#leftmapyear').val()
-            scenario: @$('#leftmapscenario').val()
-            gcm: @$('#leftmapgcm').val()
-        }
-
-        # bail if nothing changed
-        return false if @leftInfo and _.isEqual newLeftInfo, @leftInfo
-
-        # also bail if they're both same species at baseline
-        if (
-            @leftInfo and
-            newLeftInfo.speciesName == @leftInfo.speciesName and
-            newLeftInfo.year == @leftInfo.year and
-            newLeftInfo.year == 'baseline'
-        )
-            return false
-
-        # save the new setup
-        @leftInfo = newLeftInfo
-
-        # apply the changes to the map
-        @addMapLayer 'left'
-
-        # apply the changes to the tag
-        @addMapTag 'left'
-    # ---------------------------------------------------------------
-    rightSideUpdate: ()->
-        debug 'AppView.rightSideUpdate'
-
-        sppName = @$('#rightmapspp').val()
-
-        # bail if that's not a real species
-        if sppName in @speciesSciNameList
-            @$('.btn-copy-ltr').prop 'disabled', false
-        else
-            @$('.btn-copy-ltr').prop 'disabled', true
-            return false
-
-        newRightInfo = {
-            speciesName: sppName
-            year: @$('#rightmapyear').val()
-            scenario: @$('#rightmapscenario').val()
-            gcm: @$('#rightmapgcm').val()
-        }
-
-        # bail if nothing changed
-        return false if @rightInfo and _.isEqual newRightInfo, @rightInfo
-
-        # also bail if they're both same species at baseline
-        if (
-            @rightInfo and
-            newRightInfo.speciesName == @rightInfo.speciesName and
-            newRightInfo.year == @rightInfo.year and
-            newRightInfo.year == 'baseline'
-        )
-            return false
-
-        # save the new setup
-        @rightInfo = newRightInfo
-
-        # apply the changes to the map
-        @addMapLayer 'right'
-
-        # apply the changes to the tag
-        @addMapTag 'right'
-    # ---------------------------------------------------------------
-    addMapTag: (side)->
-        debug 'AppView.addMapTag'
-
-        info = @leftInfo if side == 'left'
-        info = @rightInfo if side == 'right'
-
-        tag = "<b><i>#{info.speciesName}</i></b>"
-
-        if info.year is 'baseline'
-            tag = "current #{tag} distribution"
-        else if info.gcm is 'all'
-            tag = "<b>median</b> projections for #{tag} in <b>#{info.year}</b> if <b>#{info.scenario}</b>"
-        else
-            tag = "<b>#{info.gcm}</b> projections for #{tag} in <b>#{info.year}</b> if <b>#{info.scenario}</b>"
-
-
-        if side == 'left'
-            @leftTag.find('.leftlayername').html tag
-
-        if side == 'right'
-            @rightTag.find('.rightlayername').html tag
-    # ---------------------------------------------------------------
-    addMapLayer: (side)->
-        debug 'AppView.addMapLayer'
-
-        sideInfo = @leftInfo if side == 'left'
-        sideInfo = @rightInfo if side == 'right'
-
-        futureModelPoint = [
-            sideInfo.scenario
-            sideInfo.gcm
-            sideInfo.year
-        ].join '_'
-        futureModelPoint = '1990' if sideInfo.year == 'baseline'
-        mapData = [
-            @speciesDataUrl
-            sideInfo.speciesName.replace(' ', '_')
-            'output'
-            futureModelPoint + '.asc.gz'
-        ].join '/'
-
-        layer = L.tileLayer.wms @rasterApiUrl, {
-            DATA_URL: mapData
-            # layers: 'Demo WMS'
-            layers: 'DEFAULT'
-            format: 'image/png'
-            transparent: true
-            }
-
-        # add a class to our element when there's tiles loading
-        loadClass = '' + side + 'loading'
-        layer.on 'loading', ()=> @$el.addClass loadClass
-        layer.on 'load', ()=> @$el.removeClass loadClass
-
-        layer.addTo @map
-
-        if side == 'left'
-            @map.removeLayer @leftLayer if @leftLayer
-            @leftLayer = layer
-
-        if side == 'right'
-            @map.removeLayer @rightLayer if @rightLayer
-            @rightLayer = layer
-
-        @resizeThings() # re-establish the splitter
-
-    # ---------------------------------------------------------------
-    # ---------------------------------------------------------------
-    # UI actions
-    # ---------------------------------------------------------------
-    centreMap: (repeatedlyFor)->
-        debug 'AppView.centreMap'
-
-        repeatedlyFor = 500 unless repeatedlyFor
-        recentre = ()=>
-            @map.invalidateSize(false)
-            @resizeThings()
-        setTimeout(
-            recentre, later
-        ) for later in [0..repeatedlyFor] by 25
-
-    # ---------------------------------------------------------------
-    toggleForms: ()->
-        debug 'AppView.toggleForms'
-
-        @$el.toggleClass 'showforms'
-        @centreMap()
-    # ---------------------------------------------------------------
-    toggleSplitter: ()->
-        debug 'AppView.toggleSplitter'
-
-        @$el.toggleClass 'split'
-        if @$el.hasClass 'split'
-            @activateSplitter()
-        else
-            @deactivateSplitter()
-        @centreMap()
-    # ---------------------------------------------------------------
-    # ---------------------------------------------------------------
-    # ajaxy stuff
-    # ---------------------------------------------------------------
-    fetchSpeciesInfo: ()->
-        debug 'AppView.fetchSpeciesInfo'
-
-        return $.ajax({
-            url: '/speciesdata/species.json'
-        }).done (data)=>
-            speciesLookupList = []
-            speciesSciNameList = []
-
-            # in order to avoid making a function in the inner loop,
-            # here's a function returns a function that writes a
-            # common name into the given sciName.  This is partial
-            # function application, which is a bit like currying.
-            commonNameWriter = (sciName)=>
-                sciNamePostfix = " (#{sciName})"
-                return (cnIndex, cn)=>
-                    speciesLookupList.push {
-                        label: cn + sciNamePostfix
-                        value: sciName
+        # pretend it took a while to get the data..
+        setTimeout ()->
+            fetch.resolve({
+                sections: [
+                    {
+                        id: 'intro'
+                        name: 'Introduction'
+                        description: 'title, credits, and introductory paragraphs.'
+                        presence: 'required'
+                        sections: []
+                    },{
+                        id: 'climatereview'
+                        name: 'Climate Review'
+                        description: 'a description of the region\'s current and projected climate.'
+                        presence: 'optional'
+                        sections: [
+                            {
+                                id: 'temperature'
+                                name: 'Temperature'
+                                description: 'current and projected temperature.'
+                                presence: 'optional'
+                                sections: []
+                            },{
+                                id: 'rainfall'
+                                name: 'Rainfall'
+                                description: 'current and projected precipitation.'
+                                presence: 'optional'
+                                sections: []
+                            }
+                        ]
+                    },{
+                        id: 'biodiversity'
+                        name: 'Biodiversity Review'
+                        description: 'a description of the region\'s current and projected biodiversity.'
+                        presence: 'optional'
+                        sections: [
+                            {
+                                id: 'overall'
+                                name: 'Overall'
+                                description: 'current and projected biodiversity over all modelled species.'
+                                presence: 'optional'
+                                sections: []
+                            },{
+                                id: 'mammals'
+                                name: 'Mammals'
+                                description: 'current and projected biodiversity over mammal species.'
+                                presence: 'optional'
+                                sections: []
+                            },{
+                                id: 'amphibians'
+                                name: 'Amphibians'
+                                description: 'current and projected biodiversity over amphibian species.'
+                                presence: 'optional'
+                                sections: [{
+                                        id: 'allamphibians'
+                                        name: 'All'
+                                        description: 'current and projected biodiversity over all amphibian species.'
+                                        presence: 'optional'
+                                        sections: []
+                                    },{
+                                        id: 'streamfrogs'
+                                        name: 'Stream frogs'
+                                        description: 'current and projected biodiversity over stream frogs.'
+                                        presence: 'optional'
+                                        sections: []
+                                    }
+                                ]
+                            },{
+                                id: 'reptiles'
+                                name: 'Reptiles'
+                                description: 'current and projected biodiversity over reptile species.'
+                                presence: 'optional'
+                                sections: [{
+                                        id: 'allreptiles'
+                                        name: 'All'
+                                        description: 'current and projected biodiversity over all reptile species.'
+                                        presence: 'optional'
+                                        sections: []
+                                    },{
+                                        id: 'turtles'
+                                        name: 'Turtles'
+                                        description: 'current and projected biodiversity over turtles.'
+                                        presence: 'optional'
+                                        sections: []
+                                    }
+                                ]
+                            },{
+                                id: 'birds'
+                                name: 'Birds'
+                                description: 'current and projected biodiversity over bird species.'
+                                presence: 'optional'
+                                sections: []
+                            },{
+                                id: 'freshwaterfish'
+                                name: 'Freshwater fish'
+                                description: 'current and projected biodiversity over freshwater fish species.'
+                                presence: 'optional'
+                                sections: []
+                            }
+                        ]
+                    },{
+                        id: 'pests'
+                        name: 'Pest Species'
+                        description: 'climate suitability and distribution of pest species.'
+                        presence: 'optional'
+                        sections: [
+                            {
+                                id: 'pestplants'
+                                name: 'Pest Plants'
+                                description: 'summary of projections for selected pest plants.'
+                                presence: 'optional'
+                                sections: []
+                            }
+                        ]
+                    },{
+                        id: 'appendixes'
+                        name: 'Appendices'
+                        description: 'tables and other appendices.'
+                        presence: 'required'
+                        sections: [
+                            {
+                                id: 'observedmammallist'
+                                name: 'Mammals Present'
+                                description: 'list of mammals currently or projected to be present in region.'
+                                presence: 'optional'
+                                sections: []
+                            },{
+                                id: 'observedamphibianslist'
+                                name: 'Amphibians Present'
+                                description: 'list of amphibians currently or projected to be present in region.'
+                                presence: 'optional'
+                                sections: []
+                            },{
+                                id: 'observedstreamfrogslist'
+                                name: 'Steam Frogs Present'
+                                description: 'list of stream frogs currently or projected to be present in region.'
+                                presence: 'optional'
+                                sections: []
+                            },{
+                                id: 'observedreptileslist'
+                                name: 'Reptiles Present'
+                                description: 'list of reptiles currently or projected to be present in region.'
+                                presence: 'optional'
+                                sections: []
+                            },{
+                                id: 'observedturtleslist'
+                                name: 'Turtles Present'
+                                description: 'list of turtles currently or projected to be present in region.'
+                                presence: 'optional'
+                                sections: []
+                            },{
+                                id: 'observedbirdslist'
+                                name: 'Birds Present'
+                                description: 'list of birds currently or projected to be present in region.'
+                                presence: 'optional'
+                                sections: []
+                            },{
+                                id: 'science'
+                                name: 'Science'
+                                description: 'description of the climate and species distribution modelling used to generate the data in the report.'
+                                presence: 'required'
+                                sections: []
+                            }
+                        ]
                     }
+                ]
+            })
+        , 500 + (500 * Math.random())
 
-            $.each data, (sciName, commonNames)=>
-                speciesSciNameList.push sciName
-                if commonNames
-                    $.each commonNames, commonNameWriter sciName
+        # now return a promise in case we need to wait for this
+        return fetch.promise()
+    # ---------------------------------------------------------------
+    buildReportSectionList: (data, wrapper)->
+        debug 'AppView.buildReportSectionList'
+
+        $.each data, (index, item)=>
+
+            # make a row for this item
+            selectorRow = $ AppView.templates.sectionSelector(item)
+            $(wrapper).append selectorRow
+
+            # if the item has subitems, insert those
+            if item.sections.length > 0
+                subsections = $ AppView.templates.subsections()
+                @buildReportSectionList item.sections, subsections
+                $(selectorRow).addClass('hassubsections').append(subsections)
+    # ---------------------------------------------------------------
+    updateSectionSelection: (event)->
+        debug 'AppView.updateSectionSelection'
+
+        @handleSectionSelection @possibleSections
+    # ---------------------------------------------------------------
+    handleSectionSelection: (sectionList, parent)->
+        debug 'AppView.handleSectionSelection'
+
+        $.each sectionList, (index, item)=>
+            # find the selection checkbox..
+            selector = @$ "#section-#{ item.id }"
+            selectionControl = selector.find 'input'
+
+            # set the right class on the selector
+            if selectionControl.prop 'checked'
+                selector.removeClass 'unselected'
+            else
+                selector.addClass 'unselected'
+
+            if item.sections?.length > 0
+                @handleSectionSelection item.sections, item.id
+
+        @updateSummary()
+    # ---------------------------------------------------------------
+    # deal with regions
+    # ---------------------------------------------------------------
+    fetchRegions: ()->
+        debug 'AppView.fetchRegions'
+
+        # later this will be an ajax call, for now make a deferred object
+        fetch = $.Deferred()
+
+        fetch.done (data)=>
+            @buildRegionList data
+
+        # pretend it took a while to get the data..
+        setTimeout ()->
+            fetch.resolve({
+                regiontypes: [
+                    {
+                        id: 'nrm'
+                        name: 'NRM region'
+                        regions: [
+                            { id: 'NRM_ACT', name: 'ACT' },
+                            { id: 'NRM_Adelaide_and_Mount_Lofty_Ranges', name: 'Adelaide and Mount Lofty Ranges' },
+                            { id: 'NRM_Alinytjara_Wilurara', name: 'Alinytjara Wilurara' },
+                            { id: 'NRM_Avon', name: 'Avon' },
+                            { id: 'NRM_Border_Rivers-Gwydir', name: 'Border Rivers-Gwydir' },
+                            { id: 'NRM_Border_Rivers_Maranoa-Balonne', name: 'Border Rivers Maranoa-Balonne' },
+                            { id: 'NRM_Burdekin', name: 'Burdekin' },
+                            { id: 'NRM_Burnett_Mary', name: 'Burnett Mary' },
+                            { id: 'NRM_Cape_York', name: 'Cape York' },
+                            { id: 'NRM_Central_West', name: 'Central West' },
+                            { id: 'NRM_Condamine', name: 'Condamine' },
+                            { id: 'NRM_Cooperative_Management_Area', name: 'Cooperative Management Area' },
+                            { id: 'NRM_Corangamite', name: 'Corangamite' },
+                            { id: 'NRM_Desert_Channels', name: 'Desert Channels' },
+                            { id: 'NRM_East_Gippsland', name: 'East Gippsland' },
+                            { id: 'NRM_Eyre_Peninsula', name: 'Eyre Peninsula' },
+                            { id: 'NRM_Fitzroy', name: 'Fitzroy' },
+                            { id: 'NRM_Glenelg_Hopkins', name: 'Glenelg Hopkins' },
+                            { id: 'NRM_Goulburn_Broken', name: 'Goulburn Broken' },
+                            { id: 'NRM_Hawkesbury-Nepean', name: 'Hawkesbury-Nepean' },
+                            { id: 'NRM_Hunter-Central_Rivers', name: 'Hunter-Central_Rivers' },
+                            { id: 'NRM_Kangaroo_Island', name: 'Kangaroo Island' },
+                            { id: 'NRM_Lachlan', name: 'Lachlan' },
+                            { id: 'NRM_Lower_Murray_Darling', name: 'Lower Murray Darling' },
+                            { id: 'NRM_Mackay_Whitsunday', name: 'Mackay Whitsunday' },
+                            { id: 'NRM_Mallee', name: 'Mallee' },
+                            { id: 'NRM_Murray', name: 'Murray' },
+                            { id: 'NRM_Murrumbidgee', name: 'Murrumbidgee' },
+                            { id: 'NRM_Namoi', name: 'Namoi' },
+                            { id: 'NRM_North', name: 'North' },
+                            { id: 'NRM_North_Central', name: 'North Central' },
+                            { id: 'NRM_North_East', name: 'North East' },
+                            { id: 'NRM_North_West', name: 'North West' },
+                            { id: 'NRM_Northern_Agricultural', name: 'Northern Agricultural' },
+                            { id: 'NRM_Northern_Gulf', name: 'Northern Gulf' },
+                            { id: 'NRM_Northern_Rivers', name: 'Northern Rivers' },
+                            { id: 'NRM_Northern_Territory', name: 'Northern Territory' },
+                            { id: 'NRM_Northern_and_Yorke', name: 'Northern and Yorke' },
+                            { id: 'NRM_Perth', name: 'Perth' },
+                            { id: 'NRM_Port_Phillip_and_Western_Port', name: 'Port Phillip and Western Port' },
+                            { id: 'NRM_Rangelands', name: 'Rangelands' },
+                            { id: 'NRM_South', name: 'South' },
+                            { id: 'NRM_South_Australian_Arid_Lands', name: 'South Australian Arid Lands' },
+                            { id: 'NRM_South_Australian_Murray_Darling_Basin', name: 'South Australian Murray Darling Basin' },
+                            { id: 'NRM_South_Coast', name: 'South Coast' },
+                            { id: 'NRM_South_East', name: 'South East' },
+                            { id: 'NRM_South_East_Queensland', name: 'South East Queensland' },
+                            { id: 'NRM_South_West', name: 'South West' },
+                            { id: 'NRM_South_West_Queensland', name: 'South West Queensland' },
+                            { id: 'NRM_Southern_Gulf', name: 'Southern Gulf' },
+                            { id: 'NRM_Southern_Rivers', name: 'Southern Rivers' },
+                            { id: 'NRM_Sydney_Metro', name: 'Sydney Metro' },
+                            { id: 'NRM_Torres_Strait', name: 'Torres Strait' },
+                            { id: 'NRM_West_Gippsland', name: 'West Gippsland' },
+                            { id: 'NRM_Western', name: 'Western' },
+                            { id: 'NRM_Wet_Tropics', name: 'Wet Tropics' },
+                            { id: 'NRM_Wimmera', name: 'Wimmera' }
+                        ]
+                    },{
+                        id: 'ibra'
+                        name: 'IBRA bioregion'
+                        regions: []
+                    },{
+                        id: 'park'
+                        name: 'Parks, reserves'
+                        regions: []
+                    },{
+                        id: 'state'
+                        name: 'State, territory'
+                        regions: [
+                            { id: 'State_Australian_Capital_Territory', name: 'ACT' },
+                            { id: 'State_New_South_Wales', name: 'New South Wales' },
+                            { id: 'State_Northern_Territory', name: 'Northern Territory' },
+                            { id: 'State_Queensland', name: 'Queensland' },
+                            { id: 'State_South_Australia', name: 'South Australia' },
+                            { id: 'State_Tasmania', name: 'Tasmania' },
+                            { id: 'State_Victoria', name: 'Victoria' },
+                            { id: 'State_Western_Australia', name: 'Western Australia' }
+                        ]
+                    }
+                ]
+            })
+        , 500 + (500 * Math.random())
+
+        # now return a promise in case we need to wait for this
+        return fetch.promise()
+    # ---------------------------------------------------------------
+    buildRegionList: (data)->
+        debug 'AppView.buildRegionList'
+
+        @regions = data.regiontypes
+        regionselect = @$ '.regionselect'
+        regionselect.empty().removeClass 'loading'
+
+        $.each @regions, (index, regionType)=>
+            # make a row for this regiontype
+
+            # first the regions go into a select box
+            regionType.optionList = [
+                AppView.templates.regionSelector(reg) for reg in regionType.regions
+            ].join "\n"
+
+            regionTypeRow = $ AppView.templates.regionTypeSelector(regionType)
+            regionselect.append regionTypeRow
+    # ---------------------------------------------------------------
+    updateRegionSelection: (event)->
+        debug 'AppView.updateRegionSelection'
+
+        selectedType = @$('[name=regiontype]:checked').val()
+
+        $.each @regions, (index, regionType)=>
+            # find the selection checkbox..
+            selector = @$ "#regiontype-#{ regionType.id }"
+
+            # set the right class on the selector
+            if selectedType == regionType.id
+                selector.addClass 'typeselected'
+                @selectedRegionType = regionType.id
+                @selectedRegion = $(selector.find('select')).val()
+                if @selectedRegion == null
+                    selector.removeClass 'regionselected'
                 else
-                    speciesLookupList.push {
-                        label: sciName
-                        value: sciName
-                    }
+                    selector.addClass 'regionselected'
+                    # note the region data for later..
+                    @selectedRegionInfo = _.find regionType.regions, (region)=> region.id == @selectedRegion
+            else
+                selector.removeClass 'typeselected'
 
-            @speciesLookupList = speciesLookupList
-            @speciesSciNameList = speciesSciNameList
+        @updateSummary()
     # ---------------------------------------------------------------
+    # deal with years
     # ---------------------------------------------------------------
-    # form creation
+    fetchYears: ()->
+        debug 'AppView.fetchYears'
+
+        # later this will be an ajax call, for now make a deferred object
+        fetch = $.Deferred()
+
+        fetch.done (data)=>
+            @buildYearList data
+
+        # pretend it took a second to get the data..
+        setTimeout ()->
+            fetch.resolve({
+                years: [
+                    '2015'
+                    '2025'
+                    '2035'
+                    '2045'
+                    '2055'
+                    '2065'
+                    '2075'
+                    '2085'
+                ]
+            })
+        , 500 + (500 * Math.random())
+
+        # now return a promise in case we need to wait for this
+        return fetch.promise()
     # ---------------------------------------------------------------
-    buildLeftForm: ()->
-        debug 'AppView.buildLeftForm'
+    buildYearList: (data)->
+        debug 'AppView.buildYearList'
 
-        @speciesInfoFetchProcess.done =>
-            $leftmapspp = @$ '#leftmapspp'
-            $leftmapspp.autocomplete {
-                source: @speciesLookupList
-                appendTo: @$el
-                close: => @$el.trigger 'leftmapupdate'
-            }
+        @years = data.years
+        yearselect = @$ '.yearselect'
+        yearselect.empty().removeClass 'loading'
+
+        $.each @years, (index, year)=>
+            # make a selector for this year
+            yearselect.append AppView.templates.yearSelector({ year: year })
     # ---------------------------------------------------------------
-    buildRightForm: ()->
-        debug 'AppView.buildRightForm'
+    updateYearSelection: (event)->
+        debug 'AppView.updateYearSelection'
 
-        @speciesInfoFetchProcess.done =>
-            $rightmapspp = @$ '#rightmapspp'
-            $rightmapspp.autocomplete {
-                source: @speciesLookupList
-                appendTo: @$el
-                close: => @$el.trigger 'rightmapupdate'
-            }
+        @selectedYear = @$('[name=yearselector]:checked').val()
+
+        $.each @years, (index, year)=>
+            # find the selection checkbox..
+            selector = @$ "#year-#{ year }"
+
+            # set the right class on the selector
+            if @selectedYear == year
+                selector.addClass 'yearselected'
+            else
+                selector.removeClass 'yearselected'
+
+        @updateSummary()
     # ---------------------------------------------------------------
+    # update report summary
     # ---------------------------------------------------------------
-    # splitter handling
+    sectionId: (sectionDom)->
+        debug 'AppView.sectionId'
+
+        $(sectionDom).find('input').attr 'value'
     # ---------------------------------------------------------------
-    startSplitterTracking: ()->
-        debug 'AppView.startSplitterTracking'
+    sectionName: (sectionDom)->
+        debug 'AppView.sectionName'
 
-        @trackSplitter = true
-        @splitLine.addClass 'dragging'
-
-        @locateSplitter()
+        @sectionInfo(sectionDom).name
     # ---------------------------------------------------------------
-    locateSplitter: ()->
-        debug 'AppView.locateSplitter'
+    sectionInfo: (sectionDom)->
+        debug 'AppView.sectionInfo'
 
-        if @trackSplitter
-            @resizeThings()
-            # decrement remaining track count, unless it's true
-            if @trackSplitter == 0
-                @trackSplitter = false
-            else if @trackSplitter != true
-                @trackSplitter -= 1
-            setTimeout @locateSplitter, @trackPeriod
+        # get a list of this section's parent ids
+        parentage = $(sectionDom).parents '.sectionselector'
+        parentIds = parentage.map( (i, elem)=>
+            @sectionId elem
+        ).get().reverse()
+        # add this section's own id
+        parentIds.push @sectionId(sectionDom)
+
+        # now walk into the sections hierarchy
+        info = { sections: @possibleSections }
+
+        parentIds.forEach (id)->
+            info = _.filter(info.sections, (section)-> section.id == id)[0]
+
+        # finally we have a pointer to the info for this section
+        return info
     # ---------------------------------------------------------------
-    resizeThings: ()->
-        debug 'AppView.resizeThings'
+    subSectionList: (sectionDom)->
+        debug 'AppView.sectionList'
 
-        if @leftLayer
-            leftMap = $ @leftLayer.getContainer()
+        list = []
+        subsections = $(sectionDom).children('.subsections')
+        subsections.children('.sectionselector').not('.unselected').each (i, elem)=>
+            name = @sectionName(elem)
+            subs = @subSectionList(elem)
+            if subs isnt ''
+                name = name + ' (' + subs + ')'
+            list.push name
 
-        if @rightLayer
-            rightMap = $ @rightLayer.getContainer()
-
-        if @$el.hasClass 'split'
-
-            # we're still in split mode
-            newLeftWidth = @splitThumb.position().left + (@splitThumb.width() / 2.0)
-
-            mapBox = @map.getContainer()
-            $mapBox = $ mapBox
-            mapBounds = mapBox.getBoundingClientRect()
-
-            topLeft = @map.containerPointToLayerPoint [0,0]
-            splitPoint = @map.containerPointToLayerPoint [newLeftWidth, 0]
-            bottomRight = @map.containerPointToLayerPoint [$mapBox.width(), $mapBox.height()]
-
-            layerTop = topLeft.y
-            layerBottom = bottomRight.y
-
-            splitX = splitPoint.x - mapBounds.left
-
-            leftLeft = topLeft.x - mapBounds.left
-            rightRight = bottomRight.x
-
-            @splitLine.css 'left', newLeftWidth
-
-            ##### have to use attr to set style, for this to work in frickin IE8.
-            # @leftTag.css 'clip', "rect(0, #{newLeftWidth}px, auto, 0)"
-            @leftTag.attr 'style', "clip: rect(0, #{newLeftWidth}px, auto, 0)"
-
-            ##### have to use attr to set style, for this to work in IE8.
-            # leftMap.css 'clip', "rect(#{layerTop}px, #{splitX}px, #{layerBottom}px, #{leftLeft}px)" if @leftLayer
-            # rightMap.css 'clip', "rect(#{layerTop}px, #{rightRight}px, #{layerBottom}px, #{splitX}px)" if @rightLayer
-            leftMap.attr 'style', "clip: rect(#{layerTop}px, #{splitX}px, #{layerBottom}px, #{leftLeft}px)" if @leftLayer
-            rightMap.attr 'style', "clip: rect(#{layerTop}px, #{rightRight}px, #{layerBottom}px, #{splitX}px)" if @rightLayer
-
-        else
-            # we're not in split mode (this is probably the last
-            # resizeThings call before exiting split mode), so go
-            # full left side only.
-            ##### have to set style attr for IE8 to work.
-            # @leftTag.css 'clip', 'inherit'
-            # leftMap.css 'clip', 'inherit' if @leftLayer
-            # rightMap.css 'clip', 'rect(0,0,0,0)' if @rightLayer
-
-            @leftTag.attr 'style', 'clip: inherit'
-            leftMap.attr 'style', 'clip: inherit' if @leftLayer
-            rightMap.attr 'style', 'clip: rect(0,0,0,0)' if @rightLayer
+        return list.join ', '
 
     # ---------------------------------------------------------------
-    stopSplitterTracking: ()->
-        debug 'AppView.stopSplitterTracking'
+    updateSummary: ()->
+        debug 'AppView.updateSummary'
 
-        @splitLine.removeClass 'dragging'
-        @trackSplitter = 5 # five more resizings, then stop
-    # ---------------------------------------------------------------
-    activateSplitter: ()->
-        debug 'AppView.activateSplitter'
+        selectedSections = @$('.sectionselect > .sectionselector').not('.unselected')
 
-        @splitThumb.draggable {
-            containment: $ '#mapwrapper'
-            scroll: false
-            start: @startSplitterTracking
-            drag: @resizeThings
-            stop: @stopSplitterTracking
+        contentList = []
+        selectedSections.each (index, section)=>
+            info = @sectionName section
+            subList = @subSectionList section
+            if subList isnt ''
+                info = info + ': ' + subList.toLowerCase()
+            contentList.push info + '.'
+
+        content = ''
+        if contentList.length > 0
+            content = '<li>' + contentList.join('</li><li>') + '</li>'
+
+        summary = {
+            regionName: @selectedRegionInfo?.name
+            year: @selectedYear
+            content: content
         }
-        @resizeThings()
-    # ---------------------------------------------------------------
-    deactivateSplitter: ()->
-        debug 'AppView.deactivateSplitter'
 
-        @splitThumb.draggable 'destroy'
-        @resizeThings()
-
+        @$('.reviewblock').html AppView.templates.reviewBlock(summary)
     # ---------------------------------------------------------------
 },{ templates: { # ==================================================
     # templates here
     # ---------------------------------------------------------------
     layout: _.template """
-        <div class="splitline">&nbsp;</div>
-        <div class="splitthumb"><span>&#x276e; &#x276f;</span></div>
-        <div class="left tag"><%= leftTag %></div>
-        <div class="right tag"><%= rightTag %></div>
-        <div class="left form"><%= leftForm %></div>
-        <div class="right form"><%= rightForm %></div>
-        <div class="left loader"><img src="/static/images/spinner.loadinfo.net.gif" /></div>
-        <div class="right loader"><img src="/static/images/spinner.loadinfo.net.gif" /></div>
-        <div id="mapwrapper"><div id="map"></div></div>
-    """
-    # ---------------------------------------------------------------
-    leftTag: _.template """
-        <div class="show">
-            <span class="leftlayername">plain map</span>
-            <br>
-            <button class="btn-change">settings</button>
-            <button class="btn-compare">show/hide comparison map</button>
-        </div>
-        <div class="edit">
-            <input id="leftmapspp" name="leftmapspp" placeholder="&hellip; species or group &hellip;" />
-            <!--
-            <button class="btn-change">hide settings</button>
-            <button class="btn-compare">compare +/-</button>
-            -->
+        <div class="reviewblock"></div>
+        <div class="formblock">
+            <h1>Report on</h1>
+            <div class="loading select regionselect">loading available regions..</div>
+
+            <h1>In the year</h1>
+            <div class="loading select yearselect">loading available years..</div>
+
+            <h1>Including</h1>
+            <div class="loading select sectionselect">loading available sections..</div>
         </div>
     """
     # ---------------------------------------------------------------
-    rightTag: _.template """
-        <div class="show">
-            <span class="rightlayername">(no distribution)</span>
-            <br>
-            <button class="btn-change">settings</button>
-            <button class="btn-compare">show/hide comparison map</button>
-        </div>
-        <div class="edit">
-            <input id="rightmapspp" name="rightmapspp" placeholder="&hellip; species or group &hellip;" />
-        </div>
-    """
-    # ---------------------------------------------------------------
-    leftForm: _.template """
-        <p>
-        <button class="btn-copy-rtl">copy right map &laquo;</button>
-        </p><p>
-        <select class="left" id="leftmapyear">
-            <option value="baseline">baseline</option>
-            <option value="2015">2015</option>
-            <option value="2035">2035</option>
-            <option value="2055">2055</option>
-            <option value="2075">2075</option>
-        </select>
-        </p><p>
-        <select class="left" id="leftmapscenario">
-            <option>RCP3PD</option>
-            <option>RCP6</option>
-        </select>
-        </p><p>
-        <select class="left" id="leftmapgcm">
-            <option value="all">median</option>
-            <option value="csiro-mk30">CSIRO Mark 3.0</option>
-        </select>
-        </p><p>
-        <button class="btn-change">hide settings</button>
-        </p><p>
-        <button class="btn-compare">compare +/-</button>
+    reviewBlock: _.template """
+        <h1>Selected Report</h1>
+        <p class="coverage">Covers
+            <% if (regionName) { %><%= regionName %><% } else { %><em>(unspecified region)</em><% } %>
+            in
+            <% if (year) { %><%= year %>.<% } else { %><em>(unspecified year)</em>.<% } %>
         </p>
+        <ul class="contents"><%= content %></ul>
+        <button type="button" class="getreport">download report</button>
     """
     # ---------------------------------------------------------------
-    rightForm: _.template """
-        <p>
-        <button class="btn-copy-ltr">&raquo; copy left map</button>
-        </p><p>
-        <select class="right" id="rightmapyear">
-            <option value="baseline">baseline</option>
-            <option value="2015">2015</option>
-            <option value="2035">2035</option>
-            <option value="2055">2055</option>
-            <option value="2075">2075</option>
-        </select>
-        </p><p>
-        <select class="right" id="rightmapscenario">
-            <option>RCP3PD</option>
-            <option>RCP6</option>
-        </select>
-        </p><p>
-        <select class="right" id="rightmapgcm">
-            <option value="all">median</option>
-            <option value="csiro-mk30">CSIRO Mark 3.0</option>
-        </select>
-        </p><p>
-        <button class="btn-change">hide settings</button>
-        </p><p>
-        <button class="btn-compare">compare +/-</button>
-        </p>
+    reviewContentItem: _.template """
+        <li>item</li>
+    """
+    # ---------------------------------------------------------------
+    regionTypeSelector: _.template """
+        <div class="regiontypeselector" id="regiontype-<%= id %>">
+            <label class="name"><input
+                class="regiontype"
+                name="regiontype"
+                type="radio"
+                value="<%= id %>"
+            /> <%= name %>
+            </label>
+            <div class="regionselectorwrapper"><select class="regionselector">
+                <option value="" disabled="disabled" selected="selected">select a region&hellip;</option>
+                <%= optionList %>
+            </select></div>
+        </div>
+    """
+    # ---------------------------------------------------------------
+    regionSelector: _.template """<option value="<%= id %>"><%= name %></option>"""
+    # ---------------------------------------------------------------
+    yearSelector: _.template """
+        <div class="yearrow" id="year-<%= year %>">
+            <label class="name"><input
+                class="yearselector"
+                name="yearselector"
+                type="radio"
+                value="<%= year %>"
+            /> <%= year %></label>
+        </div>
+    """
+    # ---------------------------------------------------------------
+    sectionSelector: _.template """
+        <div class="sectionselector" id="section-<%= id %>">
+            <label class="name"
+                <% if (presence == 'required') { print('title="This section is required"'); } %>
+            ><input
+                type="checkbox"
+                value="<%= id %>"
+                checked="checked"
+                <% if (presence == 'required') { print('disabled="disabled"'); } %>
+            /> <%= name %></label>
+            <p class="description"><%= description %></p>
+
+        </div>
+    """
+    # ---------------------------------------------------------------
+    subsections: _.template """
+        <div class="subsections clearfix">
+        </div>
     """
     # ---------------------------------------------------------------
 }}

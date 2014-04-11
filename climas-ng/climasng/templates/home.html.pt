@@ -16,5 +16,7 @@
 
     <div metal:use-macro="load: partial.footer.html.pt"></div><!-- ::partial:: -->
 
+    <!-- JS goes down here, where civilised people put it -->
+    <script src="${request.static_path('climasng:static/lib/jquery-1.11.0.js')}"></script>
 </body>
 </html>
