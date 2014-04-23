@@ -12,7 +12,7 @@
   debug = function(itemToLog, itemLevel) {
     var levels, messageNum, threshold, thresholdNum;
     levels = ['verydebug', 'debug', 'message', 'warning'];
-    threshold = 'debug';
+    threshold = 'message';
     if (!itemLevel) {
       itemLevel = 'debug';
     }
@@ -40,7 +40,8 @@
       'change .sectionselector input': 'updateSectionSelection',
       'change .regionselect input': 'updateRegionSelection',
       'change .regionselect select': 'updateRegionSelection',
-      'change .yearselect input': 'updateYearSelection'
+      'change .yearselect input': 'updateYearSelection',
+      'click .getreport': 'getReport'
     },
     initialize: function() {
       debug('AppView.initialize');
@@ -53,6 +54,20 @@
       debug('AppView.render');
       this.$el.append(AppView.templates.layout({}));
       return $('#contentwrap .maincontent').append(this.$el);
+    },
+    getReport: function() {
+      var form;
+      debug('AppView.getReport');
+      this.$('#reportform').remove();
+      form = [];
+      form.push('<form action="/regionreport" method="get" id="reportform">');
+      form.push('<input type="hidden" name="year" value="' + this.selectedYear + '">');
+      form.push('<input type="hidden" name="regiontype" value="' + this.selectedRegionType + '">');
+      form.push('<input type="hidden" name="region" value="' + this.selectedRegion + '">');
+      form.push('<input type="hidden" name="sections" value="' + this.selectedSections.join(' ') + '">');
+      form.push('</form>');
+      this.$el.append(form.join('\n'));
+      return this.$('#reportform').submit();
     },
     fetchReportSections: function() {
       var fetch;
@@ -626,6 +641,7 @@
         };
       })(this)).get().reverse();
       parentIds.push(this.sectionId(sectionDom));
+      this.selectedSections.push(parentIds.join('.'));
       info = {
         sections: this.possibleSections
       };
@@ -658,6 +674,7 @@
       var content, contentList, selectedSections, summary, _ref;
       debug('AppView.updateSummary');
       selectedSections = this.$('.sectionselect > .sectionselector').not('.unselected');
+      this.selectedSections = [];
       contentList = [];
       selectedSections.each((function(_this) {
         return function(index, section) {

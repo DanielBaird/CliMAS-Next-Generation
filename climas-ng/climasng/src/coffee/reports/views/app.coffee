@@ -5,7 +5,8 @@
 # L = require 'leaflet'
 
 # MapLayer = require '../models/maplayer'
-require '../util/shims'
+
+require '../util/shims' # help IE to get up to date
 
 # disable the jshint warning about "did you mean to return a
 # conditional" which crops up all the time in coffeescript compiled
@@ -21,8 +22,9 @@ debug = (itemToLog, itemLevel)->
     levels = ['verydebug', 'debug', 'message', 'warning']
 
     # threshold = 'verydebug'
-    threshold = 'debug'
-    # threshold = 'message'
+    # threshold = 'debug'
+    threshold = 'message'
+
     itemLevel = 'debug' unless itemLevel
 
     thresholdNum = levels.indexOf threshold
@@ -57,6 +59,7 @@ AppView = Backbone.View.extend {
         'change .regionselect input': 'updateRegionSelection'
         'change .regionselect select': 'updateRegionSelection'
         'change .yearselect input': 'updateYearSelection'
+        'click .getreport': 'getReport'
     # ---------------------------------------------------------------
     initialize: ()->
         debug 'AppView.initialize'
@@ -76,6 +79,33 @@ AppView = Backbone.View.extend {
 
         @$el.append AppView.templates.layout {}
         $('#contentwrap .maincontent').append @$el
+
+    # ---------------------------------------------------------------
+    # actually go get the report
+    # ---------------------------------------------------------------
+    getReport: ()->
+        debug 'AppView.getReport'
+
+        # remove any previous form
+        @$('#reportform').remove()
+
+        form = []
+        form.push '<form action="/regionreport" method="get" id="reportform">'
+
+        # selected year
+        form.push '<input type="hidden" name="year" value="' + @selectedYear + '">'
+
+        # selected region
+        form.push '<input type="hidden" name="regiontype" value="' + @selectedRegionType + '">'
+        form.push '<input type="hidden" name="region" value="' + @selectedRegion + '">'
+
+        # selected report sections
+        form.push '<input type="hidden" name="sections" value="' + @selectedSections.join(' ') + '">'
+
+        form.push '</form>'
+
+        @$el.append form.join '\n'
+        @$('#reportform').submit()
 
     # ---------------------------------------------------------------
     # deal with report sections
@@ -533,6 +563,8 @@ AppView = Backbone.View.extend {
         # add this section's own id
         parentIds.push @sectionId(sectionDom)
 
+        @selectedSections.push parentIds.join('.')
+
         # now walk into the sections hierarchy
         info = { sections: @possibleSections }
 
@@ -562,6 +594,7 @@ AppView = Backbone.View.extend {
 
         selectedSections = @$('.sectionselect > .sectionselector').not('.unselected')
 
+        @selectedSections = []
         contentList = []
         selectedSections.each (index, section)=>
             info = @sectionName section

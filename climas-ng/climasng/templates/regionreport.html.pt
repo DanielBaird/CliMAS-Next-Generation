@@ -8,14 +8,10 @@
 	</title>
 	<meta content="width=device-width" name="viewport" />
 	<link href="${request.static_path('climasng:static/images/favicon-trans.png')}" rel="shortcut icon" />
-	<link href="${request.static_path('climasng:static/css/normalize.min.css')}" rel="stylesheet" />
-	<link href="${request.static_path('climasng:static/css/h5bp.css')}" rel="stylesheet" />
-	<link href="${request.static_path('climasng:static/css/main.css')}" rel="stylesheet" />
-	<script src="${request.static_path('climasng:static/js/lib/modernizr.2.7.1.js')}"></script>
 </head>
 <body>
 	<div id="report">
-		${ report_content }
+		${ structure: report_content }
 	</div>
 </body>
 </html>
