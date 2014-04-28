@@ -54,6 +54,8 @@ def main(global_config, **settings):
 
     config.add_route('speciesdata', '/speciesdata/{data_name:.*}')
 
+    config.add_route('regiondata', '/regiondata/{regionid}/')
+
     config.add_static_view(name='olddata/regions', path=settings['climas.old_report_data_path'])
 
     # add a 404 view that will retry with an appended slash first

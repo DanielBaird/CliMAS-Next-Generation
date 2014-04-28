@@ -38,7 +38,12 @@ class ProseMaker(object):
     @dataJSON.setter
     def dataJSON(self, value):
         self._json = value
-        self._data = json.loads(value, parse_float=Decimal)
+        self._data = json.loads(
+            value,
+            parse_float=Decimal,
+            parse_int=Decimal,
+            parse_constant=Decimal
+        )
         return self._json
 
     @dataJSON.deleter
