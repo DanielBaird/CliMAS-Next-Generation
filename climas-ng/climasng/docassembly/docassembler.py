@@ -31,10 +31,11 @@ class DocAssembler(object):
     def getRegionData(self, region_id=None, region_type=None):
         region_type = self._region_type if region_type is None else region_type
         region_id = self._region_id if region_id is None else region_id
-        self._region = json.dumps({
+        self._region = {
             'region_type': region_type,
             'region_id': region_id
-        })
+        }
+        # raise Exception(self._region)
         return self._region
 
 
@@ -44,6 +45,7 @@ class DocAssembler(object):
             sources.append(self.getSectionSource(section))
         self._source = "\n\n".join(sources)
         return self._source
+
 
     def getSectionSource(self, section):
         section_path = os.path.join(
