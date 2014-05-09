@@ -1,10 +1,12 @@
 
 import re
-import json
+import shlex
+import simplejson # can't use native json because we have to json-ify Decimals
 from decimal import *
 
 from docpart import DocPart
 from conditionparser import ConditionParser
+from replacementparser import ReplacementParser
 
 class ProseMaker(object):
 
@@ -22,7 +24,8 @@ class ProseMaker(object):
     @data.setter
     def data(self, value):
         self._data = value
-        self._json = json.dumps(value, indent=4)
+        # if they set data directly, we'll keep a json string too.
+        self._json = simplejson.dumps(value, indent=4, use_decimal=True)
         return self._data
 
     @data.deleter
@@ -38,8 +41,10 @@ class ProseMaker(object):
     @dataJSON.setter
     def dataJSON(self, value):
         self._json = value
-        self._data = json.loads(
+        self._data = simplejson.loads(
             value,
+            # can't use simplejson's use_decimal arg here because
+            # that only applies to floats, we want ints etc as well.
             parse_float=Decimal,
             parse_int=Decimal,
             parse_constant=Decimal
@@ -110,9 +115,9 @@ class ProseMaker(object):
             #
             # And this data:
             #
-            # {   daytype:            'weekday',
-            #     alarm_weekday_time: '6am',
-            #     alarm_weekend_time: '9am'    }
+            # {   "daytype":            "weekday",
+            #     "alarm_weekday_time": "6am",
+            #     "alarm_weekend_time": "9am"    }
             #
             # Your result will be:
             #
@@ -141,16 +146,20 @@ class ProseMaker(object):
     # ---------------------------------------------------------------
     def resolve_replacement(self, match):
 
-        # match.group(1) is a comma-separated list of stuff.  the 1st
-        # thing is the varname.  That's optionally followed by
-        # a list of transformations.
+        # match.group(1) is all the stuff that was {{ inside the
+        # curlies }}.  the 1st thing is the varname; that's followed
+        # by a (possibly zero-length) list of transformations.  Eg:
+        # {{ varname, trans1, trans2 trans2arg, trans3 }}
+        #
+        # It gets pretty complicated because you can quote the args,
+        # and a quoted arg can have commas in it, etc... liuckily
+        # there's a replacement parser to help out.
 
-        transforms = re.split('\s*,\s*', match.group(1))
-        start_value = transforms.pop(0)
+        var_name, transforms = ReplacementParser(match.group(1)).result
 
-        if self.data[start_value]:
+        if var_name in self.data:
             # if it's a var we know, we can do something with it
-            val = self.data[start_value]
+            val = self.data[var_name]
 
             try:
                 # Decimal(1.1) gives 1.100000000000000088817841970012523233890533447265625
@@ -173,8 +182,7 @@ class ProseMaker(object):
 
             for transform in transforms:
 
-                trans_args = transform.split() # strips whitespace too
-                trans_name = trans_args.pop(0).lower()
+                trans_name, trans_args = transform
 
                 if trans_name == 'absolute':
                     val = abs(val)

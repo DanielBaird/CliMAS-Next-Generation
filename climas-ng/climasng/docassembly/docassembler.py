@@ -1,7 +1,9 @@
 
 import json
+import urllib2
 import os
 from string import Template
+from decimal import Decimal
 
 from climasng.parsing.prosemaker import ProseMaker
 
@@ -11,7 +13,7 @@ class DocAssembler(object):
     def __init__(self, doc_data, settings={}):
         self._defaults = {
             # pattern can use region_id and region_type to make a url
-            'region_url_pattern': Template('/regiondata/${region_id}'),
+            'region_url_pattern': Template('http://localhost:6543/regiondata/${region_type}/${region_id}'),
             'section_path': './climasng/reportcontent/sections'
         }
         # merge in the user settings
@@ -31,11 +33,27 @@ class DocAssembler(object):
     def getRegionData(self, region_id=None, region_type=None):
         region_type = self._region_type if region_type is None else region_type
         region_id = self._region_id if region_id is None else region_id
+
         self._region = {
             'region_type': region_type,
             'region_id': region_id
         }
+
+        region_data_url = self._settings['region_url_pattern'].substitute(self._region)
+
+        json_string = urllib2.urlopen(region_data_url).read()
+        data = json.loads(
+                    json_string,
+                    parse_float=Decimal,
+                    parse_int=Decimal,
+                    parse_constant=Decimal
+        )
+
+        self._region.update(data) # merge, json wins
+
+        # raise Exception(region_data_url)
         # raise Exception(self._region)
+
         return self._region
 
 

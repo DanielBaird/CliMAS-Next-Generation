@@ -1,5 +1,5 @@
 # Intro
 
-Report intro section.
+Report intro section wiyth {{ random }} stuff in it.
 
-This covers the region {{ region_id }}.
+{{ one }} {{ one, plural reports "This one report" }} covers the region {{ region_full_title }}.

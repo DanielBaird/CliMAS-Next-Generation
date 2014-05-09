@@ -17,7 +17,11 @@ class RegionDataView(object):
         data_path = self.request.registry.settings['climas.region_data_path']
 
         return FileResponse(
-            os.path.join(data_path, self.request.matchdict['region_id']),
+            os.path.join(
+                data_path,
+                self.request.matchdict['regiontype'],
+                self.request.matchdict['regionid'] + '.json'
+            ),
             request=self.request
         )
 

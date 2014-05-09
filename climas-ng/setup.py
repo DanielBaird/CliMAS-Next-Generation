@@ -18,7 +18,8 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'parsimonious',
-    'coverage'
+    'coverage',
+    'simplejson'
     ]
 
 setup(name='climas-ng',

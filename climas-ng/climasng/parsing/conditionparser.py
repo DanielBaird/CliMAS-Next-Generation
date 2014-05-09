@@ -34,7 +34,7 @@ class ConditionVisitor(NodeVisitor):
     # proper node handlers ------------------------------------------
     def visit_condition(self, node, children):
         # top level condition should already have a single boolean child
-        return children
+        return children[0]
 
 
     def visit_always(self, node, children):
@@ -241,4 +241,4 @@ class ConditionParser(object):
         tree = g.parse(self._condition)
         v = ConditionVisitor(self.data)
 
-        return v.visit(tree)[0]
+        return v.visit(tree)
