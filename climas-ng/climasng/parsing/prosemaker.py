@@ -95,7 +95,11 @@ class ProseMaker(object):
     def resolve_condition(self, condition):
         # force the condition to be stringy
         condition = str(condition)
-        # use a condition parser to get the answer
+
+        # first, resolve all the {{ replacements }} in the condition
+        condition = self.resolve_content(condition)
+
+        # then use a condition parser to get the answer
         cp = ConditionParser(condition, self._data)
         return cp.result
 
@@ -125,22 +129,21 @@ class ProseMaker(object):
             #
             # But if you change the daytype to "weekend", you'll get 9am in the
             # result.  Cool hey.
-            #
-            def var_lookup(match):
-                if self.data[match.group(1)]:
-                    return self.data[match.group(1)]
 
-            while (replacements > 0):
-                replacements = 0
+            old_content = ''
+            # keep going until there were no changes
+            while (content != old_content):
 
+                old_content = content
                 # this regex will catch {{placeholders}} that have no inner
                 # placeholders, so the most nested {{curlies}} get resolved
                 # first.
-                content, replacements = re.subn(
+                content = re.sub(
                     r'{{\s*([^\{\}]+?)\s*}}',
                     self.resolve_replacement,
                     content
                 )
+
         return content
 
     # ---------------------------------------------------------------
@@ -155,12 +158,9 @@ class ProseMaker(object):
         # and a quoted arg can have commas in it, etc... liuckily
         # there's a replacement parser to help out.
 
-        var_name, transforms = ReplacementParser(match.group(1)).result
+        val, transforms = ReplacementParser(match.group(1), self._data).result
 
-        if var_name in self.data:
-            # if it's a var we know, we can do something with it
-            val = self.data[var_name]
-
+        if type(val) != Decimal:
             try:
                 # Decimal(1.1) gives 1.100000000000000088817841970012523233890533447265625
                 # Decimal(repr(1.1)) gives 1.1
@@ -169,68 +169,63 @@ class ProseMaker(object):
                 # that's okay, it doesn't want to be a Decimal
                 pass
 
-            # function for doing rounding
-            def round(val, unit, method):
-                unit = Decimal(unit)
-                val = val / unit
-                val = val.quantize(Decimal('1'), context=Context(rounding=method))
-                val = val * unit
-                # turn -0 into 0
-                if val.is_zero():
-                    val = Decimal('0')
-                return val
+        # function for doing rounding
+        def round(val, unit, method):
+            unit = Decimal(unit)
+            val = val / unit
+            val = val.quantize(Decimal('1'), context=Context(rounding=method))
+            val = val * unit
+            # turn -0 into 0
+            if val.is_zero():
+                val = Decimal('0')
+            return val
 
-            for transform in transforms:
+        for transform in transforms:
 
-                trans_name, trans_args = transform
+            trans_name, trans_args = transform
 
-                if trans_name == 'absolute':
-                    val = abs(val)
-                    continue
+            if trans_name == 'absolute':
+                val = abs(val)
+                continue
 
-                if trans_name == 'round':
+            if trans_name == 'round':
 
-                    unit = Decimal(trans_args[0]) if len(trans_args) > 0 else Decimal('1')
-                    val = round(val, unit, ROUND_HALF_EVEN)
-                    # val = val / unit
-                    # val = val.quantize(Decimal('1'), context=Context(rounding=ROUND_HALF_EVEN))
-                    # val = val * unit
-                    # # turn -0 into 0 and 1.00 into 1
-                    # val = Decimal('0') if val.is_zero() else val.normalize()
-                    continue
+                unit = Decimal(trans_args[0]) if len(trans_args) > 0 else Decimal('1')
+                val = round(val, unit, ROUND_HALF_EVEN)
+                # val = val / unit
+                # val = val.quantize(Decimal('1'), context=Context(rounding=ROUND_HALF_EVEN))
+                # val = val * unit
+                # # turn -0 into 0 and 1.00 into 1
+                # val = Decimal('0') if val.is_zero() else val.normalize()
+                continue
 
-                if trans_name == 'roundup':
-                    unit = Decimal(trans_args[0]) if len(trans_args) > 0 else Decimal('1')
-                    val = round(val, unit, ROUND_UP)
-                    continue
+            if trans_name == 'roundup':
+                unit = Decimal(trans_args[0]) if len(trans_args) > 0 else Decimal('1')
+                val = round(val, unit, ROUND_UP)
+                continue
 
-                if trans_name == 'rounddown':
-                    unit = Decimal(trans_args[0]) if len(trans_args) > 0 else Decimal('1')
-                    val = val = round(val, unit, ROUND_DOWN)
-                    continue
+            if trans_name == 'rounddown':
+                unit = Decimal(trans_args[0]) if len(trans_args) > 0 else Decimal('1')
+                val = val = round(val, unit, ROUND_DOWN)
+                continue
 
-                if trans_name == 'plural':
-                    plural_part = trans_args[0] if len(trans_args) > 0 else 's'
-                    single_part = trans_args[1] if len(trans_args) > 1 else ''
-                    if val == 1:
-                        val = single_part
-                    else:
-                        val = plural_part
-                    continue
+            if trans_name == 'plural':
+                plural_part = trans_args[0] if len(trans_args) > 0 else 's'
+                single_part = trans_args[1] if len(trans_args) > 1 else ''
+                if val == 1:
+                    val = single_part
+                else:
+                    val = plural_part
+                continue
 
-                raise Exception('transformation "%s" is not implemented.' % trans_name)
+            raise Exception('transformation "%s" is not implemented.' % trans_name)
 
-                # loop repeats for each transform
+            # loop repeats for each transform
 
-            if isinstance(val, Decimal):
-                val = val.normalize()      # turns 1.00 into 1
-                val = '{0:f}'.format(val)  # turns 1E+1 into 10
-            return str(val)
-
-        else:
-            # if we didn't recognise the start value, just leave the entire placeholder as is
-            return str(match.group(0))
-
+        if isinstance(val, Decimal):
+            val = val.normalize()      # turns 1.00 into 1
+            val = '{0:f}'.format(val)  # turns 1E+1 into 10
+        return str(val)
 
 
 

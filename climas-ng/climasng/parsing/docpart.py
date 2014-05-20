@@ -40,7 +40,7 @@ class DocPart(object):
     def parse(self, block):
         """ Parses a string block that might start with a condition """
 
-        # maybe it starts with [[, but it doesn't have to (its implied)
+        # maybe it starts with [[, but it doesn't have to (it's implied)
         if block[0:2] == '[[':
             block = block[2:]
 

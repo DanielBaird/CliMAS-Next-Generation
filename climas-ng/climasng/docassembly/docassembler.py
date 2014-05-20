@@ -25,6 +25,7 @@ class DocAssembler(object):
         self._region_id = doc_data['regionid']
         self._sections = doc_data['sections']
         self._format = doc_data['format']
+        self._year = doc_data['year']
 
         self.getRegionData()
         self.getSource()
@@ -35,6 +36,7 @@ class DocAssembler(object):
         region_id = self._region_id if region_id is None else region_id
 
         self._region = {
+            'year': self._year,
             'region_type': region_type,
             'region_id': region_id
         }
@@ -82,6 +84,7 @@ class DocAssembler(object):
         pm = ProseMaker()
         pm.data = self._region
         pm.source = self._source
+
         # currently returning raw Markdown.
         return pm.doc
 
