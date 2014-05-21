@@ -158,75 +158,79 @@ class ProseMaker(object):
         # and a quoted arg can have commas in it, etc... liuckily
         # there's a replacement parser to help out.
 
-        val, transforms = ReplacementParser(match.group(1), self._data).result
+        try:
 
-        if type(val) != Decimal:
-            try:
-                # Decimal(1.1) gives 1.100000000000000088817841970012523233890533447265625
-                # Decimal(repr(1.1)) gives 1.1
-                val = Decimal(repr(val))
-            except InvalidOperation:
-                # that's okay, it doesn't want to be a Decimal
-                pass
+            val, transforms = ReplacementParser(match.group(1), self._data).result
 
-        # function for doing rounding
-        def round(val, unit, method):
-            unit = Decimal(unit)
-            val = val / unit
-            val = val.quantize(Decimal('1'), context=Context(rounding=method))
-            val = val * unit
-            # turn -0 into 0
-            if val.is_zero():
-                val = Decimal('0')
-            return val
+            if type(val) != Decimal:
+                try:
+                    # Decimal(1.1) gives 1.100000000000000088817841970012523233890533447265625
+                    # Decimal(repr(1.1)) gives 1.1
+                    val = Decimal(repr(val))
+                except InvalidOperation:
+                    # that's okay, it doesn't want to be a Decimal
+                    pass
 
-        for transform in transforms:
+            # function for doing rounding
+            def round(val, unit, method):
+                unit = Decimal(unit)
+                val = val / unit
+                val = val.quantize(Decimal('1'), context=Context(rounding=method))
+                val = val * unit
+                # turn -0 into 0
+                if val.is_zero():
+                    val = Decimal('0')
+                return val
 
-            trans_name, trans_args = transform
+            for transform in transforms:
 
-            if trans_name == 'absolute':
-                val = abs(val)
-                continue
+                trans_name, trans_args = transform
 
-            if trans_name == 'round':
+                if trans_name == 'absolute':
+                    val = abs(val)
+                    continue
 
-                unit = Decimal(trans_args[0]) if len(trans_args) > 0 else Decimal('1')
-                val = round(val, unit, ROUND_HALF_EVEN)
-                # val = val / unit
-                # val = val.quantize(Decimal('1'), context=Context(rounding=ROUND_HALF_EVEN))
-                # val = val * unit
-                # # turn -0 into 0 and 1.00 into 1
-                # val = Decimal('0') if val.is_zero() else val.normalize()
-                continue
+                if trans_name == 'round':
 
-            if trans_name == 'roundup':
-                unit = Decimal(trans_args[0]) if len(trans_args) > 0 else Decimal('1')
-                val = round(val, unit, ROUND_UP)
-                continue
+                    unit = Decimal(trans_args[0]) if len(trans_args) > 0 else Decimal('1')
+                    val = round(val, unit, ROUND_HALF_EVEN)
+                    # val = val / unit
+                    # val = val.quantize(Decimal('1'), context=Context(rounding=ROUND_HALF_EVEN))
+                    # val = val * unit
+                    # # turn -0 into 0 and 1.00 into 1
+                    # val = Decimal('0') if val.is_zero() else val.normalize()
+                    continue
 
-            if trans_name == 'rounddown':
-                unit = Decimal(trans_args[0]) if len(trans_args) > 0 else Decimal('1')
-                val = val = round(val, unit, ROUND_DOWN)
-                continue
+                if trans_name == 'roundup':
+                    unit = Decimal(trans_args[0]) if len(trans_args) > 0 else Decimal('1')
+                    val = round(val, unit, ROUND_UP)
+                    continue
 
-            if trans_name == 'plural':
-                plural_part = trans_args[0] if len(trans_args) > 0 else 's'
-                single_part = trans_args[1] if len(trans_args) > 1 else ''
-                if val == 1:
-                    val = single_part
-                else:
-                    val = plural_part
-                continue
+                if trans_name == 'rounddown':
+                    unit = Decimal(trans_args[0]) if len(trans_args) > 0 else Decimal('1')
+                    val = val = round(val, unit, ROUND_DOWN)
+                    continue
 
-            raise Exception('transformation "%s" is not implemented.' % trans_name)
+                if trans_name == 'plural':
+                    plural_part = trans_args[0] if len(trans_args) > 0 else 's'
+                    single_part = trans_args[1] if len(trans_args) > 1 else ''
+                    if val == 1:
+                        val = single_part
+                    else:
+                        val = plural_part
+                    continue
 
-            # loop repeats for each transform
+                raise Exception('transformation "%s" is not implemented.' % trans_name)
 
-        if isinstance(val, Decimal):
-            val = val.normalize()      # turns 1.00 into 1
-            val = '{0:f}'.format(val)  # turns 1E+1 into 10
-        return str(val)
+                # loop repeats for each transform
 
+            if isinstance(val, Decimal):
+                val = val.normalize()      # turns 1.00 into 1
+                val = '{0:f}'.format(val)  # turns 1E+1 into 10
+            return str(val)
+
+        except:
+            return match.group(0)
 
 
 

@@ -3,7 +3,7 @@
 ================================================================
 for
 ===
-{{ rg_full_title }}
+{{ rg_name }}
 ==================
 
 <p class="frontpagecredits">
@@ -64,7 +64,7 @@ Figure 1 tracks increase of mean annual temperature in $$rg_short_name between 2
 
 ![Figure 1: Average Projected Temperature]($$rg_url/absolute.climate.temperature.png)
 
-Figure 2 shows the projected [[hi_{{rpt_year}}_50th_t_mean > baseline_t_mean]]  increase  [[$$hi_{{rpt_year}}_50th_t_mean < $$baseline_t_mean]]  change [[always]] in annual average temperature across $$rg_short_name, in low and high emission scenarios.  The images of the 10th, 50th and 90th percentiles visualise the variation between the 18 different GCMs.  The 10th percentile depicts the lower end of warming projected, at only [[hi_{{rpt_year}}_50th_t_mean > baseline_t_mean]] $$t_high_{{rpt_year}}_tenth_mean&deg;C ($$t_high_{{rpt_year}}_tenth_d_up&deg;C increase), and the 90th percentile represents the high end of waming projected at $$t_high_{{rpt_year}}_ninetieth_mean&deg;C ($$t_high_{{rpt_year}}_ninetieth_d_up&deg;C increase) [[hi_{{rpt_year}}_50th_t_mean < baseline_t_mean]] $$t_high_{{rpt_year}}_tenth_mean&deg;C ($$t_high_{{rpt_year}}_tenth_d_down&deg;C decrease), and the 90th percentile represents the high end of waming projected at $$t_high_{{rpt_year}}_ninetieth_mean&deg;C ($$t_high_{{rpt_year}}_ninetieth_d_up&deg;C increase) [[always]] both for the high scenario.
+Figure 2 shows the projected [[hi_{{rpt_year}}_50th_t_mean > baseline_t_mean]]  increase  [[hi_{{rpt_year}}_50th_t_mean < baseline_t_mean]]  change [[always]] in annual average temperature across $$rg_short_name, in low and high emission scenarios.  The images of the 10th, 50th and 90th percentiles visualise the variation between the 18 different GCMs.  The 10th percentile depicts the lower end of warming projected, at only [[hi_{{rpt_year}}_50th_t_mean > baseline_t_mean]] $$t_high_{{rpt_year}}_tenth_mean&deg;C ($$t_high_{{rpt_year}}_tenth_d_up&deg;C increase), and the 90th percentile represents the high end of waming projected at $$t_high_{{rpt_year}}_ninetieth_mean&deg;C ($$t_high_{{rpt_year}}_ninetieth_d_up&deg;C increase) [[hi_{{rpt_year}}_50th_t_mean < baseline_t_mean]] $$t_high_{{rpt_year}}_tenth_mean&deg;C ($$t_high_{{rpt_year}}_tenth_d_down&deg;C decrease), and the 90th percentile represents the high end of waming projected at $$t_high_{{rpt_year}}_ninetieth_mean&deg;C ($$t_high_{{rpt_year}}_ninetieth_d_up&deg;C increase) [[always]] both for the high scenario.
 
 ![Figure 2: Projected Temperature Change]($$rg_url/delta.temperature.png)
 
@@ -72,30 +72,30 @@ Figure 2 shows the projected [[hi_{{rpt_year}}_50th_t_mean > baseline_t_mean]]  
 
 ###Rainfall
 
-Currently, the mean annual rainfall for $$rg_short_name is $$rainfall_current_mean mL, experiencing a range of averages between $$rainfall_current_min mL and $$rainfall_current_max mL.  [[always]]
+Currently, the mean annual rainfall for $$rg_short_name is $$baseline_p_mean mL, experiencing a range of averages between $$rainfall_current_min mL and $$rainfall_current_max mL.  [[always]]
 
-Future rainfall projections are much more variable.  By  {{rpt_year}}, rainfall is projected to [[rainfall_high_{{rpt_year}}_fiftieth_mean > rainfall_current_mean]]  increase by $$rainfall_high_{{rpt_year}}_fiftieth_d_up mL to $$rainfall_high_{{rpt_year}}_fiftieth_mean mL. [[rainfall_high_{{rpt_year}}_fiftieth_mean < rainfall_current_mean]]  decrease by $$rainfall_high_{{rpt_year}}_fiftieth_d_down mL to $$rainfall_high_{{rpt_year}}_fiftieth_mean mL.
+Future rainfall projections are much more variable.  By  {{rpt_year}}, rainfall is projected to [[hi_{{rpt_year}}_50th_p_mean > baseline_p_mean]]  increase by $$rainfall_high_{{rpt_year}}_fiftieth_d_up mL to $$hi_{{rpt_year}}_50th_p_mean mL. [[hi_{{rpt_year}}_50th_p_mean < baseline_p_mean]]  decrease by $$rainfall_high_{{rpt_year}}_fiftieth_d_down mL to $$hi_{{rpt_year}}_50th_p_mean mL.
 [[always]]
 
 Figure 3 tracks increase of rainfall in $$rg_short_name between 2015 and 2085.
 
-[[rainfall_high_{{rpt_year}}_fiftieth_mean < rainfall_current_mean
-    and rainfall_high_{{rpt_year}}_ninetieth_mean < rainfall_current_mean]]
+[[hi_{{rpt_year}}_50th_p_mean < baseline_p_mean
+    and rainfall_high_{{rpt_year}}_ninetieth_mean < baseline_p_mean]]
 
 All models predict a decrease in rainfall, by between $$rainfall_high_{{rpt_year}}_tenth_d_down mL and $$rainfall_high_{{rpt_year}}_ninetieth_d_down mL.
 
-[[rainfall_high_{{rpt_year}}_fiftieth_mean < rainfall_current_mean
-    and rainfall_high_{{rpt_year}}_ninetieth_mean > rainfall_current_mean]]
+[[hi_{{rpt_year}}_50th_p_mean < baseline_p_mean
+    and rainfall_high_{{rpt_year}}_ninetieth_mean > baseline_p_mean]]
 
 Most models predict a decrease in rainfall, by as much as $$rainfall_high_{{rpt_year}}_tenth_d_down mL, however some predict an increase of as much as $$rainfall_high_{{rpt_year}}_ninetieth_d_up mL.
 
-[[rainfall_high_{{rpt_year}}_fiftieth_mean > rainfall_current_mean
-    and rainfall_high_{{rpt_year}}_tenth_mean > rainfall_current_mean]]
+[[hi_{{rpt_year}}_50th_p_mean > baseline_p_mean
+    and rainfall_high_{{rpt_year}}_tenth_mean > baseline_p_mean]]
 
 All models predict an increase in rainfall, by between $$rainfall_high_{{rpt_year}}_tenth_d_up mL and $$rainfall_high_{{rpt_year}}_ninetieth_d_up mL.
 
-[[rainfall_high_{{rpt_year}}_fiftieth_mean > rainfall_current_mean
-    and rainfall_high_{{rpt_year}}_tenth_mean < rainfall_current_mean]]
+[[hi_{{rpt_year}}_50th_p_mean > baseline_p_mean
+    and rainfall_high_{{rpt_year}}_tenth_mean < baseline_p_mean]]
 
 Most models predict an increase in rainfall, by as much as $$rainfall_high_{{rpt_year}}_ninetieth_d_up, however some predict a decrease of as much as $$rainfall_high_{{rpt_year}}_tenth_d_down.
 
@@ -103,7 +103,7 @@ Most models predict an increase in rainfall, by as much as $$rainfall_high_{{rpt
 
 ![Figure 3: Average Projected rainfall]($$rg_url/absolute.climate.rainfall.png)
 
-Figure 4 shows the projected [[rainfall_high_{{rpt_year}}_fiftieth_mean > rainfall_current_mean]]  increase [[rainfall_high_{{rpt_year}}_fiftieth_mean < rainfall_current_mean]]  change [[always]] in annual average rainfall across $$rg_short_name, in low and high emission scenarios.
+Figure 4 shows the projected [[hi_{{rpt_year}}_50th_p_mean > baseline_p_mean]]  increase [[hi_{{rpt_year}}_50th_p_mean < baseline_p_mean]]  change [[always]] in annual average rainfall across $$rg_short_name, in low and high emission scenarios.
 
 ![Figure 4: Projected rainfall Change]($$rg_url/delta.rainfall.png)
 [[rpt_year < 2085]]Note that this figure shows projections for 2085.[[always]]

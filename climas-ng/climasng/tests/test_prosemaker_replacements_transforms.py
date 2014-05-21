@@ -30,11 +30,11 @@ class TestProseMakerReplacements(ProseMakerTestCase):
 
     # ------------------------------------------------------- test --
     def test_pm_transform_bad(self):
-        self.pm.source = '{{onePone, notatransform}}'
-        # has to be a lambda coz otherwise the doc property is invoked
-        # right here and the exception arrives before the assertRaises
-        # method gets called.
-        self.assertRaises(Exception, lambda: self.pm.doc)
+        self.assertParses('{{onePone}}', '1.1')
+        self.assertParses(
+            '{{onePone, notatransform}}',
+            '{{onePone, notatransform}}'
+        )
 
     # ------------------------------------------------------- test --
     def test_pm_transform_absolute(self):

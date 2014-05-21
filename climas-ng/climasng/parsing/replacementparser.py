@@ -34,14 +34,27 @@ class ReplacementVisitor(NodeVisitor):
         if node.text in self._data:
             return (self._data[node.text])
 
-        raise Exception('variable name "' + varname + '" was not found.')
+        raise Exception('variable name "' + node.text + '" was not found.')
 
-    def visit_numericexpression(self, node, (left, ws1, operator, ws2, right)):
+    def visit_expression(self, node, (left, ws1, operator, ws2, right)):
+
+        if not isinstance(left, Decimal):
+            left = Decimal(repr(left))
+
+        if not isinstance(right, Decimal):
+            right = Decimal(repr(right))
+
         if operator ==  '+':
             return (left + right)
 
         if operator ==  '-':
             return (left - right)
+
+        if operator ==  '*':
+            return (left * right)
+
+        if operator ==  '/':
+            return (left / right)
 
         raise Exception('operator "' + operator + '" is not implemented')
 
@@ -102,7 +115,7 @@ class ReplacementParser(object):
         g = Grammar("""
             replacement = ws replacevalue transformationlist ws
 
-            replacevalue = numericexpression / varname / literal
+            replacevalue = expression / varname / literal
 
             transformationlist = transformation*
             transformation = ws comma ws transname transarglist
@@ -110,7 +123,9 @@ class ReplacementParser(object):
             transarglist = transarg*
             transarg = singlequotedstr / doublequotedstr / unquotedarg
 
-            numericexpression = numberliteral rws operator rws numberliteral
+            expression = term rws operator rws term
+
+            term = numberliteral / varname
 
             varname = ~"[a-z_][a-z0-9_]*"i
             transname = ~"[a-z_][a-z0-9_]*"i
@@ -123,9 +138,12 @@ class ReplacementParser(object):
             singlequotedstr = ws sngq notsngq sngq
             unquotedarg = ws notwsorcomma
 
-            operator = plus
+            operator = plus / minus / times / divide
 
             plus = "+"
+            minus = "-"
+            times = "*"
+            divide = "/"
 
             rws = ~"\s+"
             ws = ~"\s*"

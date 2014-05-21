@@ -32,8 +32,38 @@ class ConditionVisitor(NodeVisitor):
         return node.text.strip()
 
     # proper node handlers ------------------------------------------
-    def visit_condition(self, node, children):
-        # top level condition should already have a single boolean child
+
+    def visit_disjunction(self, node, (firstterm, otherterms)):
+        terms = [firstterm]
+        if len(otherterms) > 0:
+            terms.extend(otherterms)
+        return any(terms)
+
+
+    def visit_moreorconjunctions(self, node, terms):
+        return terms
+
+
+    def visit_orconjunction(self, node, (ws1, operator, ws2, conjunction)):
+        return conjunction
+
+
+    def visit_conjunction(self, node, (firstterm, otherterms)):
+        terms = [firstterm]
+        if len(otherterms) > 0:
+            terms.extend(otherterms)
+        return all(terms)
+
+
+    def visit_moreandconditions(self, node, terms):
+        return terms
+
+
+    def visit_andcondition(self, node, (ws1, operator, ws2, simplecondition)):
+        return simplecondition
+
+
+    def visit_simplecondition(self, node, children):
         return children[0]
 
 
@@ -188,9 +218,22 @@ class ConditionParser(object):
         """ The 'result' property """
 
         g = Grammar("""
-            condition = always / never / comparison
+
+            disjunction = conjunction moreorconjunctions
+            moreorconjunctions = orconjunction*
+            orconjunction = rws op_or rws conjunction
+
+            conjunction = simplecondition moreandconditions
+            moreandconditions = andcondition*
+            andcondition = rws op_and rws simplecondition
+
+            simplecondition = always / never / comparison
+
+            op_or = ~"or"i
+            op_and = ~"and"i
 
             ws = ~"\s*"
+            rws = ~"\s+"
 
             never = ~"never"i
             always = ~"always"i
@@ -239,6 +282,11 @@ class ConditionParser(object):
         """)
 
         tree = g.parse(self._condition)
+
+        # print("\n----\n")
+        # print(repr(tree))
+        # print("\n----\n")
+
         v = ConditionVisitor(self.data)
 
         return v.visit(tree)
