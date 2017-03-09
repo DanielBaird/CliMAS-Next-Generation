@@ -1,3 +1,7 @@
+
+# This work was continued in my organisation's repo: https://github.com/jcu-eresearch/climas-ng 
+
+
 CliMAS-Next-Generation
 ======================
 
